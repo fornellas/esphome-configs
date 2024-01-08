@@ -11,6 +11,7 @@ esphome:
             id(wifi_led_pwm).turn_on();
         - script.execute: fast_reboot_factory_reset
         - switch.turn_off: ld2410_bluetooth
+        - button.press: ld2410_query_params
   on_loop:
     then:
       - lambda: |-
@@ -505,6 +506,7 @@ button:
       icon: 'mdi:restart'
     query_params:
       name: 'Hi-Link HLK-LD2410: Query params'
+      id: ld2410_query_params
 
   - platform: restart
     name: "ESPHome: Restart"
