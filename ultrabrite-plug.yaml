@@ -87,6 +87,16 @@ binary_sensor:
   - platform: status
     name: "ESPHome: Status"
 
+  - platform: gpio
+    id: relay_button
+    pin:
+      number: P6
+      inverted: true
+      mode: INPUT_PULLUP
+    on_press:
+      then:
+        - switch.toggle: relay
+
 sensor:
   - platform: uptime
     name: 'ESPHome: Uptime'
@@ -103,17 +113,29 @@ sensor:
 
 output:
   - platform: slow_pwm
-    pin: 7
+    pin:
+      number: P7
+      inverted: true
     id: wifi_led_pwm
     period: 1s
   - platform: gpio
-    pin: 8
+    pin:
+      number: P8
+      inverted: true
     id: relay_led
 
 switch:
   - platform: factory_reset
     id: factory_reset_switch
     name: "ESPHome: Factory reset"
+  - platform: gpio
+    id: relay
+    name: Relay
+    pin: P24
+    on_turn_on:
+      - output.turn_on: relay_led
+    on_turn_off:
+      - output.turn_off: relay_led
 
 button:
   - platform: restart
