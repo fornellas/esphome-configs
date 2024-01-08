@@ -1,0 +1,562 @@
+esphome:
+  name: "presence"
+  friendly_name: "ESPHome > Presence"
+  name_add_mac_suffix: true
+  on_boot:
+    - priority: 600.0
+      then:
+        - lambda: |-
+            id(wifi_led_pwm).set_level(0.5);
+            id(wifi_led_pwm).set_period(1000);
+            id(wifi_led_pwm).turn_on();
+        - script.execute: fast_reboot_factory_reset
+        - switch.turn_off: ld2410_bluetooth
+  on_loop:
+    then:
+      - lambda: |-
+          if(id(wifi_component).has_ap() && !id(wifi_component).has_sta()) {
+            // Captive portal
+            id(wifi_led_pwm).set_level(0.5);
+            id(wifi_led_pwm).set_period(200);
+          } else {
+            id(wifi_led_pwm).set_period(1000);
+            if(id(wifi_component).is_connected())
+              id(wifi_led_pwm).set_level(1);
+            else
+              id(wifi_led_pwm).set_level(0.5);
+          }
+
+esp32:
+  board: esp32-c3-devkitm-1
+
+globals:
+  - id: fast_reboot
+    type: int
+    restore_value: yes
+    initial_value: '0'
+
+  - id: factory_reset_reboot_counter
+    type: int
+    initial_value: '2'
+
+logger:
+
+script:
+  - id: fast_reboot_factory_reset
+    then:
+      - if:
+          condition:
+            lambda: return ( id(fast_reboot) >= id(factory_reset_reboot_counter) );
+          then:
+            - lambda: |-
+                ESP_LOGD("Fast Boot Factory Reset", "Performing factotry reset");
+                id(fast_reboot) = 0;
+                fast_reboot->loop();
+                global_preferences->sync();
+            - switch.turn_on: factory_reset_switch
+      - lambda: |-
+          if(id(fast_reboot) > 0)
+            ESP_LOGD("Fast Boot Factory Reset", "Quick reboot %d/%d, do it %d more times to factory reset", id(fast_reboot), id(factory_reset_reboot_counter), id(factory_reset_reboot_counter) - id(fast_reboot));
+          id(fast_reboot) += 1;
+          fast_reboot->loop();
+          global_preferences->sync();
+      - delay: 10s
+      - lambda: |-
+          id(fast_reboot) = 0;
+          fast_reboot->loop();
+          global_preferences->sync();
+
+wifi:
+  id: wifi_component
+  ap:
+    ap_timeout: 0s
+  reboot_timeout: 0s
+
+captive_portal:
+    
+web_server:
+
+api:
+  reboot_timeout: 0s
+
+ota:
+  safe_mode: false
+
+prometheus:
+
+uart:
+  baud_rate: 256000
+  tx_pin: 2
+  rx_pin: 1
+  parity: NONE
+  stop_bits: 1
+
+i2c:
+  sda: 7
+  scl: 6
+  scan: false
+
+ld2410:
+  id: ld2410_sensor
+
+binary_sensor:
+  - platform: ld2410
+    has_target:
+      name: 'Hi-Link HLK-LD2410: Presence (UART)'
+      icon: 'mdi:motion-sensor'
+      filters:
+        # FIXME used to enable Prometheus 15s scraping window to see it
+        delayed_off: 15s
+    has_moving_target:
+      name: 'Hi-Link HLK-LD2410: Presence moving'
+      icon: 'mdi:motion-sensor'
+      filters:
+        # FIXME used to enable Prometheus 15s scraping window to see it
+        delayed_off: 15s
+    has_still_target:
+      name: 'Hi-Link HLK-LD2410: Presence still'
+      icon: 'mdi:motion-sensor'
+      filters:
+        # FIXME used to enable Prometheus 15s scraping window to see it
+        delayed_off: 15s
+    out_pin_presence_status:
+      name: 'Hi-Link HLK-LD2410: Presence GPIO indicates'
+      icon: 'mdi:motion-sensor'
+      entity_category: "diagnostic"
+      filters:
+        # FIXME used to enable Prometheus 15s scraping window to see it
+        delayed_off: 15s
+
+  - platform: gpio
+    pin: 3
+    name: 'Hi-Link HLK-LD2410: Presence (GPIO)'
+    id: presence_gpio
+    device_class: presence
+    icon: 'mdi:motion-sensor'
+    filters:
+      # FIXME used to enable Prometheus 15s scraping window to see it
+      delayed_off: 15s
+    on_press:
+      then:
+        - output.turn_on: presence_led
+    on_release:
+      then:
+        - output.turn_off: presence_led
+
+  - platform: status
+    name: "ESPHome: Status"
+
+sensor:
+  - platform: uptime
+    name: 'ESPHome: Uptime'
+    icon: 'mdi:timer-outline'
+    update_interval: 1s
+
+  - platform: wifi_signal
+    name: "ESPHome: WiFi Signal"
+    unit_of_measurement: "dB"
+    id: wifi_signal_db
+    update_interval: 15s
+    entity_category: "diagnostic"
+    icon: 'mdi:signal'
+
+  - platform: ld2410
+    # Engineering Mode
+    light:
+      name: 'Hi-Link HLK-LD2410: Light'
+      icon: 'mdi:brightness-5'
+      filters:
+        # FIXME used to enable Prometheus 15s scraping window to see it
+        - sliding_window_moving_average:
+            window_size: 3
+    moving_distance:
+      name: 'Hi-Link HLK-LD2410: Presence moving distance'
+      unit_of_measurement: "cm"
+      icon: 'mdi:motion-sensor'
+      filters:
+        # FIXME used to enable Prometheus 15s scraping window to see it
+        - sliding_window_moving_average:
+            window_size: 15
+    still_distance:
+      name: 'Hi-Link HLK-LD2410: Presence still distance'
+      unit_of_measurement: "cm"
+      icon: 'mdi:motion-sensor'
+      filters:
+        # FIXME used to enable Prometheus 15s scraping window to see it
+        - sliding_window_moving_average:
+            window_size: 15
+    moving_energy:
+      name: 'Hi-Link HLK-LD2410: Presence moving energy'
+      unit_of_measurement: "%"
+      icon: 'mdi:motion-sensor'
+      filters:
+        # FIXME used to enable Prometheus 15s scraping window to see it
+        - max:
+            window_size: 15
+    still_energy:
+      name: 'Hi-Link HLK-LD2410: Presence still energy'
+      unit_of_measurement: "%"
+      icon: 'mdi:motion-sensor'
+      filters:
+        # FIXME used to enable Prometheus 15s scraping window to see it
+        - max:
+            window_size: 15
+    detection_distance:
+      name: 'Hi-Link HLK-LD2410: Presence distance'
+      unit_of_measurement: "cm"
+      icon: 'mdi:ruler'
+      filters:
+        # FIXME used to enable Prometheus 15s scraping window to see it
+        - sliding_window_moving_average:
+            window_size: 15
+    g0:
+      # Engineering Mode
+      move_energy:
+        name: 'Hi-Link HLK-LD2410: Presence moving gate 0 energy'
+        icon: 'mdi:percent'
+        filters:
+          # FIXME used to enable Prometheus 15s scraping window to see it
+          - max:
+              window_size: 3
+      # Engineering Mode
+      still_energy:
+        name: 'Hi-Link HLK-LD2410: Presence still gate 0 energy'
+        icon: 'mdi:percent'
+        filters:
+          # FIXME used to enable Prometheus 15s scraping window to see it
+          - max:
+              window_size: 3
+    g1:
+      # Engineering Mode
+      move_energy:
+        name: 'Hi-Link HLK-LD2410: Presence moving gate 1 energy'
+        icon: 'mdi:percent'
+        filters:
+          # FIXME used to enable Prometheus 15s scraping window to see it
+          - max:
+              window_size: 3
+      # Engineering Mode
+      still_energy:
+        name: 'Hi-Link HLK-LD2410: Presence still gate 1 energy'
+        icon: 'mdi:percent'
+        filters:
+          # FIXME used to enable Prometheus 15s scraping window to see it
+          - max:
+              window_size: 3
+    g2:
+      # Engineering Mode
+      move_energy:
+        name: 'Hi-Link HLK-LD2410: Presence moving gate 2 energy'
+        icon: 'mdi:percent'
+        filters:
+          # FIXME used to enable Prometheus 15s scraping window to see it
+          - max:
+              window_size: 3
+      # Engineering Mode
+      still_energy:
+        name: 'Hi-Link HLK-LD2410: Presence still gate 2 energy'
+        icon: 'mdi:percent'
+        filters:
+          # FIXME used to enable Prometheus 15s scraping window to see it
+          - max:
+              window_size: 3
+    g3:
+      # Engineering Mode
+      move_energy:
+        name: 'Hi-Link HLK-LD2410: Presence moving gate 3 energy'
+        icon: 'mdi:percent'
+        filters:
+          # FIXME used to enable Prometheus 15s scraping window to see it
+          - max:
+              window_size: 3
+      # Engineering Mode
+      still_energy:
+        name: 'Hi-Link HLK-LD2410: Presence still gate 3 energy'
+        icon: 'mdi:percent'
+        filters:
+          # FIXME used to enable Prometheus 15s scraping window to see it
+          - max:
+              window_size: 3
+    g4:
+      # Engineering Mode
+      move_energy:
+        name: 'Hi-Link HLK-LD2410: Presence moving gate 4 energy'
+        icon: 'mdi:percent'
+        filters:
+          # FIXME used to enable Prometheus 15s scraping window to see it
+          - max:
+              window_size: 3
+      # Engineering Mode
+      still_energy:
+        name: 'Hi-Link HLK-LD2410: Presence still gate 4 energy'
+        icon: 'mdi:percent'
+        filters:
+          # FIXME used to enable Prometheus 15s scraping window to see it
+          - max:
+              window_size: 3
+    g5:
+      # Engineering Mode
+      move_energy:
+        name: 'Hi-Link HLK-LD2410: Presence moving gate 5 energy'
+        icon: 'mdi:percent'
+        filters:
+          # FIXME used to enable Prometheus 15s scraping window to see it
+          - max:
+              window_size: 3
+      # Engineering Mode
+      still_energy:
+        name: 'Hi-Link HLK-LD2410: Presence still gate 5 energy'
+        icon: 'mdi:percent'
+        filters:
+          # FIXME used to enable Prometheus 15s scraping window to see it
+          - max:
+              window_size: 3
+    g6:
+      # Engineering Mode
+      move_energy:
+        name: 'Hi-Link HLK-LD2410: Presence moving gate 6 energy'
+        icon: 'mdi:percent'
+        filters:
+          # FIXME used to enable Prometheus 15s scraping window to see it
+          - max:
+              window_size: 3
+      # Engineering Mode
+      still_energy:
+        name: 'Hi-Link HLK-LD2410: Presence still gate 6 energy'
+        icon: 'mdi:percent'
+        filters:
+          # FIXME used to enable Prometheus 15s scraping window to see it
+          - max:
+              window_size: 3
+    g7:
+      # Engineering Mode
+      move_energy:
+        name: 'Hi-Link HLK-LD2410: Presence moving gate 7 energy'
+        icon: 'mdi:percent'
+        filters:
+          # FIXME used to enable Prometheus 15s scraping window to see it
+          - max:
+              window_size: 3
+      # Engineering Mode
+      still_energy:
+        name: 'Hi-Link HLK-LD2410: Presence still gate 7 energy'
+        icon: 'mdi:percent'
+        filters:
+          # FIXME used to enable Prometheus 15s scraping window to see it
+          - max:
+              window_size: 3
+    g8:
+      # Engineering Mode
+      move_energy:
+        name: 'Hi-Link HLK-LD2410: Presence moving gate 8 energy'
+        icon: 'mdi:percent'
+        filters:
+          # FIXME used to enable Prometheus 15s scraping window to see it
+          - max:
+              window_size: 3
+      # Engineering Mode
+      still_energy:
+        name: 'Hi-Link HLK-LD2410: Presence still gate 8 energy'
+        icon: 'mdi:percent'
+        filters:
+          # FIXME used to enable Prometheus 15s scraping window to see it
+          - max:
+              window_size: 3
+
+  - platform: bh1750
+    name: "Rohms BH1750"
+    address: 0x23
+    update_interval: 1s
+    unit_of_measurement: "lx"
+    icon: 'mdi:brightness-5'
+
+output:
+  - platform: slow_pwm
+    pin: 5
+    id: wifi_led_pwm
+    period: 1s
+  - platform: gpio
+    pin: 4
+    id: presence_led
+
+switch:
+  - platform: ld2410
+    engineering_mode:
+      name: "Hi-Link HLK-LD2410: Engineering mode"
+      id: ld2410_engineering_mode
+      icon: 'mdi:chip'
+      internal: true
+      on_turn_off:
+        - switch.turn_on: ld2410_engineering_mode
+    bluetooth:
+      id: ld2410_bluetooth
+      name: "Hi-Link HLK-LD2410: Bluetooth"
+      icon: 'mdi:bluetooth'
+
+  - platform: factory_reset
+    id: factory_reset_switch
+    name: "ESPHome: Factory reset"
+
+number:
+  - platform: ld2410
+    timeout:
+      name: 'Hi-Link HLK-LD2410: Presence timeout'
+      unit_of_measurement: "s"
+      icon: 'mdi:timer-outline'
+    light_threshold:
+      name: 'Hi-Link HLK-LD2410: Light threshold'
+      icon: 'mdi:brightness-5'
+    max_move_distance_gate:
+      name: 'Hi-Link HLK-LD2410: Presence moving max distance gate'
+      icon: 'mdi:ruler'
+    max_still_distance_gate:
+      name: 'Hi-Link HLK-LD2410: Presence still max distance gate'
+      icon: 'mdi:ruler'
+    g0:
+      move_threshold:
+        name: 'Hi-Link HLK-LD2410: Presence moving gate 0 threshold'
+        unit_of_measurement: "%"
+        icon: 'mdi:percent'
+      still_threshold:
+        name: 'Hi-Link HLK-LD2410: Presence still gate 0 threshold'
+        unit_of_measurement: "%"
+        icon: 'mdi:percent'
+    g1:
+      move_threshold:
+        name: 'Hi-Link HLK-LD2410: Presence moving gate 1 threshold'
+        unit_of_measurement: "%"
+        icon: 'mdi:percent'
+      still_threshold:
+        name: 'Hi-Link HLK-LD2410: Presence still gate 1 threshold'
+        unit_of_measurement: "%"
+        icon: 'mdi:percent'
+    g2:
+      move_threshold:
+        name: 'Hi-Link HLK-LD2410: Presence moving gate 2 threshold'
+        unit_of_measurement: "%"
+        icon: 'mdi:percent'
+      still_threshold:
+        name: 'Hi-Link HLK-LD2410: Presence still gate 2 threshold'
+        unit_of_measurement: "%"
+        icon: 'mdi:percent'
+    g3:
+      move_threshold:
+        name: 'Hi-Link HLK-LD2410: Presence moving gate 3 threshold'
+        unit_of_measurement: "%"
+        icon: 'mdi:percent'
+      still_threshold:
+        name: 'Hi-Link HLK-LD2410: Presence still gate 3 threshold'
+        unit_of_measurement: "%"
+        icon: 'mdi:percent'
+    g4:
+      move_threshold:
+        name: 'Hi-Link HLK-LD2410: Presence moving gate 4 threshold'
+        unit_of_measurement: "%"
+        icon: 'mdi:percent'
+      still_threshold:
+        name: 'Hi-Link HLK-LD2410: Presence still gate 4 threshold'
+        unit_of_measurement: "%"
+        icon: 'mdi:percent'
+    g5:
+      move_threshold:
+        name: 'Hi-Link HLK-LD2410: Presence moving gate 5 threshold'
+        unit_of_measurement: "%"
+        icon: 'mdi:percent'
+      still_threshold:
+        name: 'Hi-Link HLK-LD2410: Presence still gate 5 threshold'
+        unit_of_measurement: "%"
+        icon: 'mdi:percent'
+    g6:
+      move_threshold:
+        name: 'Hi-Link HLK-LD2410: Presence moving gate 6 threshold'
+        unit_of_measurement: "%"
+        icon: 'mdi:percent'
+      still_threshold:
+        name: 'Hi-Link HLK-LD2410: Presence still gate 6 threshold'
+        unit_of_measurement: "%"
+        icon: 'mdi:percent'
+    g7:
+      move_threshold:
+        name: 'Hi-Link HLK-LD2410: Presence moving gate 7 threshold'
+        unit_of_measurement: "%"
+        icon: 'mdi:percent'
+      still_threshold:
+        name: 'Hi-Link HLK-LD2410: Presence still gate 7 threshold'
+        unit_of_measurement: "%"
+        icon: 'mdi:percent'
+    g8:
+      move_threshold:
+        name: 'Hi-Link HLK-LD2410: Presence moving gate 8 threshold'
+        unit_of_measurement: "%"
+        icon: 'mdi:percent'
+      still_threshold:
+        name: 'Hi-Link HLK-LD2410: Presence still gate 8 threshold'
+        unit_of_measurement: "%"
+        icon: 'mdi:percent'
+
+button:
+  - platform: ld2410
+    factory_reset:
+      name: "Hi-Link HLK-LD2410: Factory reset"
+      icon: 'mdi:restart'
+    restart:
+      name: "Hi-Link HLK-LD2410: Restart"
+      id: ld2410_restart
+      icon: 'mdi:restart'
+    query_params:
+      name: 'Hi-Link HLK-LD2410: Query params'
+
+  - platform: restart
+    name: "ESPHome: Restart"
+
+  - platform: safe_mode
+    name: "ESPHome: Safe Mode"
+
+text_sensor:
+  - platform: wifi_info
+    ip_address:
+      name: "ESPHome: Wifi IP Address"
+    ssid:
+      name: "ESPHome: Wifi Connected SSID"
+    bssid:
+      name: "ESPHome: Wifi Connected BSSID"
+    mac_address:
+      name: "ESPHome: Wifi Mac Wifi Address"
+    dns_address:
+      name: "ESPHome: Wifi DNS Address"
+
+  - platform: ld2410
+    version:
+      name: "Hi-Link HLK-LD2410: Firmware version"
+      icon: 'mdi:chip'
+    mac_address:
+      name: "Hi-Link HLK-LD2410: Bluetooth MAC address"
+      icon: 'mdi:bluetooth'
+
+select:
+  - platform: ld2410
+    distance_resolution:
+      name: "Hi-Link HLK-LD2410: Presence distance resolution"
+      icon: 'mdi:ruler'
+    baud_rate:
+      name: "Hi-Link HLK-LD2410: Baud rate"
+      icon: ''
+    light_function:
+      name: 'Hi-Link HLK-LD2410: Light function'
+      icon: 'mdi:brightness-5'
+    out_pin_level:
+      name: 'Hi-Link HLK-LD2410: Presence GPIO pin level'
+      icon: 'mdi:motion-sensor'
+
+text:
+  - platform: template
+    name: "Hi-Link HLK-LD2410: Bluetooth password"
+    optimistic: true
+    min_length: 6
+    max_length: 6
+    mode: text
+    on_value:
+      then:
+        - bluetooth_password.set:
+            id: ld2410_sensor
+            password: !lambda 'return x;'
