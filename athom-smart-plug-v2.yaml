@@ -129,23 +129,23 @@ sensor:
     update_interval: 1s
     current:
       name: "Itead CSE7766: Current"
-      accuracy_decimals: 6
+      accuracy_decimals: 9
       filters:
         # For the chip will report less than 3w power when no load is connected
         # - lambda: if (x < 0.060) return 0.0; else return x;
     voltage:
       name: "Itead CSE7766: Voltage"
-      accuracy_decimals: 6
+      accuracy_decimals: 9
     power:
       name: "Itead CSE7766: Power"
-      accuracy_decimals: 6
+      accuracy_decimals: 9
       id: power_sensor
       filters:
         # For the chip will report less than 3w power when no load is connected
         # - lambda: if (x < 3.0) return 0.0; else return x;
     energy:
       name: "Itead CSE7766: Energy"
-      accuracy_decimals: 6
+      accuracy_decimals: 9
       id: energy
       unit_of_measurement: kWh
       filters:
