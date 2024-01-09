@@ -39,12 +39,8 @@ globals:
     type: int
     initial_value: '2'
 
-  - id: total_energy
-    type: float
-    restore_value: yes
-    initial_value: '0.0'
-
 logger:
+  baud_rate: 0
 
 script:
   - id: fast_reboot_factory_reset
@@ -130,52 +126,31 @@ sensor:
     icon: 'mdi:signal'
 
   - platform: cse7766
-    update_interval: 10s
+    update_interval: 1s
     current:
-      name: "Current"
+      name: "Itead CSE7766: Current"
+      accuracy_decimals: 6
       filters:
-          - lambda: if (x < 0.060) return 0.0; else return x;   #For the chip will report less than 3w power when no load is connected
+        # For the chip will report less than 3w power when no load is connected
+        # - lambda: if (x < 0.060) return 0.0; else return x;
     voltage:
-      name: "Voltage"
+      name: "Itead CSE7766: Voltage"
+      accuracy_decimals: 6
     power:
-      name: "Power"
+      name: "Itead CSE7766: Power"
+      accuracy_decimals: 6
       id: power_sensor
       filters:
-          - lambda: if (x < 3.0) return 0.0; else return x;    #For the chip will report less than 3w power when no load is connected
+        # For the chip will report less than 3w power when no load is connected
+        # - lambda: if (x < 3.0) return 0.0; else return x;
     energy:
-      name: "Energy"
+      name: "Itead CSE7766: Energy"
+      accuracy_decimals: 6
       id: energy
       unit_of_measurement: kWh
       filters:
         # Multiplication factor from W to kW is 0.001
         - multiply: 0.001
-      on_value:
-        then:
-          - lambda: |-
-              static float previous_energy_value = 0.0;
-              float current_energy_value = id(energy).state;
-              id(total_energy) += current_energy_value - previous_energy_value;
-              previous_energy_value = current_energy_value;
-
-  - platform: template
-    name: "Total Energy"
-    unit_of_measurement: kWh
-    device_class: "energy"
-    state_class: "total_increasing"
-    icon: "mdi:lightning-bolt"
-    # accuracy_decimals: 3
-    lambda: |-
-      return id(total_energy);
-    update_interval: 10s
-
-  - platform: total_daily_energy
-    name: "Total Daily Energy"
-    restore: true
-    power_id: power_sensor
-    unit_of_measurement: kWh
-    # accuracy_decimals: 3
-    filters:
-      - multiply: 0.001
 
 output:
   - platform: slow_pwm
@@ -188,12 +163,9 @@ output:
 switch:
   - platform: gpio
     pin: GPIO12
+    name: "Relay"
     id: relay
     restore_mode: RESTORE_DEFAULT_OFF
-    # on_turn_on:
-    #   - output.turn_on: relay_led
-    # on_turn_off:
-    #   - output.turn_off: relay_led
 
 button:
   - platform: factory_reset
