@@ -5,6 +5,7 @@ ESPHOME = docker run --rm --privileged -v "${PWD}":/config -it ghcr.io/esphome/e
 
 all: \
 	template.bin \
+	athom-rgbct-light.bin \
 	athom-smart-plug-v2.bin \
 	presence.bin \
 	ultrabrite-plug.uf2
@@ -15,6 +16,16 @@ template.bin: template.yaml
 	$(ESPHOME) compile $<
 	cp .esphome/build/template/.pioenvs/template/firmware.bin $@.tmp
 	mv -f $@.tmp $@
+
+# Athom RGBCT Light
+athom-rgbct-light.bin: athom-rgbct-light.yaml
+	$(ESPHOME) compile $<
+	cp .esphome/build/athom-rgbct-light/.pioenvs/athom-rgbct-light/firmware.bin $@.tmp
+	mv -f $@.tmp $@
+
+athom-rgbct-light-clean:
+	rm -f athom-rgbct-light.bin.tmp athom-rgbct-light.bin
+clean: athom-rgbct-light-clean
 
 # Athom Smart Plug V2
 

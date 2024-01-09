@@ -1,4 +1,5 @@
 /.esphome/
+/athom-rgbct-light.bin
 /athom-smart-plug-v2.bin
 /presence.bin
 /template.bin
