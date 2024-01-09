@@ -1,7 +1,12 @@
 ESPHOME_VERSION = dev
 ESPHOME = docker run --rm --privileged -v "${PWD}":/config -it ghcr.io/esphome/esphome:$(ESPHOME_VERSION)
 
-all: presence.bin ultrabrite-plug.uf2
+all: template.bin presence.bin ultrabrite-plug.uf2
+
+template.bin: template.yaml
+	$(ESPHOME) compile $<
+	cp .esphome/build/template/.pioenvs/template/firmware.bin $@.tmp
+	mv -f $@.tmp $@
 
 presence.bin: presence.yaml
 	$(ESPHOME) compile $<
