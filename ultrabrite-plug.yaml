@@ -118,6 +118,7 @@ output:
       inverted: true
     id: wifi_led_pwm
     period: 1s
+
   - platform: gpio
     pin:
       number: P8
@@ -128,6 +129,7 @@ switch:
   - platform: factory_reset
     id: factory_reset_switch
     name: "ESPHome: Factory reset"
+
   - platform: gpio
     id: relay
     name: Relay

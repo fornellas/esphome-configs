@@ -376,6 +376,7 @@ output:
     pin: 5
     id: wifi_led_pwm
     period: 1s
+
   - platform: gpio
     pin: 4
     id: presence_led
