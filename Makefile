@@ -1,6 +1,5 @@
-#docker run --rm --privileged --net=host -v "${PWD}":/config --device=/dev/serial/by-id/usb-Silicon_Labs_CP2102N_USB_to_UART_Bridge_Controller_cc1ecdf97ea0eb119c16cdacdf749906-if00-port0 -it ghcr.io/esphome/esphome:dev run esphome_presence.yaml /dev/ttyUSB0
-
 ESPHOME_VERSION = dev
+# --net=host --device=/dev/ttyUSB0
 ESPHOME = docker run --rm --privileged -v "${PWD}":/config -it ghcr.io/esphome/esphome:$(ESPHOME_VERSION)
 
 DOMAIN := $(shell cat .domain)
