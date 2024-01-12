@@ -6,6 +6,7 @@ esphome:
     - priority: 600.0
       then:
         - lambda: |-
+            // Default: Connecting
             id(wifi_led_pwm).set_level(0.5);
             id(wifi_led_pwm).set_period(1000);
             id(wifi_led_pwm).turn_on();
@@ -15,14 +16,16 @@ esphome:
   on_loop:
     then:
       - lambda: |-
+          // Captive portal
           if(id(wifi_component).has_ap() && !id(wifi_component).has_sta()) {
-            // Captive portal
             id(wifi_led_pwm).set_level(0.5);
             id(wifi_led_pwm).set_period(200);
           } else {
             id(wifi_led_pwm).set_period(1000);
+            // Connected
             if(id(wifi_component).is_connected())
               id(wifi_led_pwm).set_level(1);
+            // Connecting
             else
               id(wifi_led_pwm).set_level(0.5);
           }
@@ -41,6 +44,8 @@ globals:
     initial_value: '2'
 
 logger:
+  baud_rate: 0
+  level: INFO
 
 script:
   - id: fast_reboot_factory_reset
@@ -50,14 +55,14 @@ script:
             lambda: return ( id(fast_reboot) >= id(factory_reset_reboot_counter) );
           then:
             - lambda: |-
-                ESP_LOGD("Fast Boot Factory Reset", "Performing factotry reset");
+                ESP_LOGI("Fast Boot Factory Reset", "Performing factotry reset");
                 id(fast_reboot) = 0;
                 fast_reboot->loop();
                 global_preferences->sync();
-            - switch.turn_on: factory_reset_switch
+            - button.press: factory_reset_button
       - lambda: |-
           if(id(fast_reboot) > 0)
-            ESP_LOGD("Fast Boot Factory Reset", "Quick reboot %d/%d, do it %d more times to factory reset", id(fast_reboot), id(factory_reset_reboot_counter), id(factory_reset_reboot_counter) - id(fast_reboot));
+            ESP_LOGI("Fast Boot Factory Reset", "Quick reboot %d/%d, do it %d more times to factory reset", id(fast_reboot), id(factory_reset_reboot_counter), id(factory_reset_reboot_counter) - id(fast_reboot));
           id(fast_reboot) += 1;
           fast_reboot->loop();
           global_preferences->sync();
@@ -395,10 +400,6 @@ switch:
       name: "Hi-Link HLK-LD2410: Bluetooth"
       icon: 'mdi:bluetooth'
 
-  - platform: factory_reset
-    id: factory_reset_switch
-    name: "ESPHome: Factory reset"
-
 number:
   - platform: ld2410
     timeout:
@@ -514,6 +515,10 @@ button:
 
   - platform: safe_mode
     name: "ESPHome: Safe Mode"
+
+  - platform: factory_reset
+    id: factory_reset_button
+    name: "ESPHome: Factory reset"
 
 text_sensor:
   - platform: wifi_info
