@@ -4,10 +4,10 @@
 /.esphome/
 /.password
 /.presence-devices
-/.ultrabrite-plug-devices
+/.ultrabrite-smart-wp-devices
 /.username
 /athom-rgbct-light.bin
 /athom-smart-plug-v2.bin
 /presence.bin
 /template.bin
-/ultrabrite-plug.uf2
+/ultrabrite-smart-wp.uf2

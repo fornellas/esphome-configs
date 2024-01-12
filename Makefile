@@ -33,9 +33,9 @@ ifneq ($(.SHELLSTATUS),0)
   $(error cat .presence-devices failed: $(PRESENCE_DEVICES))
 endif
 
-ULTRABRITE_PLUG_DEVICES := $(shell cat .ultrabrite-plug-devices)
+ULTRABRITE_SMART_WIFI_PLUG_DEVICES := $(shell cat .ultrabrite-smart-wp-devices)
 ifneq ($(.SHELLSTATUS),0)
-  $(error cat .ultrabrite-plug-devices failed: $(ULTRABRITE_PLUG_DEVICES))
+  $(error cat .ultrabrite-smart-wp-devices failed: $(ULTRABRITE_SMART_WIFI_PLUG_DEVICES))
 endif
 
 all: \
@@ -43,7 +43,7 @@ all: \
 	athom-rgbct-light.bin \
 	athom-smart-plug-v2.bin \
 	presence.bin \
-	ultrabrite-plug.uf2
+	ultrabrite-smart-wp.uf2
 
 # Template
 
@@ -107,21 +107,21 @@ clean: presence-clean
 
 # Ultrabrite Plug
 
-ultrabrite-plug.uf2: ultrabrite-plug.yaml
+ultrabrite-smart-wp.uf2: ultrabrite-smart-wp.yaml
 	$(ESPHOME) compile $<
-	cp .esphome/build/ultrabrite-plug/.pioenvs/ultrabrite-plug/firmware.uf2 $@.tmp
+	cp .esphome/build/ultrabrite-smart-wp/.pioenvs/ultrabrite-smart-wp/firmware.uf2 $@.tmp
 	mv -f $@.tmp $@
 
-.PHONY: ultrabrite-plug-upload
-ultrabrite-plug-upload: ultrabrite-plug.uf2
-	@echo Uploading ultrabrite-plug:
-	@for device in $(ULTRABRITE_PLUG_DEVICES) ; do echo -n "  ultrabrite-plug-$${device}.$(DOMAIN)..." ; curl -f -X POST https://ultrabrite-plug-$${device}.$(DOMAIN)/update -F upload=@ultrabrite-plug.uf2 -u "$(USERNAME):$(PASSWORD)" ; done
+.PHONY: ultrabrite-smart-wp-upload
+ultrabrite-smart-wp-upload: ultrabrite-smart-wp.uf2
+	@echo Uploading ultrabrite-smart-wp:
+	@for device in $(ULTRABRITE_SMART_WIFI_PLUG_DEVICES) ; do echo -n "  ultrabrite-smart-wp-$${device}.$(DOMAIN)..." ; curl -f -X POST https://ultrabrite-smart-wp-$${device}.$(DOMAIN)/update -F upload=@ultrabrite-smart-wp.uf2 -u "$(USERNAME):$(PASSWORD)" ; done
 	@echo
-upload: ultrabrite-plug-upload
+upload: ultrabrite-smart-wp-upload
 
-ultrabrite-plug-clean:
-	rm -f ultrabrite-plug.uf2.tmp ultrabrite-plug.uf2
-clean: ultrabrite-plug-clean
+ultrabrite-smart-wp-clean:
+	rm -f ultrabrite-smart-wp.uf2.tmp ultrabrite-smart-wp.uf2
+clean: ultrabrite-smart-wp-clean
 
 # Upload
 
