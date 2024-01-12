@@ -1,4 +1,11 @@
+/.athom-rgbct-light-devices
+/.athom-smart-plug-v2-devices
+/.domain
 /.esphome/
+/.password
+/.presence-devices
+/.ultrabrite-plug-devices
+/.username
 /athom-rgbct-light.bin
 /athom-smart-plug-v2.bin
 /presence.bin
