@@ -234,50 +234,50 @@ number:
   - platform: template
     name: "RGBCT Light: RGB: Red"
     id: rgbct_number_red
-    # unit_of_measurement: "%"
+    unit_of_measurement: "%"
     min_value: 0
-    max_value: 1
-    step: 0.01
+    max_value: 100
+    step: 0.1
     lambda: |-
-      return id(rgbct_light).current_values.get_red();
+      return id(rgbct_light).current_values.get_red() * 100.0;
     update_interval: 50ms
     set_action:
       - light.control:
           id: rgbct_light
           color_mode: RGB
-          red: !lambda "return x;"
+          red: !lambda "return float(x) / 100.0;"
 
   - platform: template
     name: "RGBCT Light: RGB: Green"
     id: rgbct_number_green
-    # unit_of_measurement: "%"
+    unit_of_measurement: "%"
     min_value: 0
-    max_value: 1
-    step: 0.01
+    max_value: 100
+    step: 0.1
     lambda: |-
-      return id(rgbct_light).current_values.get_green();
+      return id(rgbct_light).current_values.get_green() * 100.0;
     update_interval: 50ms
     set_action:
       - light.control:
           id: rgbct_light
           color_mode: RGB
-          green: !lambda "return x;"
+          green: !lambda "return float(x) / 100.0;"
 
   - platform: template
     name: "RGBCT Light: RGB: Blue"
     id: rgbct_number_blue
-    # unit_of_measurement: "%"
+    unit_of_measurement: "%"
     min_value: 0
-    max_value: 1
-    step: 0.01
+    max_value: 100
+    step: 0.1
     lambda: |-
-      return id(rgbct_light).current_values.get_blue();
+      return id(rgbct_light).current_values.get_blue() * 100.0;
     update_interval: 50ms
     set_action:
       - light.control:
           id: rgbct_light
           color_mode: RGB
-          blue: !lambda "return x;"
+          blue: !lambda "return float(x) / 100.0;"
 
   - platform: template
     name: "RGBCT Light: Color Temperature"
@@ -299,17 +299,17 @@ number:
   - platform: template
     name: "RGBCT Light: Brightness"
     id: rgbct_number_brightness
-    # unit_of_measurement: "%"
+    unit_of_measurement: "%"
     min_value: 0
-    max_value: 1
-    step: 0.01
+    max_value: 100
+    step: 0.1
     lambda: |-
-      return id(rgbct_light).current_values.get_brightness();
+      return id(rgbct_light).current_values.get_brightness() * 100.0;
     update_interval: 50ms
     set_action:
       - light.turn_on:
           id: rgbct_light
-          brightness: !lambda "return x;"
+          brightness: !lambda "return float(x) / 100.0;"
 
 button:
   - platform: factory_reset
