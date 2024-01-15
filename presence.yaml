@@ -152,6 +152,12 @@ sensor:
     loop_time:
       name: "Debug: Loop Time"
 
+  - platform: bh1750
+    name: "Rohms BH1750"
+    address: 0x23
+    update_interval: 1s
+    unit_of_measurement: "lx"
+
   - platform: ld2410
     # Engineering Mode
     light:
@@ -229,12 +235,6 @@ sensor:
       # Engineering Mode
       still_energy:
         name: 'Hi-Link HLK-LD2410: Presence still gate 8 energy'
-
-  - platform: bh1750
-    name: "Rohms BH1750"
-    address: 0x23
-    update_interval: 1s
-    unit_of_measurement: "lx"
 
 output:
   - platform: slow_pwm
