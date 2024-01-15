@@ -1,6 +1,10 @@
+SERIAL := $(shell cat .serial)
+ifneq ($(.SHELLSTATUS),0)
+  $(error cat .serial failed: $(SERIAL))
+endif
+
 ESPHOME_VERSION = 2023.12.5
-# --net=host --device=/dev/ttyUSB0
-ESPHOME = docker run --rm --privileged -v "${PWD}":/config -it ghcr.io/esphome/esphome:$(ESPHOME_VERSION)
+ESPHOME = docker run --rm --privileged --net=host --device=$(SERIAL) -v "${PWD}":/config -it ghcr.io/esphome/esphome:$(ESPHOME_VERSION)
 
 DOMAIN := $(shell cat .domain)
 ifneq ($(.SHELLSTATUS),0)
@@ -73,6 +77,10 @@ athom-rgbct-light-upload: athom-rgbct-light.bin
 	@echo
 upload: athom-rgbct-light-upload
 
+.PHONY: athom-rgbct-light-upload-serial
+athom-rgbct-light-upload-serial:
+	$(ESPHOME) upload --device $(SERIAL) athom-rgbct-light.yaml
+
 athom-rgbct-light-clean:
 	rm -f athom-rgbct-light.bin.tmp athom-rgbct-light.bin
 clean: athom-rgbct-light-clean
@@ -92,6 +100,10 @@ athom-smart-plug-v2-upload: athom-smart-plug-v2.bin
 	@for device in $(ATHOM_SMART_PLUG_V2_DEVICES) ; do echo -n "  athom-smart-plug-v2-$${device}.$(DOMAIN)..." ; curl -f -X POST https://athom-smart-plug-v2-$${device}.$(DOMAIN)/update -F upload=@athom-smart-plug-v2.bin -u "$(USERNAME):$(PASSWORD)" ; done
 	@echo
 upload: athom-smart-plug-v2-upload
+
+.PHONY: athom-smart-plug-v2-upload-serial
+athom-smart-plug-v2-upload-serial:
+	$(ESPHOME) upload --device $(SERIAL) athom-smart-plug-v2.yaml
 
 athom-smart-plug-v2-clean:
 	rm -f athom-smart-plug-v2.bin.tmp athom-smart-plug-v2.bin
@@ -113,6 +125,10 @@ presence-upload: presence.bin
 	@echo
 upload: presence-upload
 
+.PHONY: presence-upload-serial
+presence-upload-serial:
+	$(ESPHOME) upload --device $(SERIAL) presence.yaml
+
 presence-clean:
 	rm -f presence.bin.tmp presence.bin
 clean: presence-clean
@@ -132,6 +148,10 @@ ultrabrite-smart-wp-upload: ultrabrite-smart-wp.uf2
 	@for device in $(ULTRABRITE_SMART_WIFI_PLUG_DEVICES) ; do echo -n "  ultrabrite-smart-wp-$${device}.$(DOMAIN)..." ; curl -f -X POST https://ultrabrite-smart-wp-$${device}.$(DOMAIN)/update -F upload=@ultrabrite-smart-wp.uf2 -u "$(USERNAME):$(PASSWORD)" ; done
 	@echo
 upload: ultrabrite-smart-wp-upload
+
+.PHONY: ultrabrite-smart-wp-upload-serial
+ultrabrite-smart-wp-upload-serial:
+	$(ESPHOME) upload --device $(SERIAL) ultrabrite-smart-wp.yaml
 
 ultrabrite-smart-wp-clean:
 	rm -f ultrabrite-smart-wp.uf2.tmp ultrabrite-smart-wp.uf2
