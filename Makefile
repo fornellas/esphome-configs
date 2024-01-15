@@ -1,4 +1,4 @@
-ESPHOME_VERSION = dev
+ESPHOME_VERSION = 2023.12.5
 # --net=host --device=/dev/ttyUSB0
 ESPHOME = docker run --rm --privileged -v "${PWD}":/config -it ghcr.io/esphome/esphome:$(ESPHOME_VERSION)
 
