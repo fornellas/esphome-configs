@@ -43,7 +43,7 @@ globals:
 
 logger:
   baud_rate: 0
-  level: INFO
+  level: info
 
 script:
   - id: fast_reboot_factory_reset
@@ -88,9 +88,12 @@ ota:
 
 prometheus:
 
+debug:
+  update_interval: 5s
+
 binary_sensor:
   - platform: status
-    name: "ESPHome: Status"
+    name: "Status"
 
   - platform: gpio
     id: relay_button
@@ -104,25 +107,30 @@ binary_sensor:
 
 sensor:
   - platform: uptime
-    name: 'ESPHome: Uptime'
-    icon: 'mdi:timer-outline'
+    name: "Uptime"
     update_interval: 1s
 
   - platform: wifi_signal
-    name: "ESPHome: WiFi Signal"
+    name: "WiFi Signal"
     unit_of_measurement: "dB"
-    id: wifi_signal_db
-    update_interval: 15s
-    entity_category: "diagnostic"
     icon: 'mdi:signal'
+    update_interval: 5s
+
+  - platform: debug
+    free:
+      name: "Debug: Heap Free"
+    block:
+      name: "Debug: Heap Largest Contiguous Free Block"
+    loop_time:
+      name: "Debug: Loop Time"
 
 output:
   - platform: slow_pwm
+    id: wifi_led_pwm
+    period: 1s
     pin:
       number: P7
       inverted: true
-    id: wifi_led_pwm
-    period: 1s
 
   - platform: gpio
     pin:
@@ -143,24 +151,30 @@ switch:
 
 button:
   - platform: restart
-    name: "ESPHome: Restart"
+    name: "Restart"
 
   - platform: safe_mode
-    name: "ESPHome: Safe Mode"
+    name: "Safe Mode"
 
   - platform: factory_reset
     id: factory_reset_button
-    name: "ESPHome: Factory reset"
+    name: "Factory Reset"
 
 text_sensor:
   - platform: wifi_info
     ip_address:
-      name: "ESPHome: Wifi IP Address"
+      name: "Wifi Info: IP Address"
     ssid:
-      name: "ESPHome: Wifi Connected SSID"
+      name: "Wifi Info: SSID"
     bssid:
-      name: "ESPHome: Wifi Connected BSSID"
+      name: "Wifi Info: BSSID"
     mac_address:
-      name: "ESPHome: Wifi Mac Wifi Address"
+      name: "Wifi Info: MAC Address"
     dns_address:
-      name: "ESPHome: Wifi DNS Address"
+      name: "Wifi Info: DNS Address"
+
+  - platform: debug
+    device:
+      name: "Debug: Device Info"
+    reset_reason:
+      name: "Debug: Reset Reason"

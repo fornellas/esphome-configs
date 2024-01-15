@@ -105,10 +105,8 @@ sensor:
     update_interval: 1s
 
   - platform: wifi_signal
-    id: wifi_signal_db
     name: "WiFi Signal"
     unit_of_measurement: "dB"
-    device_class: SensorDeviceClass.SIGNAL_STRENGTH
     icon: 'mdi:signal'
     update_interval: 5s
 
