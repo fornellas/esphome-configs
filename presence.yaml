@@ -292,9 +292,6 @@ switch:
       name: "Hi-Link HLK-LD2410: Engineering mode"
       id: ld2410_engineering_mode
       icon: 'mdi:chip'
-      internal: true
-      on_turn_off:
-        - switch.turn_on: ld2410_engineering_mode
     bluetooth:
       id: ld2410_bluetooth
       name: "Hi-Link HLK-LD2410: Bluetooth"
