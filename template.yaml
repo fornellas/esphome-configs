@@ -97,68 +97,67 @@ debug:
 
 binary_sensor:
   - platform: status
-    name: "ESPHome: Status"
+    name: "Status"
 
 sensor:
   - platform: uptime
-    name: 'ESPHome: Uptime'
-    icon: 'mdi:timer-outline'
+    name: 'Uptime'
     update_interval: 1s
 
   - platform: wifi_signal
-    name: "ESPHome: WiFi Signal"
-    unit_of_measurement: "dB"
     id: wifi_signal_db
-    update_interval: 15s
-    entity_category: "diagnostic"
+    name: "WiFi Signal"
+    unit_of_measurement: "dB"
+    device_class: SensorDeviceClass.SIGNAL_STRENGTH
     icon: 'mdi:signal'
+    update_interval: 5s
 
   - platform: debug
     free:
-      name: "ESPHome: Heap Free"
+      name: "Debug: Heap Free"
     # esp8266
     # fragmentation:
-    #   name: "ESPHome: Heap Fragmentation"
+    #   name: "Debug: Heap Fragmentation"
     block:
-      name: "ESPHome: Heap Max Block"
+      name: "Debug: Heap Largest Contiguous Free Block"
     loop_time:
-      name: "ESPHome: Loop Time"
+      name: "Debug: Loop Time"
     # esp32
     # psram:
-    #   name: "ESPHome: Free PSRAM"
+    #   name: "Debug: Free PSRAM"
 
 output:
   - platform: slow_pwm
-    pin: 5
     id: wifi_led_pwm
     period: 1s
+    pin: 5
 
 button:
   - platform: factory_reset
     id: factory_reset_button
-    name: "ESPHome: Factory reset"
+    name: "Factory reset"
 
   - platform: restart
-    name: "ESPHome: Restart"
+    name: "Restart"
 
   - platform: safe_mode
-    name: "ESPHome: Safe Mode"
+    name: "Safe Mode"
 
 text_sensor:
   - platform: wifi_info
     ip_address:
-      name: "ESPHome: Wifi IP Address"
+      name: "Wifi Info: IP Address"
     ssid:
-      name: "ESPHome: Wifi Connected SSID"
+      name: "Wifi Info: SSID"
     bssid:
-      name: "ESPHome: Wifi Connected BSSID"
+      name: "Wifi Info: BSSID"
     mac_address:
-      name: "ESPHome: Wifi Mac Wifi Address"
+      name: "Wifi Info: MAC Address"
     dns_address:
-      name: "ESPHome: Wifi DNS Address"
+      name: "Wifi Info: DNS Address"
 
   - platform: debug
     device:
-      name: "ESPHome: Device Info"
+      name: "Debug: Device Info"
     reset_reason:
-      name: "ESPHome: Reset Reason"
+      name: "Debug: Reset Reason"
