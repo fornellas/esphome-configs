@@ -47,7 +47,7 @@ globals:
 
 logger:
   baud_rate: 0
-  level: INFO
+  level: debug
 
 script:
   - id: fast_reboot_factory_reset
@@ -92,6 +92,9 @@ ota:
 
 prometheus:
 
+debug:
+  update_interval: 5s
+
 binary_sensor:
   - platform: status
     name: "ESPHome: Status"
@@ -109,6 +112,18 @@ sensor:
     update_interval: 15s
     entity_category: "diagnostic"
     icon: 'mdi:signal'
+
+  - platform: debug
+    free:
+      name: "ESPHome: Heap Free"
+    fragmentation:
+      name: "ESPHome: Heap Fragmentation"
+    block:
+      name: "ESPHome: Heap Max Block"
+    loop_time:
+      name: "ESPHome: Loop Time"
+    psram:
+      name: "ESPHome: Free PSRAM"
 
 output:
   - platform: slow_pwm
@@ -139,3 +154,9 @@ text_sensor:
       name: "ESPHome: Wifi Mac Wifi Address"
     dns_address:
       name: "ESPHome: Wifi DNS Address"
+
+  - platform: debug
+    device:
+      name: "ESPHome: Device Info"
+    reset_reason:
+      name: "ESPHome: Reset Reason"
