@@ -116,14 +116,16 @@ sensor:
   - platform: debug
     free:
       name: "ESPHome: Heap Free"
-    fragmentation:
-      name: "ESPHome: Heap Fragmentation"
+    # esp8266
+    # fragmentation:
+    #   name: "ESPHome: Heap Fragmentation"
     block:
       name: "ESPHome: Heap Max Block"
     loop_time:
       name: "ESPHome: Loop Time"
-    psram:
-      name: "ESPHome: Free PSRAM"
+    # esp32
+    # psram:
+    #   name: "ESPHome: Free PSRAM"
 
 output:
   - platform: slow_pwm
