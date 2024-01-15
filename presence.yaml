@@ -32,9 +32,6 @@ esphome:
 
 esp32:
   board: esp32-c3-devkitm-1
-  framework:
-    # https://github.com/esphome/issues/issues/5379
-    type: esp-idf
 
 globals:
   - id: fast_reboot
@@ -112,36 +109,29 @@ ld2410:
   id: ld2410_sensor
 
 binary_sensor:
+  - platform: status
+    name: "Status"
+
   - platform: ld2410
     has_target:
       name: 'Hi-Link HLK-LD2410: Presence (UART)'
-      icon: 'mdi:motion-sensor'
     has_moving_target:
       name: 'Hi-Link HLK-LD2410: Presence moving'
-      icon: 'mdi:motion-sensor'
     has_still_target:
       name: 'Hi-Link HLK-LD2410: Presence still'
-      icon: 'mdi:motion-sensor'
     out_pin_presence_status:
       name: 'Hi-Link HLK-LD2410: Presence GPIO indicates'
-      icon: 'mdi:motion-sensor'
-      entity_category: "diagnostic"
 
   - platform: gpio
     pin: 3
-    name: 'Hi-Link HLK-LD2410: Presence (GPIO)'
     id: presence_gpio
-    device_class: presence
-    icon: 'mdi:motion-sensor'
+    name: 'Hi-Link HLK-LD2410: Presence (GPIO)'
     on_press:
       then:
         - output.turn_on: presence_led
     on_release:
       then:
         - output.turn_off: presence_led
-
-  - platform: status
-    name: "Status"
 
 sensor:
   - platform: uptime
@@ -166,115 +156,85 @@ sensor:
     # Engineering Mode
     light:
       name: 'Hi-Link HLK-LD2410: Light'
-      icon: 'mdi:brightness-5'
     moving_distance:
       name: 'Hi-Link HLK-LD2410: Presence moving distance'
-      unit_of_measurement: "cm"
-      icon: 'mdi:motion-sensor'
     still_distance:
       name: 'Hi-Link HLK-LD2410: Presence still distance'
-      unit_of_measurement: "cm"
-      icon: 'mdi:motion-sensor'
     moving_energy:
       name: 'Hi-Link HLK-LD2410: Presence moving energy'
-      unit_of_measurement: "%"
-      icon: 'mdi:motion-sensor'
     still_energy:
       name: 'Hi-Link HLK-LD2410: Presence still energy'
-      unit_of_measurement: "%"
-      icon: 'mdi:motion-sensor'
     detection_distance:
       name: 'Hi-Link HLK-LD2410: Presence distance'
-      unit_of_measurement: "cm"
-      icon: 'mdi:ruler'
     g0:
       # Engineering Mode
       move_energy:
         name: 'Hi-Link HLK-LD2410: Presence moving gate 0 energy'
-        icon: 'mdi:percent'
       # Engineering Mode
       still_energy:
         name: 'Hi-Link HLK-LD2410: Presence still gate 0 energy'
-        icon: 'mdi:percent'
     g1:
       # Engineering Mode
       move_energy:
         name: 'Hi-Link HLK-LD2410: Presence moving gate 1 energy'
-        icon: 'mdi:percent'
       # Engineering Mode
       still_energy:
         name: 'Hi-Link HLK-LD2410: Presence still gate 1 energy'
-        icon: 'mdi:percent'
     g2:
       # Engineering Mode
       move_energy:
         name: 'Hi-Link HLK-LD2410: Presence moving gate 2 energy'
-        icon: 'mdi:percent'
       # Engineering Mode
       still_energy:
         name: 'Hi-Link HLK-LD2410: Presence still gate 2 energy'
-        icon: 'mdi:percent'
     g3:
       # Engineering Mode
       move_energy:
         name: 'Hi-Link HLK-LD2410: Presence moving gate 3 energy'
-        icon: 'mdi:percent'
       # Engineering Mode
       still_energy:
         name: 'Hi-Link HLK-LD2410: Presence still gate 3 energy'
-        icon: 'mdi:percent'
     g4:
       # Engineering Mode
       move_energy:
         name: 'Hi-Link HLK-LD2410: Presence moving gate 4 energy'
-        icon: 'mdi:percent'
       # Engineering Mode
       still_energy:
         name: 'Hi-Link HLK-LD2410: Presence still gate 4 energy'
-        icon: 'mdi:percent'
     g5:
       # Engineering Mode
       move_energy:
         name: 'Hi-Link HLK-LD2410: Presence moving gate 5 energy'
-        icon: 'mdi:percent'
       # Engineering Mode
       still_energy:
         name: 'Hi-Link HLK-LD2410: Presence still gate 5 energy'
-        icon: 'mdi:percent'
     g6:
       # Engineering Mode
       move_energy:
         name: 'Hi-Link HLK-LD2410: Presence moving gate 6 energy'
-        icon: 'mdi:percent'
       # Engineering Mode
       still_energy:
         name: 'Hi-Link HLK-LD2410: Presence still gate 6 energy'
-        icon: 'mdi:percent'
     g7:
       # Engineering Mode
       move_energy:
         name: 'Hi-Link HLK-LD2410: Presence moving gate 7 energy'
-        icon: 'mdi:percent'
       # Engineering Mode
       still_energy:
         name: 'Hi-Link HLK-LD2410: Presence still gate 7 energy'
-        icon: 'mdi:percent'
     g8:
       # Engineering Mode
       move_energy:
         name: 'Hi-Link HLK-LD2410: Presence moving gate 8 energy'
-        icon: 'mdi:percent'
       # Engineering Mode
       still_energy:
         name: 'Hi-Link HLK-LD2410: Presence still gate 8 energy'
-        icon: 'mdi:percent'
 
   - platform: bh1750
     name: "Rohms BH1750"
     address: 0x23
     update_interval: 1s
     unit_of_measurement: "lx"
-    icon: 'mdi:brightness-5'
 
 output:
   - platform: slow_pwm
@@ -289,124 +249,70 @@ output:
 switch:
   - platform: ld2410
     engineering_mode:
-      name: "Hi-Link HLK-LD2410: Engineering mode"
       id: ld2410_engineering_mode
-      icon: 'mdi:chip'
+      name: "Hi-Link HLK-LD2410: Engineering mode"
     bluetooth:
       id: ld2410_bluetooth
       name: "Hi-Link HLK-LD2410: Bluetooth"
-      icon: 'mdi:bluetooth'
 
 number:
   - platform: ld2410
     timeout:
       name: 'Hi-Link HLK-LD2410: Presence timeout'
-      unit_of_measurement: "s"
-      icon: 'mdi:timer-outline'
+      # unit_of_measurement: "s"
     light_threshold:
       name: 'Hi-Link HLK-LD2410: Light threshold'
-      icon: 'mdi:brightness-5'
     max_move_distance_gate:
       name: 'Hi-Link HLK-LD2410: Presence moving max distance gate'
-      icon: 'mdi:ruler'
     max_still_distance_gate:
       name: 'Hi-Link HLK-LD2410: Presence still max distance gate'
-      icon: 'mdi:ruler'
     g0:
       move_threshold:
         name: 'Hi-Link HLK-LD2410: Presence moving gate 0 threshold'
-        unit_of_measurement: "%"
-        icon: 'mdi:percent'
       still_threshold:
         name: 'Hi-Link HLK-LD2410: Presence still gate 0 threshold'
-        unit_of_measurement: "%"
-        icon: 'mdi:percent'
     g1:
       move_threshold:
         name: 'Hi-Link HLK-LD2410: Presence moving gate 1 threshold'
-        unit_of_measurement: "%"
-        icon: 'mdi:percent'
       still_threshold:
         name: 'Hi-Link HLK-LD2410: Presence still gate 1 threshold'
-        unit_of_measurement: "%"
-        icon: 'mdi:percent'
     g2:
       move_threshold:
         name: 'Hi-Link HLK-LD2410: Presence moving gate 2 threshold'
-        unit_of_measurement: "%"
-        icon: 'mdi:percent'
       still_threshold:
         name: 'Hi-Link HLK-LD2410: Presence still gate 2 threshold'
-        unit_of_measurement: "%"
-        icon: 'mdi:percent'
     g3:
       move_threshold:
         name: 'Hi-Link HLK-LD2410: Presence moving gate 3 threshold'
-        unit_of_measurement: "%"
-        icon: 'mdi:percent'
       still_threshold:
         name: 'Hi-Link HLK-LD2410: Presence still gate 3 threshold'
-        unit_of_measurement: "%"
-        icon: 'mdi:percent'
     g4:
       move_threshold:
         name: 'Hi-Link HLK-LD2410: Presence moving gate 4 threshold'
-        unit_of_measurement: "%"
-        icon: 'mdi:percent'
       still_threshold:
         name: 'Hi-Link HLK-LD2410: Presence still gate 4 threshold'
-        unit_of_measurement: "%"
-        icon: 'mdi:percent'
     g5:
       move_threshold:
         name: 'Hi-Link HLK-LD2410: Presence moving gate 5 threshold'
-        unit_of_measurement: "%"
-        icon: 'mdi:percent'
       still_threshold:
         name: 'Hi-Link HLK-LD2410: Presence still gate 5 threshold'
-        unit_of_measurement: "%"
-        icon: 'mdi:percent'
     g6:
       move_threshold:
         name: 'Hi-Link HLK-LD2410: Presence moving gate 6 threshold'
-        unit_of_measurement: "%"
-        icon: 'mdi:percent'
       still_threshold:
         name: 'Hi-Link HLK-LD2410: Presence still gate 6 threshold'
-        unit_of_measurement: "%"
-        icon: 'mdi:percent'
     g7:
       move_threshold:
         name: 'Hi-Link HLK-LD2410: Presence moving gate 7 threshold'
-        unit_of_measurement: "%"
-        icon: 'mdi:percent'
       still_threshold:
         name: 'Hi-Link HLK-LD2410: Presence still gate 7 threshold'
-        unit_of_measurement: "%"
-        icon: 'mdi:percent'
     g8:
       move_threshold:
         name: 'Hi-Link HLK-LD2410: Presence moving gate 8 threshold'
-        unit_of_measurement: "%"
-        icon: 'mdi:percent'
       still_threshold:
         name: 'Hi-Link HLK-LD2410: Presence still gate 8 threshold'
-        unit_of_measurement: "%"
-        icon: 'mdi:percent'
 
 button:
-  - platform: ld2410
-    factory_reset:
-      name: "Hi-Link HLK-LD2410: Factory reset"
-      icon: 'mdi:restart'
-    restart:
-      name: "Hi-Link HLK-LD2410: Restart"
-      id: ld2410_restart
-      icon: 'mdi:restart'
-    query_params:
-      name: 'Hi-Link HLK-LD2410: Query params'
-      id: ld2410_query_params
-
   - platform: restart
     name: "Restart"
 
@@ -416,6 +322,16 @@ button:
   - platform: factory_reset
     id: factory_reset_button
     name: "Factory Reset"
+
+  - platform: ld2410
+    factory_reset:
+      name: "Hi-Link HLK-LD2410: Factory reset"
+    restart:
+      id: ld2410_restart
+      name: "Hi-Link HLK-LD2410: Restart"
+    query_params:
+      id: ld2410_query_params
+      name: 'Hi-Link HLK-LD2410: Query params'
 
 text_sensor:
   - platform: wifi_info
@@ -439,25 +355,19 @@ text_sensor:
   - platform: ld2410
     version:
       name: "Hi-Link HLK-LD2410: Firmware version"
-      icon: 'mdi:chip'
     mac_address:
       name: "Hi-Link HLK-LD2410: Bluetooth MAC address"
-      icon: 'mdi:bluetooth'
 
 select:
   - platform: ld2410
     distance_resolution:
       name: "Hi-Link HLK-LD2410: Presence distance resolution"
-      icon: 'mdi:ruler'
     baud_rate:
       name: "Hi-Link HLK-LD2410: Baud rate"
-      icon: ''
     light_function:
       name: 'Hi-Link HLK-LD2410: Light function'
-      icon: 'mdi:brightness-5'
     out_pin_level:
       name: 'Hi-Link HLK-LD2410: Presence GPIO pin level'
-      icon: 'mdi:motion-sensor'
 
 text:
   - platform: template
