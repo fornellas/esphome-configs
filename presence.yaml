@@ -32,6 +32,9 @@ esphome:
 
 esp32:
   board: esp32-c3-devkitm-1
+  framework:
+    # https://github.com/esphome/issues/issues/5379
+    type: esp-idf
 
 globals:
   - id: fast_reboot
