@@ -110,28 +110,16 @@ binary_sensor:
     has_target:
       name: 'Hi-Link HLK-LD2410: Presence (UART)'
       icon: 'mdi:motion-sensor'
-      filters:
-        # FIXME used to enable Prometheus 15s scraping window to see it
-        delayed_off: 15s
     has_moving_target:
       name: 'Hi-Link HLK-LD2410: Presence moving'
       icon: 'mdi:motion-sensor'
-      filters:
-        # FIXME used to enable Prometheus 15s scraping window to see it
-        delayed_off: 15s
     has_still_target:
       name: 'Hi-Link HLK-LD2410: Presence still'
       icon: 'mdi:motion-sensor'
-      filters:
-        # FIXME used to enable Prometheus 15s scraping window to see it
-        delayed_off: 15s
     out_pin_presence_status:
       name: 'Hi-Link HLK-LD2410: Presence GPIO indicates'
       icon: 'mdi:motion-sensor'
       entity_category: "diagnostic"
-      filters:
-        # FIXME used to enable Prometheus 15s scraping window to see it
-        delayed_off: 15s
 
   - platform: gpio
     pin: 3
@@ -139,9 +127,6 @@ binary_sensor:
     id: presence_gpio
     device_class: presence
     icon: 'mdi:motion-sensor'
-    filters:
-      # FIXME used to enable Prometheus 15s scraping window to see it
-      delayed_off: 15s
     on_press:
       then:
         - output.turn_on: presence_led
@@ -171,203 +156,107 @@ sensor:
     light:
       name: 'Hi-Link HLK-LD2410: Light'
       icon: 'mdi:brightness-5'
-      filters:
-        # FIXME used to enable Prometheus 15s scraping window to see it
-        - sliding_window_moving_average:
-            window_size: 3
     moving_distance:
       name: 'Hi-Link HLK-LD2410: Presence moving distance'
       unit_of_measurement: "cm"
       icon: 'mdi:motion-sensor'
-      filters:
-        # FIXME used to enable Prometheus 15s scraping window to see it
-        - sliding_window_moving_average:
-            window_size: 15
     still_distance:
       name: 'Hi-Link HLK-LD2410: Presence still distance'
       unit_of_measurement: "cm"
       icon: 'mdi:motion-sensor'
-      filters:
-        # FIXME used to enable Prometheus 15s scraping window to see it
-        - sliding_window_moving_average:
-            window_size: 15
     moving_energy:
       name: 'Hi-Link HLK-LD2410: Presence moving energy'
       unit_of_measurement: "%"
       icon: 'mdi:motion-sensor'
-      filters:
-        # FIXME used to enable Prometheus 15s scraping window to see it
-        - max:
-            window_size: 15
     still_energy:
       name: 'Hi-Link HLK-LD2410: Presence still energy'
       unit_of_measurement: "%"
       icon: 'mdi:motion-sensor'
-      filters:
-        # FIXME used to enable Prometheus 15s scraping window to see it
-        - max:
-            window_size: 15
     detection_distance:
       name: 'Hi-Link HLK-LD2410: Presence distance'
       unit_of_measurement: "cm"
       icon: 'mdi:ruler'
-      filters:
-        # FIXME used to enable Prometheus 15s scraping window to see it
-        - sliding_window_moving_average:
-            window_size: 15
     g0:
       # Engineering Mode
       move_energy:
         name: 'Hi-Link HLK-LD2410: Presence moving gate 0 energy'
         icon: 'mdi:percent'
-        filters:
-          # FIXME used to enable Prometheus 15s scraping window to see it
-          - max:
-              window_size: 3
       # Engineering Mode
       still_energy:
         name: 'Hi-Link HLK-LD2410: Presence still gate 0 energy'
         icon: 'mdi:percent'
-        filters:
-          # FIXME used to enable Prometheus 15s scraping window to see it
-          - max:
-              window_size: 3
     g1:
       # Engineering Mode
       move_energy:
         name: 'Hi-Link HLK-LD2410: Presence moving gate 1 energy'
         icon: 'mdi:percent'
-        filters:
-          # FIXME used to enable Prometheus 15s scraping window to see it
-          - max:
-              window_size: 3
       # Engineering Mode
       still_energy:
         name: 'Hi-Link HLK-LD2410: Presence still gate 1 energy'
         icon: 'mdi:percent'
-        filters:
-          # FIXME used to enable Prometheus 15s scraping window to see it
-          - max:
-              window_size: 3
     g2:
       # Engineering Mode
       move_energy:
         name: 'Hi-Link HLK-LD2410: Presence moving gate 2 energy'
         icon: 'mdi:percent'
-        filters:
-          # FIXME used to enable Prometheus 15s scraping window to see it
-          - max:
-              window_size: 3
       # Engineering Mode
       still_energy:
         name: 'Hi-Link HLK-LD2410: Presence still gate 2 energy'
         icon: 'mdi:percent'
-        filters:
-          # FIXME used to enable Prometheus 15s scraping window to see it
-          - max:
-              window_size: 3
     g3:
       # Engineering Mode
       move_energy:
         name: 'Hi-Link HLK-LD2410: Presence moving gate 3 energy'
         icon: 'mdi:percent'
-        filters:
-          # FIXME used to enable Prometheus 15s scraping window to see it
-          - max:
-              window_size: 3
       # Engineering Mode
       still_energy:
         name: 'Hi-Link HLK-LD2410: Presence still gate 3 energy'
         icon: 'mdi:percent'
-        filters:
-          # FIXME used to enable Prometheus 15s scraping window to see it
-          - max:
-              window_size: 3
     g4:
       # Engineering Mode
       move_energy:
         name: 'Hi-Link HLK-LD2410: Presence moving gate 4 energy'
         icon: 'mdi:percent'
-        filters:
-          # FIXME used to enable Prometheus 15s scraping window to see it
-          - max:
-              window_size: 3
       # Engineering Mode
       still_energy:
         name: 'Hi-Link HLK-LD2410: Presence still gate 4 energy'
         icon: 'mdi:percent'
-        filters:
-          # FIXME used to enable Prometheus 15s scraping window to see it
-          - max:
-              window_size: 3
     g5:
       # Engineering Mode
       move_energy:
         name: 'Hi-Link HLK-LD2410: Presence moving gate 5 energy'
         icon: 'mdi:percent'
-        filters:
-          # FIXME used to enable Prometheus 15s scraping window to see it
-          - max:
-              window_size: 3
       # Engineering Mode
       still_energy:
         name: 'Hi-Link HLK-LD2410: Presence still gate 5 energy'
         icon: 'mdi:percent'
-        filters:
-          # FIXME used to enable Prometheus 15s scraping window to see it
-          - max:
-              window_size: 3
     g6:
       # Engineering Mode
       move_energy:
         name: 'Hi-Link HLK-LD2410: Presence moving gate 6 energy'
         icon: 'mdi:percent'
-        filters:
-          # FIXME used to enable Prometheus 15s scraping window to see it
-          - max:
-              window_size: 3
       # Engineering Mode
       still_energy:
         name: 'Hi-Link HLK-LD2410: Presence still gate 6 energy'
         icon: 'mdi:percent'
-        filters:
-          # FIXME used to enable Prometheus 15s scraping window to see it
-          - max:
-              window_size: 3
     g7:
       # Engineering Mode
       move_energy:
         name: 'Hi-Link HLK-LD2410: Presence moving gate 7 energy'
         icon: 'mdi:percent'
-        filters:
-          # FIXME used to enable Prometheus 15s scraping window to see it
-          - max:
-              window_size: 3
       # Engineering Mode
       still_energy:
         name: 'Hi-Link HLK-LD2410: Presence still gate 7 energy'
         icon: 'mdi:percent'
-        filters:
-          # FIXME used to enable Prometheus 15s scraping window to see it
-          - max:
-              window_size: 3
     g8:
       # Engineering Mode
       move_energy:
         name: 'Hi-Link HLK-LD2410: Presence moving gate 8 energy'
         icon: 'mdi:percent'
-        filters:
-          # FIXME used to enable Prometheus 15s scraping window to see it
-          - max:
-              window_size: 3
       # Engineering Mode
       still_energy:
         name: 'Hi-Link HLK-LD2410: Presence still gate 8 energy'
         icon: 'mdi:percent'
-        filters:
-          # FIXME used to enable Prometheus 15s scraping window to see it
-          - max:
-              window_size: 3
 
   - platform: bh1750
     name: "Rohms BH1750"
