@@ -44,14 +44,23 @@ all: \
 	presence.bin \
 	ultrabrite-smart-wp.uf2
 
-# Template
+##
+## Template
+##
 
 template.bin: template.yaml
 	$(ESPHOME) compile $<
 	cp .esphome/build/template/.pioenvs/template/firmware.bin $@.tmp
 	mv -f $@.tmp $@
 
-# Athom RGBCT Light
+template-clean:
+	rm -f template.bin.tmp template.bin
+clean: template-clean
+
+##
+## Athom RGBCT Light
+##
+
 athom-rgbct-light.bin: athom-rgbct-light.yaml
 	$(ESPHOME) compile $<
 	cp .esphome/build/athom-rgbct-light/.pioenvs/athom-rgbct-light/firmware.bin $@.tmp
@@ -68,7 +77,9 @@ athom-rgbct-light-clean:
 	rm -f athom-rgbct-light.bin.tmp athom-rgbct-light.bin
 clean: athom-rgbct-light-clean
 
-# Athom Smart Plug V2
+##
+## Athom Smart Plug V2
+##
 
 athom-smart-plug-v2.bin: athom-smart-plug-v2.yaml
 	$(ESPHOME) compile $<
@@ -86,7 +97,9 @@ athom-smart-plug-v2-clean:
 	rm -f athom-smart-plug-v2.bin.tmp athom-smart-plug-v2.bin
 clean: athom-smart-plug-v2-clean
 
-# Presence
+##
+## Presence
+##
 
 presence.bin: presence.yaml
 	$(ESPHOME) compile $<
@@ -104,7 +117,9 @@ presence-clean:
 	rm -f presence.bin.tmp presence.bin
 clean: presence-clean
 
-# Ultrabrite Plug
+##
+## Ultrabrite Plug
+##
 
 ultrabrite-smart-wp.uf2: ultrabrite-smart-wp.yaml
 	$(ESPHOME) compile $<
@@ -122,10 +137,14 @@ ultrabrite-smart-wp-clean:
 	rm -f ultrabrite-smart-wp.uf2.tmp ultrabrite-smart-wp.uf2
 clean: ultrabrite-smart-wp-clean
 
-# Upload
+##
+## Upload
+#
 
 upload:
 
-# Clean
+##
+## Clean
+##
 
 clean:
