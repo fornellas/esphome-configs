@@ -79,6 +79,7 @@ upload: athom-rgbct-light-upload
 
 .PHONY: athom-rgbct-light-upload-serial
 athom-rgbct-light-upload-serial:
+	$(ESPHOME) compile athom-rgbct-light.yaml
 	$(ESPHOME) upload --device $(SERIAL) athom-rgbct-light.yaml
 
 athom-rgbct-light-clean:
@@ -103,6 +104,7 @@ upload: athom-smart-plug-v2-upload
 
 .PHONY: athom-smart-plug-v2-upload-serial
 athom-smart-plug-v2-upload-serial:
+	$(ESPHOME) compile athom-smart-plug-v2.yaml
 	$(ESPHOME) upload --device $(SERIAL) athom-smart-plug-v2.yaml
 
 athom-smart-plug-v2-clean:
@@ -127,6 +129,7 @@ upload: presence-upload
 
 .PHONY: presence-upload-serial
 presence-upload-serial:
+	$(ESPHOME) compile presence.yaml
 	$(ESPHOME) upload --device $(SERIAL) presence.yaml
 
 presence-clean:
@@ -151,6 +154,7 @@ upload: ultrabrite-smart-wp-upload
 
 .PHONY: ultrabrite-smart-wp-upload-serial
 ultrabrite-smart-wp-upload-serial:
+	$(ESPHOME) compile ultrabrite-smart-wp.yaml
 	$(ESPHOME) upload --device $(SERIAL) ultrabrite-smart-wp.yaml
 
 ultrabrite-smart-wp-clean:
