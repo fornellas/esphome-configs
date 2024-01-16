@@ -176,6 +176,7 @@ switch:
   - platform: template
     name: "RGBCT Light: RGB"
     id: rgbct_light_rgb_switch
+    icon: mdi:palette
     restore_mode: RESTORE_DEFAULT_OFF
     lambda: |-
       ColorMode color_mode = id(rgbct_light).current_values.get_color_mode();
@@ -195,6 +196,7 @@ switch:
 
 number:
   - platform: template
+    icon: mdi:palette
     name: "RGBCT Light: Red"
     unit_of_measurement: "%"
     min_value: 0
@@ -210,6 +212,7 @@ number:
           red: !lambda "return float(x) / 100.0;"
 
   - platform: template
+    icon: mdi:palette
     name: "RGBCT Light: Green"
     unit_of_measurement: "%"
     min_value: 0
@@ -225,6 +228,7 @@ number:
           green: !lambda "return float(x) / 100.0;"
 
   - platform: template
+    icon: mdi:palette
     name: "RGBCT Light: Blue"
     unit_of_measurement: "%"
     min_value: 0
@@ -241,6 +245,7 @@ number:
 
   - platform: template
     name: "RGBCT Light: Color Temperature"
+    icon: mdi:temperature-celsius
     unit_of_measurement: "K"
     min_value: 2000
     max_value: 6500
@@ -257,6 +262,7 @@ number:
 
   - platform: template
     name: "RGBCT Light: Brightness"
+    icon: mdi:brightness-percent
     unit_of_measurement: "%"
     min_value: 0
     max_value: 100
