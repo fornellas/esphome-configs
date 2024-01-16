@@ -136,13 +136,13 @@ binary_sensor:
 sensor:
   - platform: uptime
     name: "Uptime"
-    update_interval: 1s
+    update_interval: 15s
 
   - platform: wifi_signal
     name: "WiFi Signal"
     unit_of_measurement: "dB"
     icon: 'mdi:signal'
-    update_interval: 5s
+    update_interval: 15s
 
   - platform: debug
     free:
