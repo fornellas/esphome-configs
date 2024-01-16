@@ -101,7 +101,7 @@ binary_sensor:
     name: "Status"
 
   - platform: gpio
-    id: relay_button
+    id: button_gpio
     pin:
       number: 5
       mode: INPUT_PULLUP
@@ -112,7 +112,7 @@ binary_sensor:
           - ON for at most 1s
           - OFF for at least 0.2s
         then:
-          - switch.toggle: relay
+          - switch.toggle: power_switch
       - timing:
           - ON for at least 4s
         then:
@@ -140,29 +140,21 @@ sensor:
   - platform: cse7766
     update_interval: 1s
     current:
-      name: "Itead CSE7766: Current"
-      accuracy_decimals: 9
-      filters:
-        # For the chip will report less than 3w power when no load is connected
-        # - lambda: if (x < 0.060) return 0.0; else return x;
+      name: "Current"
+      icon: mdi:current-ac
+      accuracy_decimals: 5
     voltage:
-      name: "Itead CSE7766: Voltage"
-      accuracy_decimals: 9
+      name: "Voltage"
+      icon: mdi:sine-wave
+      accuracy_decimals: 1
     power:
-      name: "Itead CSE7766: Power"
-      accuracy_decimals: 9
-      id: power_sensor
-      filters:
-        # For the chip will report less than 3w power when no load is connected
-        # - lambda: if (x < 3.0) return 0.0; else return x;
+      name: "Power"
+      icon: mdi:lightning-bolt-outline
+      accuracy_decimals: 3
     energy:
-      name: "Itead CSE7766: Energy"
-      accuracy_decimals: 9
-      id: energy
-      unit_of_measurement: kWh
-      filters:
-        # Multiplication factor from W to kW is 0.001
-        - multiply: 0.001
+      name: "Energy"
+      icon: mdi:lightning-bolt
+      accuracy_decimals: 5
 
 output:
   - platform: slow_pwm
@@ -175,8 +167,11 @@ output:
 switch:
   - platform: gpio
     pin: GPIO12
-    name: "Relay"
-    id: relay
+    name: "Power"
+    id: power_switch
+    icon: mdi:toggle-switch
+    entity_category: ""
+    device_class: outlet
     restore_mode: RESTORE_DEFAULT_OFF
 
 button:
