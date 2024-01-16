@@ -50,14 +50,14 @@ wifi:
   id: wifi_component
   ap:
     ap_timeout: 0s
-  reboot_timeout: 60s
+  reboot_timeout: 0s
 
 captive_portal:
     
 web_server:
 
 api:
-  reboot_timeout: 60s
+  reboot_timeout: 0s
 
 ota:
   safe_mode: false
@@ -144,7 +144,7 @@ output:
 light:
   - platform: rgbct
     id: rgbct_light
-    default_transition_length: 50ms
+    default_transition_length: 0ms
     restore_mode: RESTORE_DEFAULT_ON
     red: red_output
     green: green_output
@@ -195,15 +195,14 @@ switch:
 
 number:
   - platform: template
-    name: "RGBCT Light: RGB: Red"
-    id: rgbct_number_red
+    name: "RGBCT Light: Red"
     unit_of_measurement: "%"
     min_value: 0
     max_value: 100
     step: 0.1
     lambda: |-
       return id(rgbct_light).current_values.get_red() * 100.0;
-    update_interval: 50ms
+    update_interval: 200ms
     set_action:
       - light.control:
           id: rgbct_light
@@ -211,15 +210,14 @@ number:
           red: !lambda "return float(x) / 100.0;"
 
   - platform: template
-    name: "RGBCT Light: RGB: Green"
-    id: rgbct_number_green
+    name: "RGBCT Light: Green"
     unit_of_measurement: "%"
     min_value: 0
     max_value: 100
     step: 0.1
     lambda: |-
       return id(rgbct_light).current_values.get_green() * 100.0;
-    update_interval: 50ms
+    update_interval: 200ms
     set_action:
       - light.control:
           id: rgbct_light
@@ -227,15 +225,14 @@ number:
           green: !lambda "return float(x) / 100.0;"
 
   - platform: template
-    name: "RGBCT Light: RGB: Blue"
-    id: rgbct_number_blue
+    name: "RGBCT Light: Blue"
     unit_of_measurement: "%"
     min_value: 0
     max_value: 100
     step: 0.1
     lambda: |-
       return id(rgbct_light).current_values.get_blue() * 100.0;
-    update_interval: 50ms
+    update_interval: 200ms
     set_action:
       - light.control:
           id: rgbct_light
@@ -244,14 +241,13 @@ number:
 
   - platform: template
     name: "RGBCT Light: Color Temperature"
-    id: rgbct_number_color_temperature
     unit_of_measurement: "K"
     min_value: 2000
     max_value: 6500
     step: 1
     lambda: |-
       return 1000000.0 / id(rgbct_light).current_values.get_color_temperature();
-    update_interval: 50ms
+    update_interval: 200ms
     set_action:
       - light.turn_on:
           id: rgbct_light
@@ -261,14 +257,13 @@ number:
 
   - platform: template
     name: "RGBCT Light: Brightness"
-    id: rgbct_number_brightness
     unit_of_measurement: "%"
     min_value: 0
     max_value: 100
     step: 0.1
     lambda: |-
       return id(rgbct_light).current_values.get_brightness() * 100.0;
-    update_interval: 50ms
+    update_interval: 200ms
     set_action:
       - light.turn_on:
           id: rgbct_light
