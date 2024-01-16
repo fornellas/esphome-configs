@@ -114,18 +114,18 @@ binary_sensor:
 
   - platform: ld2410
     has_target:
-      name: 'Hi-Link HLK-LD2410: Presence (UART)'
+      name: "Presence (UART)"
     has_moving_target:
-      name: 'Hi-Link HLK-LD2410: Presence moving'
+      name: "Presence moving"
     has_still_target:
-      name: 'Hi-Link HLK-LD2410: Presence still'
+      name: "Presence still"
     out_pin_presence_status:
-      name: 'Hi-Link HLK-LD2410: Presence GPIO indicates'
+      name: "Presence GPIO indicates"
 
   - platform: gpio
     pin: 3
     id: presence_gpio
-    name: 'Hi-Link HLK-LD2410: Presence (GPIO)'
+    name: "Presence (GPIO)"
     on_press:
       then:
         - output.turn_on: presence_led
@@ -151,88 +151,87 @@ sensor:
       name: "Debug: Loop Time"
 
   - platform: bh1750
-    name: "Rohms BH1750"
+    name: "Illuminance"
     address: 0x23
     update_interval: 1s
-    unit_of_measurement: "lx"
 
   - platform: ld2410
     # Engineering Mode
     light:
-      name: 'Hi-Link HLK-LD2410: Light'
+      name: "Light"
     moving_distance:
-      name: 'Hi-Link HLK-LD2410: Presence moving distance'
+      name: "Presence moving distance"
     still_distance:
-      name: 'Hi-Link HLK-LD2410: Presence still distance'
+      name: "Presence still distance"
     moving_energy:
-      name: 'Hi-Link HLK-LD2410: Presence moving energy'
+      name: "Presence moving energy"
     still_energy:
-      name: 'Hi-Link HLK-LD2410: Presence still energy'
+      name: "Presence still energy"
     detection_distance:
-      name: 'Hi-Link HLK-LD2410: Presence distance'
+      name: "Presence distance"
     g0:
       # Engineering Mode
       move_energy:
-        name: 'Hi-Link HLK-LD2410: Presence moving gate 0 energy'
+        name: "Presence moving gate 0 energy"
       # Engineering Mode
       still_energy:
-        name: 'Hi-Link HLK-LD2410: Presence still gate 0 energy'
+        name: "Presence still gate 0 energy"
     g1:
       # Engineering Mode
       move_energy:
-        name: 'Hi-Link HLK-LD2410: Presence moving gate 1 energy'
+        name: "Presence moving gate 1 energy"
       # Engineering Mode
       still_energy:
-        name: 'Hi-Link HLK-LD2410: Presence still gate 1 energy'
+        name: "Presence still gate 1 energy"
     g2:
       # Engineering Mode
       move_energy:
-        name: 'Hi-Link HLK-LD2410: Presence moving gate 2 energy'
+        name: "Presence moving gate 2 energy"
       # Engineering Mode
       still_energy:
-        name: 'Hi-Link HLK-LD2410: Presence still gate 2 energy'
+        name: "Presence still gate 2 energy"
     g3:
       # Engineering Mode
       move_energy:
-        name: 'Hi-Link HLK-LD2410: Presence moving gate 3 energy'
+        name: "Presence moving gate 3 energy"
       # Engineering Mode
       still_energy:
-        name: 'Hi-Link HLK-LD2410: Presence still gate 3 energy'
+        name: "Presence still gate 3 energy"
     g4:
       # Engineering Mode
       move_energy:
-        name: 'Hi-Link HLK-LD2410: Presence moving gate 4 energy'
+        name: "Presence moving gate 4 energy"
       # Engineering Mode
       still_energy:
-        name: 'Hi-Link HLK-LD2410: Presence still gate 4 energy'
+        name: "Presence still gate 4 energy"
     g5:
       # Engineering Mode
       move_energy:
-        name: 'Hi-Link HLK-LD2410: Presence moving gate 5 energy'
+        name: "Presence moving gate 5 energy"
       # Engineering Mode
       still_energy:
-        name: 'Hi-Link HLK-LD2410: Presence still gate 5 energy'
+        name: "Presence still gate 5 energy"
     g6:
       # Engineering Mode
       move_energy:
-        name: 'Hi-Link HLK-LD2410: Presence moving gate 6 energy'
+        name: "Presence moving gate 6 energy"
       # Engineering Mode
       still_energy:
-        name: 'Hi-Link HLK-LD2410: Presence still gate 6 energy'
+        name: "Presence still gate 6 energy"
     g7:
       # Engineering Mode
       move_energy:
-        name: 'Hi-Link HLK-LD2410: Presence moving gate 7 energy'
+        name: "Presence moving gate 7 energy"
       # Engineering Mode
       still_energy:
-        name: 'Hi-Link HLK-LD2410: Presence still gate 7 energy'
+        name: "Presence still gate 7 energy"
     g8:
       # Engineering Mode
       move_energy:
-        name: 'Hi-Link HLK-LD2410: Presence moving gate 8 energy'
+        name: "Presence moving gate 8 energy"
       # Engineering Mode
       still_energy:
-        name: 'Hi-Link HLK-LD2410: Presence still gate 8 energy'
+        name: "Presence still gate 8 energy"
 
 output:
   - platform: slow_pwm
@@ -248,67 +247,67 @@ switch:
   - platform: ld2410
     engineering_mode:
       id: ld2410_engineering_mode
-      name: "Hi-Link HLK-LD2410: Engineering mode"
+      name: "Engineering mode"
     bluetooth:
       id: ld2410_bluetooth
-      name: "Hi-Link HLK-LD2410: Bluetooth"
+      name: "Bluetooth"
 
 number:
   - platform: ld2410
     timeout:
-      name: 'Hi-Link HLK-LD2410: Presence timeout'
+      name: "Presence timeout"
       # unit_of_measurement: "s"
     light_threshold:
-      name: 'Hi-Link HLK-LD2410: Light threshold'
+      name: "Light threshold"
     max_move_distance_gate:
-      name: 'Hi-Link HLK-LD2410: Presence moving max distance gate'
+      name: "Presence moving max distance gate"
     max_still_distance_gate:
-      name: 'Hi-Link HLK-LD2410: Presence still max distance gate'
+      name: "Presence still max distance gate"
     g0:
       move_threshold:
-        name: 'Hi-Link HLK-LD2410: Presence moving gate 0 threshold'
+        name: "Presence moving gate 0 threshold"
       still_threshold:
-        name: 'Hi-Link HLK-LD2410: Presence still gate 0 threshold'
+        name: "Presence still gate 0 threshold"
     g1:
       move_threshold:
-        name: 'Hi-Link HLK-LD2410: Presence moving gate 1 threshold'
+        name: "Presence moving gate 1 threshold"
       still_threshold:
-        name: 'Hi-Link HLK-LD2410: Presence still gate 1 threshold'
+        name: "Presence still gate 1 threshold"
     g2:
       move_threshold:
-        name: 'Hi-Link HLK-LD2410: Presence moving gate 2 threshold'
+        name: "Presence moving gate 2 threshold"
       still_threshold:
-        name: 'Hi-Link HLK-LD2410: Presence still gate 2 threshold'
+        name: "Presence still gate 2 threshold"
     g3:
       move_threshold:
-        name: 'Hi-Link HLK-LD2410: Presence moving gate 3 threshold'
+        name: "Presence moving gate 3 threshold"
       still_threshold:
-        name: 'Hi-Link HLK-LD2410: Presence still gate 3 threshold'
+        name: "Presence still gate 3 threshold"
     g4:
       move_threshold:
-        name: 'Hi-Link HLK-LD2410: Presence moving gate 4 threshold'
+        name: "Presence moving gate 4 threshold"
       still_threshold:
-        name: 'Hi-Link HLK-LD2410: Presence still gate 4 threshold'
+        name: "Presence still gate 4 threshold"
     g5:
       move_threshold:
-        name: 'Hi-Link HLK-LD2410: Presence moving gate 5 threshold'
+        name: "Presence moving gate 5 threshold"
       still_threshold:
-        name: 'Hi-Link HLK-LD2410: Presence still gate 5 threshold'
+        name: "Presence still gate 5 threshold"
     g6:
       move_threshold:
-        name: 'Hi-Link HLK-LD2410: Presence moving gate 6 threshold'
+        name: "Presence moving gate 6 threshold"
       still_threshold:
-        name: 'Hi-Link HLK-LD2410: Presence still gate 6 threshold'
+        name: "Presence still gate 6 threshold"
     g7:
       move_threshold:
-        name: 'Hi-Link HLK-LD2410: Presence moving gate 7 threshold'
+        name: "Presence moving gate 7 threshold"
       still_threshold:
-        name: 'Hi-Link HLK-LD2410: Presence still gate 7 threshold'
+        name: "Presence still gate 7 threshold"
     g8:
       move_threshold:
-        name: 'Hi-Link HLK-LD2410: Presence moving gate 8 threshold'
+        name: "Presence moving gate 8 threshold"
       still_threshold:
-        name: 'Hi-Link HLK-LD2410: Presence still gate 8 threshold'
+        name: "Presence still gate 8 threshold"
 
 button:
   - platform: restart
@@ -323,13 +322,13 @@ button:
 
   - platform: ld2410
     factory_reset:
-      name: "Hi-Link HLK-LD2410: Factory reset"
+      name: "Factory reset"
     restart:
       id: ld2410_restart
-      name: "Hi-Link HLK-LD2410: Restart"
+      name: "Restart"
     query_params:
       id: ld2410_query_params
-      name: 'Hi-Link HLK-LD2410: Query params'
+      name: "Query params"
 
 text_sensor:
   - platform: wifi_info
@@ -352,24 +351,24 @@ text_sensor:
 
   - platform: ld2410
     version:
-      name: "Hi-Link HLK-LD2410: Firmware version"
+      name: "Firmware version"
     mac_address:
-      name: "Hi-Link HLK-LD2410: Bluetooth MAC address"
+      name: "Bluetooth MAC address"
 
 select:
   - platform: ld2410
     distance_resolution:
-      name: "Hi-Link HLK-LD2410: Presence distance resolution"
+      name: "Presence distance resolution"
     baud_rate:
-      name: "Hi-Link HLK-LD2410: Baud rate"
+      name: "Baud rate"
     light_function:
-      name: 'Hi-Link HLK-LD2410: Light function'
+      name: "Light function"
     out_pin_level:
-      name: 'Hi-Link HLK-LD2410: Presence GPIO pin level'
+      name: "Presence GPIO pin level"
 
 text:
   - platform: template
-    name: "Hi-Link HLK-LD2410: Bluetooth password"
+    name: "Bluetooth password"
     optimistic: true
     min_length: 6
     max_length: 6
@@ -378,4 +377,4 @@ text:
       then:
         - bluetooth_password.set:
             id: ld2410_sensor
-            password: !lambda 'return x;'
+            password: !lambda "return x;"
