@@ -125,8 +125,6 @@ sensor:
 
   - platform: wifi_signal
     name: "WiFi Signal"
-    unit_of_measurement: "dB"
-    icon: 'mdi:signal'
     update_interval: 15s
 
   - platform: debug
