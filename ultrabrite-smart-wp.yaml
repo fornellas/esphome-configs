@@ -138,10 +138,13 @@ output:
 
 switch:
   - platform: gpio
+    name: "Power"
     id: relay
-    name: Relay
+    icon: mdi:toggle-switch
     pin: P24
     restore_mode: RESTORE_DEFAULT_OFF
+    entity_category: ""
+    device_class: outlet
     on_turn_on:
       - output.turn_on: relay_led
     on_turn_off:
