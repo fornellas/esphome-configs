@@ -157,9 +157,12 @@ light:
 
 switch:
   - platform: template
-    name: "RGBCT Light: Power"
+    name: "Power"
     id: rgbct_light_power_switch
+    icon: mdi:light-switch
     restore_mode: RESTORE_DEFAULT_ON
+    entity_category: ""
+    device_class: switch
     lambda: |-
       bool is_on;
       id(rgbct_light).current_values_as_binary(&is_on);
@@ -174,10 +177,12 @@ switch:
       - light.turn_off: rgbct_light
 
   - platform: template
-    name: "RGBCT Light: RGB"
+    name: "RGB"
     id: rgbct_light_rgb_switch
     icon: mdi:palette
     restore_mode: RESTORE_DEFAULT_OFF
+    entity_category: config
+    device_class: switch
     lambda: |-
       ColorMode color_mode = id(rgbct_light).current_values.get_color_mode();
       if (color_mode == ColorMode::RGB)
@@ -196,9 +201,11 @@ switch:
 
 number:
   - platform: template
+    name: "Red"
     icon: mdi:palette
-    name: "RGBCT Light: Red"
+    entity_category: config
     unit_of_measurement: "%"
+    mode: slider
     min_value: 0
     max_value: 100
     step: 0.1
@@ -212,9 +219,11 @@ number:
           red: !lambda "return float(x) / 100.0;"
 
   - platform: template
+    name: "Green"
     icon: mdi:palette
-    name: "RGBCT Light: Green"
+    entity_category: config
     unit_of_measurement: "%"
+    mode: slider
     min_value: 0
     max_value: 100
     step: 0.1
@@ -228,9 +237,11 @@ number:
           green: !lambda "return float(x) / 100.0;"
 
   - platform: template
+    name: "Blue"
     icon: mdi:palette
-    name: "RGBCT Light: Blue"
+    entity_category: config
     unit_of_measurement: "%"
+    mode: slider
     min_value: 0
     max_value: 100
     step: 0.1
@@ -244,9 +255,11 @@ number:
           blue: !lambda "return float(x) / 100.0;"
 
   - platform: template
-    name: "RGBCT Light: Color Temperature"
+    name: "Color Temperature"
     icon: mdi:temperature-celsius
+    entity_category: config
     unit_of_measurement: "K"
+    mode: slider
     min_value: 2000
     max_value: 6500
     step: 1
@@ -261,9 +274,10 @@ number:
             return 1000000.0 / float(x);
 
   - platform: template
-    name: "RGBCT Light: Brightness"
+    name: "Brightness"
     icon: mdi:brightness-percent
     unit_of_measurement: "%"
+    mode: slider
     min_value: 0
     max_value: 100
     step: 0.1
