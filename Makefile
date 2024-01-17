@@ -31,6 +31,11 @@ ifneq ($(.SHELLSTATUS),0)
   $(error cat .athom-smart-plug-v2-devices failed: $(ATHOM_SMART_PLUG_V2_DEVICES))
 endif
 
+ENERGY_MONITOR_DEVICES := $(shell cat .energy-monitor-devices)
+ifneq ($(.SHELLSTATUS),0)
+  $(error cat .energy-monitor-devices failed: $(ENERGY_MONITOR_DEVICES))
+endif
+
 PRESENCE_DEVICES := $(shell cat .presence-devices)
 ifneq ($(.SHELLSTATUS),0)
   $(error cat .presence-devices failed: $(PRESENCE_DEVICES))
@@ -45,6 +50,7 @@ all: \
 	template.bin \
 	athom-rgbct-light.bin \
 	athom-smart-plug-v2.bin \
+	energy-monitor.bin \
 	presence.bin \
 	ultrabrite-smart-wp.uf2
 
@@ -110,6 +116,31 @@ athom-smart-plug-v2-upload-serial:
 athom-smart-plug-v2-clean:
 	rm -f athom-smart-plug-v2.bin.tmp athom-smart-plug-v2.bin
 clean: athom-smart-plug-v2-clean
+
+##
+## Energy Monitor
+##
+
+energy-monitor.bin: energy-monitor.yaml
+	$(ESPHOME) compile $<
+	cp .esphome/build/energy-monitor/.pioenvs/energy-monitor/firmware.bin $@.tmp
+	mv -f $@.tmp $@
+
+.PHONY: energy-monitor-upload
+energy-monitor-upload: energy-monitor.bin
+	@echo Uploading energy-monitor:
+	@for device in $(ENERGY_MONITOR_DEVICES) ; do echo -n "  energy-monitor-$${device}.$(DOMAIN)..." ; curl -f -X POST https://energy-monitor-$${device}.$(DOMAIN)/update -F upload=@energy-monitor.bin -u "$(USERNAME):$(PASSWORD)" ; done
+	@echo
+upload: energy-monitor-upload
+
+.PHONY: energy-monitor-upload-serial
+energy-monitor-upload-serial:
+	$(ESPHOME) compile energy-monitor.yaml
+	$(ESPHOME) upload --device $(SERIAL) energy-monitor.yaml
+
+energy-monitor-clean:
+	rm -f energy-monitor.bin.tmp energy-monitor.bin
+clean: energy-monitor-clean
 
 ##
 ## Presence
