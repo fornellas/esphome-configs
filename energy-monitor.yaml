@@ -44,7 +44,7 @@ globals:
 
 logger:
   baud_rate: 0
-  level: debug
+  level: info
 
 script:
   - id: fast_reboot_factory_reset
