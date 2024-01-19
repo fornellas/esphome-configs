@@ -3,6 +3,7 @@
 /.athom-smart-plug-v2-devices
 /.domain
 /.energy-monitor-devices
+/.powered-devices
 /.esphome/
 /.password
 /.presence-devices
@@ -11,6 +12,7 @@
 /athom-rgbct-light.bin
 /athom-smart-plug-v2.bin
 /energy-monitor.bin
+/powered.bin
 /presence.bin
 /template.bin
 /ultrabrite-smart-wp.uf2

@@ -36,6 +36,11 @@ ifneq ($(.SHELLSTATUS),0)
   $(error cat .energy-monitor-devices failed: $(ENERGY_MONITOR_DEVICES))
 endif
 
+POWERED_DEVICES := $(shell cat .powered-devices)
+ifneq ($(.SHELLSTATUS),0)
+  $(error cat .powered-devices failed: $(POWERED_DEVICES))
+endif
+
 PRESENCE_DEVICES := $(shell cat .presence-devices)
 ifneq ($(.SHELLSTATUS),0)
   $(error cat .presence-devices failed: $(PRESENCE_DEVICES))
@@ -141,6 +146,31 @@ energy-monitor-upload-serial:
 energy-monitor-clean:
 	rm -f energy-monitor.bin.tmp energy-monitor.bin
 clean: energy-monitor-clean
+
+##
+## Powered
+##
+
+powered.bin: powered.yaml
+	$(ESPHOME) compile $<
+	cp .esphome/build/powered/.pioenvs/powered/firmware.bin $@.tmp
+	mv -f $@.tmp $@
+
+.PHONY: powered-upload
+powered-upload: powered.bin
+	@echo Uploaing powered:
+	@for device in $(POWERED_DEVICES) ; do echo -n "  powered-$${device}.$(DOMAIN)..." ; curl -f -X POST https://powered-$${device}.$(DOMAIN)/update -F upload=@powered.bin -u "$(USERNAME):$(PASSWORD)" ; done
+	@echo
+upload: powered-upload
+
+.PHONY: powered-upload-serial
+powered-upload-serial:
+	$(ESPHOME) compile powered.yaml
+	$(ESPHOME) upload --device $(SERIAL) powered.yaml
+
+powered-clean:
+	rm -f powered.bin.tmp powered.bin
+clean: powered-clean
 
 ##
 ## Presence
