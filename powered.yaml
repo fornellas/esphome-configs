@@ -112,6 +112,17 @@ sensor:
     loop_time:
       name: "Debug: Loop Time"
 
+  - platform: duty_cycle
+    pin:
+      number: 2
+      inverted: true
+      mode:
+        pullup: true
+        input: true
+    name: Power LED
+    update_interval: 1s
+    icon: mdi:power
+
 output:
   - platform: slow_pwm
     id: wifi_led_pwm
