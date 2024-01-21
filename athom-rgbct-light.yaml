@@ -62,11 +62,6 @@ api:
 ota:
   safe_mode: false
 
-prometheus:
-
-debug:
-  update_interval: 5s
-
 binary_sensor:
   - platform: status
     name: "Status"
@@ -80,16 +75,6 @@ sensor:
     name: "WiFi Signal"
     update_interval: 15s
 
-  - platform: debug
-    free:
-      name: "Debug: Heap Free"
-    fragmentation:
-      name: "Debug: Heap Fragmentation"
-    block:
-      name: "Debug: Heap Largest Contiguous Free Block"
-    loop_time:
-      name: "Debug: Loop Time"
-
 text_sensor:
   - platform: wifi_info
     ip_address:
@@ -102,12 +87,6 @@ text_sensor:
       name: "Wifi Info: MAC Address"
     dns_address:
       name: "Wifi Info: DNS Address"
-
-  - platform: debug
-    device:
-      name: "Debug: Device Info"
-    reset_reason:
-      name: "Debug: Reset Reason"
 
 output:
   - platform: esp8266_pwm

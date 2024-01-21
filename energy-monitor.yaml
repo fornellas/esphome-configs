@@ -87,11 +87,6 @@ api:
 ota:
   safe_mode: false
 
-prometheus:
-
-debug:
-  update_interval: 5s
-
 uart:
   rx_pin: 14
   tx_pin: 12
@@ -111,16 +106,6 @@ sensor:
   - platform: wifi_signal
     name: "WiFi Signal"
     update_interval: 15s
-
-  - platform: debug
-    free:
-      name: "Debug: Heap Free"
-    fragmentation:
-      name: "Debug: Heap Fragmentation"
-    block:
-      name: "Debug: Heap Largest Contiguous Free Block"
-    loop_time:
-      name: "Debug: Loop Time"
 
   - platform: pzemac
     id: pzemac_sensor
@@ -175,9 +160,3 @@ text_sensor:
       name: "Wifi Info: MAC Address"
     dns_address:
       name: "Wifi Info: DNS Address"
-
-  - platform: debug
-    device:
-      name: "Debug: Device Info"
-    reset_reason:
-      name: "Debug: Reset Reason"

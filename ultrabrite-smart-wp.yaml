@@ -86,11 +86,6 @@ api:
 ota:
   safe_mode: false
 
-prometheus:
-
-debug:
-  update_interval: 5s
-
 binary_sensor:
   - platform: status
     name: "Status"
@@ -113,14 +108,6 @@ sensor:
   - platform: wifi_signal
     name: "WiFi Signal"
     update_interval: 15s
-
-  - platform: debug
-    free:
-      name: "Debug: Heap Free"
-    block:
-      name: "Debug: Heap Largest Contiguous Free Block"
-    loop_time:
-      name: "Debug: Loop Time"
 
 output:
   - platform: slow_pwm
@@ -173,9 +160,3 @@ text_sensor:
       name: "Wifi Info: MAC Address"
     dns_address:
       name: "Wifi Info: DNS Address"
-
-  - platform: debug
-    device:
-      name: "Debug: Device Info"
-    reset_reason:
-      name: "Debug: Reset Reason"
