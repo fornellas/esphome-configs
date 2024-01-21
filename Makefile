@@ -3,7 +3,7 @@ ifneq ($(.SHELLSTATUS),0)
   $(error cat .serial failed: $(SERIAL))
 endif
 
-ESPHOME_VERSION = 2023.12.5
+ESPHOME_VERSION = 2023.12.8
 ESPHOME = docker run --rm --privileged --net=host --device=$(SERIAL) -v "${PWD}":/config -it ghcr.io/esphome/esphome:$(ESPHOME_VERSION)
 
 DOMAIN := $(shell cat .domain)
@@ -56,6 +56,7 @@ all: \
 	athom-rgbct-light.bin \
 	athom-smart-plug-v2.bin \
 	energy-monitor.bin \
+	powered.bin \
 	presence.bin \
 	ultrabrite-smart-wp.uf2
 
