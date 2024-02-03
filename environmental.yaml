@@ -18,6 +18,7 @@ esphome:
               id(mhz19_sensor).abc_enable();
             else
               id(mhz19_sensor).abc_disable();
+            id(mhz19_hd).turn_on();
 
   on_loop:
     then:
@@ -176,6 +177,11 @@ output:
     id: wifi_led_pwm
     period: 1s
     pin: 9
+
+  - platform: gpio
+    id: mhz19_hd
+    pin: 6
+    mode: output
 
 button:
   - platform: factory_reset
