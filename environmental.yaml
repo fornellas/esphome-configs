@@ -122,6 +122,11 @@ uart:
   tx_pin: 4
   baud_rate: 9600
 
+i2c:
+  sda: 19
+  scl: 10
+  scan: false
+
 binary_sensor:
   - platform: status
     name: "Status"
@@ -156,6 +161,14 @@ sensor:
     name: "MH-Z19: Last zero calibration timestamp"
     lambda: |-
       return id(mhz19_calibrate_zero_timestamp);
+    update_interval: 1s
+
+  - platform: sht3xd
+    temperature:
+      name: "Temperature"
+    humidity:
+      name: "Humidity"
+    address: 0x44
     update_interval: 1s
 
 output:
