@@ -115,7 +115,7 @@ output:
   - platform: slow_pwm
     id: wifi_led_pwm
     period: 1s
-    pin: 8
+    pin: 7
 
 button:
   - platform: factory_reset
