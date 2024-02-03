@@ -36,6 +36,11 @@ ifneq ($(.SHELLSTATUS),0)
   $(error cat .energy-monitor-devices failed: $(ENERGY_MONITOR_DEVICES))
 endif
 
+ENVIRONMENTAL_DEVICES := $(shell cat .environmental-devices)
+ifneq ($(.SHELLSTATUS),0)
+  $(error cat .environmental-devices failed: $(ENVIRONMENTAL_DEVICES))
+endif
+
 POWERED_DEVICES := $(shell cat .powered-devices)
 ifneq ($(.SHELLSTATUS),0)
   $(error cat .powered-devices failed: $(POWERED_DEVICES))
@@ -61,6 +66,7 @@ all: \
 	athom-rgbct-light.bin \
 	athom-smart-plug-v2.bin \
 	energy-monitor.bin \
+	environmental.bin \
 	powered.bin \
 	presence.bin \
 	temperature-humidity.bin \
@@ -153,6 +159,31 @@ energy-monitor-upload-serial:
 energy-monitor-clean:
 	rm -f energy-monitor.bin.tmp energy-monitor.bin
 clean: energy-monitor-clean
+
+##
+## Environmental
+##
+
+environmental.bin: environmental.yaml
+	$(ESPHOME) compile $<
+	cp .esphome/build/environmental/.pioenvs/environmental/firmware.bin $@.tmp
+	mv -f $@.tmp $@
+
+.PHONY: environmental-upload
+environmental-upload: environmental.bin
+	@echo Uploading environmental:
+	@for device in $(ENVIRONMENTAL_DEVICES) ; do echo -n "  environmental-$${device}.$(DOMAIN)..." ; curl -f -X POST https://environmental-$${device}.$(DOMAIN)/update -F upload=@environmental.bin -u "$(USERNAME):$(PASSWORD)" ; done
+	@echo
+upload: environmental-upload
+
+.PHONY: environmental-upload-serial
+environmental-upload-serial:
+	$(ESPHOME) compile environmental.yaml
+	$(ESPHOME) upload --device $(SERIAL) environmental.yaml
+
+environmental-clean:
+	rm -f environmental.bin.tmp environmental.bin
+clean: environmental-clean
 
 ##
 ## Powered

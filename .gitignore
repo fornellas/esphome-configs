@@ -3,9 +3,10 @@
 /.athom-smart-plug-v2-devices
 /.domain
 /.energy-monitor-devices
-/.powered-devices
+/.environmental-devices
 /.esphome/
 /.password
+/.powered-devices
 /.presence-devices
 /.temperature-humidity-devices
 /.ultrabrite-smart-wp-devices
@@ -13,6 +14,7 @@
 /athom-rgbct-light.bin
 /athom-smart-plug-v2.bin
 /energy-monitor.bin
+/environmental.bin
 /powered.bin
 /presence.bin
 /temperature-humidity.bin

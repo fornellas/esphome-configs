@@ -1,0 +1,144 @@
+esphome:
+  name: "environmental"
+  friendly_name: "Environmental"
+  name_add_mac_suffix: true
+  on_boot:
+    - priority: 600.0
+      then:
+        - lambda: |-
+            // Default: Connecting
+            id(wifi_led_pwm).set_level(0.5);
+            id(wifi_led_pwm).set_period(1000);
+            id(wifi_led_pwm).turn_on();
+        - script.execute: fast_reboot_factory_reset
+  on_loop:
+    then:
+      - lambda: |-
+          // Captive portal
+          if(id(wifi_component).has_ap() && !id(wifi_component).has_sta()) {
+            id(wifi_led_pwm).set_level(0.5);
+            id(wifi_led_pwm).set_period(200);
+          } else {
+            id(wifi_led_pwm).set_period(1000);
+            // Connected
+            if(id(wifi_component).is_connected())
+              id(wifi_led_pwm).set_level(1);
+            // Connecting
+            else
+              id(wifi_led_pwm).set_level(0.5);
+          }
+
+esp32:
+  board: esp32-c3-devkitm-1
+
+globals:
+  - id: fast_reboot
+    type: int
+    restore_value: yes
+    initial_value: '0'
+
+  - id: factory_reset_reboot_counter
+    type: int
+    initial_value: '2'
+
+logger:
+  baud_rate: 0
+  level: info
+
+script:
+  - id: fast_reboot_factory_reset
+    then:
+      - if:
+          condition:
+            lambda: return ( id(fast_reboot) >= id(factory_reset_reboot_counter) );
+          then:
+            - lambda: |-
+                ESP_LOGI("Fast Boot Factory Reset", "Performing factotry reset");
+                id(fast_reboot) = 0;
+                fast_reboot->loop();
+                global_preferences->sync();
+            - button.press: factory_reset_button
+      - lambda: |-
+          if(id(fast_reboot) > 0)
+            ESP_LOGI("Fast Boot Factory Reset", "Quick reboot %d/%d, do it %d more times to factory reset", id(fast_reboot), id(factory_reset_reboot_counter), id(factory_reset_reboot_counter) - id(fast_reboot));
+          id(fast_reboot) += 1;
+          fast_reboot->loop();
+          global_preferences->sync();
+      - delay: 10s
+      - lambda: |-
+          id(fast_reboot) = 0;
+          fast_reboot->loop();
+          global_preferences->sync();
+
+wifi:
+  id: wifi_component
+  ap:
+    ap_timeout: 0s
+  reboot_timeout: 60s
+  power_save_mode: none
+
+captive_portal:
+    
+web_server:
+
+api:
+  reboot_timeout: 60s
+
+ota:
+  safe_mode: false
+
+uart:
+  rx_pin: 5
+  tx_pin: 4
+  baud_rate: 9600
+
+binary_sensor:
+  - platform: status
+    name: "Status"
+
+sensor:
+  - platform: uptime
+    name: 'Uptime'
+    update_interval: 15s
+
+  - platform: wifi_signal
+    name: "WiFi Signal"
+    update_interval: 15s
+
+  - platform: mhz19
+    co2:
+      name: "CO₂"
+    temperature:
+      name: "Temperature"
+    update_interval: 1s
+    automatic_baseline_calibration: true
+
+output:
+  - platform: slow_pwm
+    id: wifi_led_pwm
+    period: 1s
+    pin: 9
+
+button:
+  - platform: factory_reset
+    id: factory_reset_button
+    name: "Factory reset"
+
+  - platform: restart
+    name: "Restart"
+
+  - platform: safe_mode
+    name: "Safe Mode"
+
+text_sensor:
+  - platform: wifi_info
+    ip_address:
+      name: "Wifi Info: IP Address"
+    ssid:
+      name: "Wifi Info: SSID"
+    bssid:
+      name: "Wifi Info: BSSID"
+    mac_address:
+      name: "Wifi Info: MAC Address"
+    dns_address:
+      name: "Wifi Info: DNS Address"
