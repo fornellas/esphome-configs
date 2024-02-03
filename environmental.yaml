@@ -14,11 +14,16 @@ esphome:
     - priority: 800.0
       then:
         - lambda: |-
+            // mhz19
             if(id(mhz19_abc))
               id(mhz19_sensor).abc_enable();
             else
               id(mhz19_sensor).abc_disable();
             id(mhz19_hd).turn_on();
+
+            // pmsx003
+            id(pmsx003_set).turn_on();
+            id(pmsx003_reset).turn_on();
 
   on_loop:
     then:
@@ -119,10 +124,15 @@ ota:
   safe_mode: false
 
 uart:
-  id: uart_mhz19
-  rx_pin: 5
-  tx_pin: 4
-  baud_rate: 9600
+  - id: uart_mhz19
+    rx_pin: 5
+    tx_pin: 4
+    baud_rate: 9600
+
+  - id: uart_pmsx003
+    rx_pin: 1
+    tx_pin: 2
+    baud_rate: 9600
 
 i2c:
   sda: 19
@@ -186,15 +196,66 @@ sensor:
     address: 0x44
     update_interval: 1s
 
+  - platform: pmsx003
+    type: PMSX003
+    uart_id: uart_pmsx003
+    pm_1_0_std:
+      name: "PM1.0 CF=1，standard particle)"
+      unit_of_measurement: "μg/m³"
+    pm_2_5_std:
+      name: "PM2.5 CF=1，standard particle)"
+      unit_of_measurement: "μg/m³"
+    pm_10_0_std:
+      name: "PM10.0 CF=1，standard particle)"
+      unit_of_measurement: "μg/m³"
+    pm_1_0:
+      name: "PM1.0 (under atmospheric environment"
+      unit_of_measurement: "μg/m³"
+    pm_2_5:
+      name: "PM2.5 (under atmospheric environment"
+      unit_of_measurement: "μg/m³"
+    pm_10_0:
+      name: "PM10.0 (under atmospheric environment"
+      unit_of_measurement: "μg/m³"
+    pm_0_3um:
+      name: "Number of particles with diameter beyond 0.3μm in 0.1 L of air"
+      unit_of_measurement: ""
+    pm_0_5um:
+      name: "Number of particles with diameter beyond 0.5μm in 0.1 L of air"
+      unit_of_measurement: ""
+    pm_1_0um:
+      name: "Number of particles with diameter beyond 1.0μm in 0.1 L of air"
+      unit_of_measurement: ""
+    pm_2_5um:
+      name: "Number of particles with diameter beyond 2.5μm in 0.1 L of air"
+      unit_of_measurement: ""
+    pm_5_0um:
+      name: "Number of particles with diameter beyond 5.0μm in 0.1 L of air"
+      unit_of_measurement: ""
+    pm_10_0um:
+      name: "Number of particles with diameter beyond 10.0μm in 0.1 L of air"
+      unit_of_measurement: ""
+    # update_interval: 120s
+
 output:
   - platform: slow_pwm
     id: wifi_led_pwm
     period: 1s
-    pin: 9
+    pin:
+      number: 9
+      ignore_strapping_warning: true
 
   - platform: gpio
     id: mhz19_hd
     pin: 6
+
+  - platform: gpio
+    id: pmsx003_set
+    pin: 0
+
+  - platform: gpio
+    id: pmsx003_reset
+    pin: 3
 
 button:
   - platform: factory_reset
