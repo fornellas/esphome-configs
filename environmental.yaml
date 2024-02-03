@@ -41,6 +41,11 @@ globals:
     type: int
     initial_value: '2'
 
+  - id: mhz19_calibrate_zero_timestamp
+    type: time_t
+    restore_value: yes
+    initial_value: '0'
+
 logger:
   baud_rate: 0
   level: info
@@ -69,6 +74,18 @@ script:
           id(fast_reboot) = 0;
           fast_reboot->loop();
           global_preferences->sync();
+  - id: mhz19_calibrate_zero_timestamp_save
+    then:
+      - lambda: |-
+          auto time = id(sntp_time).utcnow();
+          if(time.is_valid()) {
+            id(mhz19_calibrate_zero_timestamp) = time.timestamp;
+            mhz19_calibrate_zero_timestamp->loop();
+            global_preferences->sync();
+            ESP_LOGD("MHZ-19", "Saved zero calibration timestamp");
+          } else {
+            ESP_LOGW("MHZ-19", "Time unavailable, can't save zero calibration timestamp");
+          }
 
 wifi:
   id: wifi_component
@@ -96,6 +113,16 @@ binary_sensor:
   - platform: status
     name: "Status"
 
+  - platform: gpio
+    id: mhz19_sensor_calibrate_zero
+    pin:
+      number: 18
+      mode: INPUT_PULLUP
+    on_press:
+      then:
+        - mhz19.calibrate_zero: mhz19_sensor
+        - script.execute:  mhz19_calibrate_zero_timestamp_save
+
 sensor:
   - platform: uptime
     name: 'Uptime'
@@ -106,12 +133,17 @@ sensor:
     update_interval: 15s
 
   - platform: mhz19
+    id: mhz19_sensor
     co2:
       name: "CO₂"
-    temperature:
-      name: "Temperature"
     update_interval: 1s
     automatic_baseline_calibration: true
+
+  - platform: template
+    name: "MHZ-19: Last zero calibration timestamp"
+    lambda: |-
+      return id(mhz19_calibrate_zero_timestamp);
+    update_interval: 1s
 
 output:
   - platform: slow_pwm
@@ -130,6 +162,13 @@ button:
   - platform: safe_mode
     name: "Safe Mode"
 
+  - platform: template
+    name: "MH19: Calibrate Zero"
+    on_press:
+      then:
+        - mhz19.calibrate_zero: mhz19_sensor
+        - script.execute:  mhz19_calibrate_zero_timestamp_save
+
 text_sensor:
   - platform: wifi_info
     ip_address:
@@ -142,3 +181,8 @@ text_sensor:
       name: "Wifi Info: MAC Address"
     dns_address:
       name: "Wifi Info: DNS Address"
+
+time:
+  - platform: sntp
+    id: sntp_time
+    timezone: Etc/UTC
