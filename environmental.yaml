@@ -82,9 +82,9 @@ script:
             id(mhz19_calibrate_zero_timestamp) = time.timestamp;
             mhz19_calibrate_zero_timestamp->loop();
             global_preferences->sync();
-            ESP_LOGD("MHZ-19", "Saved zero calibration timestamp");
+            ESP_LOGD("MH-Z19", "Saved zero calibration timestamp");
           } else {
-            ESP_LOGW("MHZ-19", "Time unavailable, can't save zero calibration timestamp");
+            ESP_LOGW("MH-Z19", "Time unavailable, can't save zero calibration timestamp");
           }
 
 wifi:
@@ -140,7 +140,7 @@ sensor:
     automatic_baseline_calibration: true
 
   - platform: template
-    name: "MHZ-19: Last zero calibration timestamp"
+    name: "MH-Z19: Last zero calibration timestamp"
     lambda: |-
       return id(mhz19_calibrate_zero_timestamp);
     update_interval: 1s
@@ -183,7 +183,7 @@ text_sensor:
       name: "Wifi Info: DNS Address"
 
   - platform: template
-    name: "MHZ-19: Last zero calibration"
+    name: "MH-Z19: Last zero calibration"
     lambda: |-
       char buffer[32];
       auto espTime = ESPTime::from_epoch_utc(id(mhz19_calibrate_zero_timestamp));
