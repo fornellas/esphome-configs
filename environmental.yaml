@@ -154,9 +154,21 @@ sensor:
   - platform: mhz19
     id: mhz19_sensor
     co2:
-      name: "CO₂"
+      name: "CO₂ (UART)"
     update_interval: 1s
     automatic_baseline_calibration: true
+
+  - platform: duty_cycle
+    name: "CO₂ (PWM)"
+    unit_of_measurement: "ppm"
+    pin:
+      number: 7
+      mode:
+        input: true
+    update_interval: 1s
+    filters:
+      - lambda: |-
+          return (x/100.0*1004.0-2.0)*5.0;
 
   - platform: template
     name: "MH-Z19: Last zero calibration timestamp"
@@ -181,7 +193,6 @@ output:
   - platform: gpio
     id: mhz19_hd
     pin: 6
-    mode: output
 
 button:
   - platform: factory_reset
