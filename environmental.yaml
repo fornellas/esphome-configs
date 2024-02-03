@@ -11,6 +11,14 @@ esphome:
             id(wifi_led_pwm).set_period(1000);
             id(wifi_led_pwm).turn_on();
         - script.execute: fast_reboot_factory_reset
+    - priority: 800.0
+      then:
+        - lambda: |-
+            if(id(mhz19_abc))
+              id(mhz19_sensor).abc_enable();
+            else
+              id(mhz19_sensor).abc_disable();
+
   on_loop:
     then:
       - lambda: |-
@@ -45,6 +53,11 @@ globals:
     type: time_t
     restore_value: yes
     initial_value: '0'
+
+  - id: mhz19_abc
+    type: bool
+    restore_value: yes
+    initial_value: 'false'
 
 logger:
   baud_rate: 0
@@ -190,6 +203,22 @@ text_sensor:
       espTime.strftime(buffer, sizeof(buffer), "%a, %d %b %Y %H:%M:%S %z");
       return {buffer};
     update_interval: 1s
+
+switch:
+  - platform: template
+    name: "MH-Z19: ABC"
+    lambda: |-
+      return id(mhz19_abc);
+    turn_on_action:
+      - mhz19.abc_enable: mhz19_sensor
+      - globals.set:
+          id: mhz19_abc
+          value: 'true'
+    turn_off_action:
+      - mhz19.abc_disable: mhz19_sensor
+      - globals.set:
+          id: mhz19_abc
+          value: 'false'
 
 time:
   - platform: sntp
