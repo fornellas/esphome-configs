@@ -119,6 +119,7 @@ ota:
   safe_mode: false
 
 uart:
+  id: uart_mhz19
   rx_pin: 5
   tx_pin: 4
   baud_rate: 9600
@@ -153,6 +154,7 @@ sensor:
 
   - platform: mhz19
     id: mhz19_sensor
+    uart_id: uart_mhz19
     co2:
       name: "CO₂ (UART)"
     update_interval: 1s
