@@ -182,6 +182,15 @@ text_sensor:
     dns_address:
       name: "Wifi Info: DNS Address"
 
+  - platform: template
+    name: "MHZ-19: Last zero calibration"
+    lambda: |-
+      char buffer[32];
+      auto espTime = ESPTime::from_epoch_utc(id(mhz19_calibrate_zero_timestamp));
+      espTime.strftime(buffer, sizeof(buffer), "%a, %d %b %Y %H:%M:%S %z");
+      return {buffer};
+    update_interval: 1s
+
 time:
   - platform: sntp
     id: sntp_time
