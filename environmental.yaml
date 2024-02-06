@@ -242,6 +242,7 @@ output:
     id: wifi_led_pwm
     period: 1s
     pin:
+      inverted: true
       number: 9
       ignore_strapping_warning: true
 
