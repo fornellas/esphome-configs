@@ -22,8 +22,11 @@ esphome:
             id(mhz19_hd).turn_on();
 
             // pmsx003
-            id(pmsx003_set).turn_on();
+            id(pmsx003_reset).turn_off();
+            id(pmsx003_set).turn_off();
+            delay(20);
             id(pmsx003_reset).turn_on();
+            id(pmsx003_set).turn_on();
 
   on_loop:
     then:
