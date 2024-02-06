@@ -242,7 +242,7 @@ sensor:
     pm_10_0um:
       name: "Number of particles with diameter beyond 10.0μm in 0.1 L of air"
       unit_of_measurement: ""
-    # update_interval: 120s
+    update_interval: 60s
 
 output:
   - platform: slow_pwm
