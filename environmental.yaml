@@ -254,12 +254,12 @@ sensor:
   - platform: template
     name: "AQI"
     lambda: |-
-      double aqi = 0;
+      double aqi = -1;
 
       // mhz19
-      double aqi_co2 = 0.0;
       double co2_ppm = id(mhz19_sensor_co2).state;
-      if(co2_ppm!=NAN) {
+      if(!std::isnan(co2_ppm)) {
+        double aqi_co2 = 0.0;
         if(co2_ppm < 400.0)
           aqi_co2 = co2_ppm / 400.0;
         else if(co2_ppm < 1000.0)
@@ -272,14 +272,14 @@ sensor:
           aqi_co2 = 4.0 + (co2_ppm - 2000.0) / 3000.0;
         else
           aqi_co2 = 6.0;
+        if(aqi_co2 > aqi)
+          aqi = aqi_co2;
       }
-      if(aqi_co2 > aqi)
-        aqi = aqi_co2;
 
       // pmsx003 pm25
-      double aqi_pm25 = 0.0;
       double pm25 = id(pmsx003_pm25).state;
-      if(pm25!=NAN) {
+      if(!std::isnan(pm25)) {
+        double aqi_pm25 = 0.0;
         if(pm25 < 10.0)
           aqi_pm25 = pm25 / 10.0;
         else if(pm25 < 20.0)
@@ -292,14 +292,14 @@ sensor:
           aqi_pm25 = 4.0 + (pm25 - 50.0) / 25.0;
         else
           aqi_pm25 = 6.0;
+        if(aqi_pm25 > aqi)
+          aqi = aqi_pm25;
       }
-      if(aqi_pm25 > aqi)
-        aqi = aqi_pm25;
 
       // pmsx003 pm10
-      double aqi_pm10 = 0.0;
       double pm10 = id(pmsx003_pm10).state;
-      if(pm10!=NAN) {
+      if(!std::isnan(pm10)) {
+        double aqi_pm10 = 0.0;
         if(pm10 < 20.0)
           aqi_pm10 = pm10 / 20.0;
         else if(pm10 < 40.0)
@@ -312,11 +312,13 @@ sensor:
           aqi_pm10 = 4.0 + (pm10 - 100.0) / 50.0;
         else
           aqi_pm10 = 6.0;
+        if(aqi_pm10 > aqi)
+          aqi = aqi_pm10;
       }
-      if(aqi_pm10 > aqi)
-        aqi = aqi_pm10;
 
-      return aqi;
+      if(aqi >= 0.0)
+        return aqi;
+      return NAN;
     update_interval: 1s
     on_value:
       then:
