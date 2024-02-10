@@ -4,6 +4,7 @@
 /.domain
 /.energy-monitor-devices
 /.environmental-devices
+/.environmental-v2-devices
 /.esphome/
 /.password
 /.powered-devices
@@ -15,6 +16,7 @@
 /athom-smart-plug-v2.bin
 /energy-monitor.bin
 /environmental.bin
+/environmental-v2.bin
 /powered.bin
 /presence.bin
 /temperature-humidity.bin

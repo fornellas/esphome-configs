@@ -41,6 +41,11 @@ ifneq ($(.SHELLSTATUS),0)
   $(error cat .environmental-devices failed: $(ENVIRONMENTAL_DEVICES))
 endif
 
+ENVIRONMENTAL_V2_DEVICES := $(shell cat .environmental-v2-devices)
+ifneq ($(.SHELLSTATUS),0)
+  $(error cat .environmental-v2-devices failed: $(ENVIRONMENTAL_V2_DEVICES))
+endif
+
 POWERED_DEVICES := $(shell cat .powered-devices)
 ifneq ($(.SHELLSTATUS),0)
   $(error cat .powered-devices failed: $(POWERED_DEVICES))
@@ -67,6 +72,7 @@ all: \
 	athom-smart-plug-v2.bin \
 	energy-monitor.bin \
 	environmental.bin \
+	environmental-v2.bin \
 	powered.bin \
 	presence.bin \
 	temperature-humidity.bin \
@@ -184,6 +190,31 @@ environmental-upload-serial:
 environmental-clean:
 	rm -f environmental.bin.tmp environmental.bin
 clean: environmental-clean
+
+##
+## Environmental v2
+##
+
+environmental-v2.bin: environmental-v2.yaml
+	$(ESPHOME) compile $<
+	cp .esphome/build/environmental-v2/.pioenvs/environmental-v2/firmware.bin $@.tmp
+	mv -f $@.tmp $@
+
+.PHONY: environmental-v2-upload
+environmental-v2-upload: environmental-v2.bin
+	@echo Uploading environmental-v2:
+	@for device in $(ENVIRONMENTAL_V2_DEVICES) ; do echo -n "  environmental-v2-$${device}.$(DOMAIN)..." ; curl -f -X POST https://environmental-v2-$${device}.$(DOMAIN)/update -F upload=@environmental-v2.bin -u "$(USERNAME):$(PASSWORD)" ; done
+	@echo
+upload: environmental-v2-upload
+
+.PHONY: environmental-v2-upload-serial
+environmental-v2-upload-serial:
+	$(ESPHOME) compile environmental-v2.yaml
+	$(ESPHOME) upload --device $(SERIAL) environmental-v2.yaml
+
+environmental-v2-clean:
+	rm -f environmental-v2.bin.tmp environmental-v2.bin
+clean: environmental-v2-clean
 
 ##
 ## Powered
