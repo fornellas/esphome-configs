@@ -1,7 +1,3 @@
-# TODO
-# - MH-Z19
-#   - Warm up time 75s
-
 esphome:
   name: "environmental-v2"
   friendly_name: "Environmental v2"
@@ -55,6 +51,14 @@ esphome:
 
 esp32:
   board: esp32-c3-devkitm-1
+
+external_components:
+  - source:
+      type: git
+      url: https://github.com/fornellas/esphome
+      ref: mhz19_warmup
+    components: [ mhz19 ]
+    refresh: 0s
 
 globals:
   - id: fast_reboot
