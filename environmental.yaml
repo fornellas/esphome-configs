@@ -193,6 +193,8 @@ sensor:
   - platform: duty_cycle
     name: "CO₂ (PWM)"
     unit_of_measurement: "ppm"
+    icon: "mdi:molecule-co2"
+    accuracy_decimals: 0
     pin:
       number: 7
       mode:
