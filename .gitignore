@@ -9,7 +9,6 @@
 /.password
 /.powered-devices
 /.presence-devices
-/.temperature-humidity-devices
 /.ultrabrite-smart-wp-devices
 /.username
 /.word-clock-devices
@@ -20,7 +19,6 @@
 /environmental.bin
 /powered.bin
 /presence.bin
-/temperature-humidity.bin
 /template.bin
 /ultrabrite-smart-wp.uf2
 /word-clock.bin

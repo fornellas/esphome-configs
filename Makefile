@@ -56,11 +56,6 @@ ifneq ($(.SHELLSTATUS),0)
   $(error cat .presence-devices failed: $(PRESENCE_DEVICES))
 endif
 
-TEMPERATURE_HUMIDITY_DEVICES := $(shell cat .temperature-humidity-devices)
-ifneq ($(.SHELLSTATUS),0)
-  $(error cat .temperature-humidity-devices failed: $(TEMPERATURE_HUMIDITY_DEVICES))
-endif
-
 ULTRABRITE_SMART_WIFI_PLUG_DEVICES := $(shell cat .ultrabrite-smart-wp-devices)
 ifneq ($(.SHELLSTATUS),0)
   $(error cat .ultrabrite-smart-wp-devices failed: $(ULTRABRITE_SMART_WIFI_PLUG_DEVICES))
@@ -81,7 +76,6 @@ all: \
 	environmental-v2.bin \
 	powered.bin \
 	presence.bin \
-	temperature-humidity.bin \
 	ultrabrite-smart-wp.uf2 \
 	word-clock.bin
 
@@ -272,31 +266,6 @@ presence-upload-serial:
 presence-clean:
 	rm -f presence.bin.tmp presence.bin
 clean: presence-clean
-
-##
-## Temperature Humidity
-##
-
-temperature-humidity.bin: temperature-humidity.yaml
-	$(ESPHOME) compile $<
-	cp .esphome/build/temperature-humidity/.pioenvs/temperature-humidity/firmware.bin $@.tmp
-	mv -f $@.tmp $@
-
-.PHONY: temperature-humidity-upload
-temperature-humidity-upload: temperature-humidity.bin
-	@echo Uploaing temperature-humidity:
-	@for device in $(TEMPERATURE_HUMIDITY_DEVICES) ; do echo -n "  temperature-humidity-$${device}.$(DOMAIN)..." ; curl -f -X POST https://temperature-humidity-$${device}.$(DOMAIN)/update -F upload=@temperature-humidity.bin -u "$(USERNAME):$(PASSWORD)" ; done
-	@echo
-upload: temperature-humidity-upload
-
-.PHONY: temperature-humidity-upload-serial
-temperature-humidity-upload-serial:
-	$(ESPHOME) compile temperature-humidity.yaml
-	$(ESPHOME) upload --device $(SERIAL) temperature-humidity.yaml
-
-temperature-humidity-clean:
-	rm -f temperature-humidity.bin.tmp temperature-humidity.bin
-clean: temperature-humidity-clean
 
 ##
 ## Ultrabrite Plug
