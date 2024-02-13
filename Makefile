@@ -66,6 +66,12 @@ ifneq ($(.SHELLSTATUS),0)
   $(error cat .ultrabrite-smart-wp-devices failed: $(ULTRABRITE_SMART_WIFI_PLUG_DEVICES))
 endif
 
+WORD_CLOCK_DEVICES := $(shell cat .word-clock-devices)
+ifneq ($(.SHELLSTATUS),0)
+  $(error cat .word-clock-devices failed: $(WORD_CLOCK_DEVICES))
+endif
+
+
 all: \
 	template.bin \
 	athom-rgbct-light.bin \
@@ -76,7 +82,8 @@ all: \
 	powered.bin \
 	presence.bin \
 	temperature-humidity.bin \
-	ultrabrite-smart-wp.uf2
+	ultrabrite-smart-wp.uf2 \
+	word-clock.bin
 
 ##
 ## Template
@@ -315,6 +322,31 @@ ultrabrite-smart-wp-upload-serial:
 ultrabrite-smart-wp-clean:
 	rm -f ultrabrite-smart-wp.uf2.tmp ultrabrite-smart-wp.uf2
 clean: ultrabrite-smart-wp-clean
+
+##
+## Word Clock
+##
+
+word-clock.bin: word-clock.yaml
+	$(ESPHOME) compile $<
+	cp .esphome/build/word-clock/.pioenvs/word-clock/firmware.bin $@.tmp
+	mv -f $@.tmp $@
+
+.PHONY: word-clock-upload
+word-clock-upload: word-clock.bin
+	@echo Uploaing word-clock:
+	@for device in $(WORD_CLOCK_DEVICES) ; do echo -n "  word-clock-$${device}.$(DOMAIN)..." ; curl -f -X POST https://word-clock-$${device}.$(DOMAIN)/update -F upload=@word-clock.bin -u "$(USERNAME):$(PASSWORD)" ; done
+	@echo
+upload: word-clock-upload
+
+.PHONY: word-clock-upload-serial
+word-clock-upload-serial:
+	$(ESPHOME) compile word-clock.yaml
+	$(ESPHOME) upload --device $(SERIAL) word-clock.yaml
+
+word-clock-clean:
+	rm -f word-clock.bin.tmp word-clock.bin
+clean: word-clock-clean
 
 ##
 ## Upload

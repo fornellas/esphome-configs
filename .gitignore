@@ -12,13 +12,15 @@
 /.temperature-humidity-devices
 /.ultrabrite-smart-wp-devices
 /.username
+/.word-clock-devices
 /athom-rgbct-light.bin
 /athom-smart-plug-v2.bin
 /energy-monitor.bin
-/environmental.bin
 /environmental-v2.bin
+/environmental.bin
 /powered.bin
 /presence.bin
 /temperature-humidity.bin
 /template.bin
 /ultrabrite-smart-wp.uf2
+/word-clock.bin
