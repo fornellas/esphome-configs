@@ -36,13 +36,26 @@ esphome:
               case state_connected:
                 auto call = id(word_clock_light).turn_on();
                 call.set_brightness(1);
-                call.set_rgb(1, 1, 1);
+                call.set_rgb(0, 0, 0);
                 call.set_effect(0);
                 call.perform();
                 break;
             }
             last_state = state;
           }
+
+          if (state == state_connected) {
+            uint32_t now = millis();
+            static uint32_t last_millis = millis();
+            if (now - last_millis > 50) {
+              static WordClock word_clock = WordClock((AddressableLight *) id(word_clock_light).get_output());
+              word_clock.set_time(id(sntp_time).now());
+              last_millis = now;
+            }
+          }
+  includes:
+    - word-clock.h
+    - word-clock.cpp
 
 esp32:
   board: esp32-c3-devkitm-1
@@ -205,3 +218,8 @@ text_sensor:
       name: "Wifi Info: MAC Address"
     dns_address:
       name: "Wifi Info: DNS Address"
+
+time:
+  - platform: sntp
+    id: sntp_time
+    timezone: Etc/UTC

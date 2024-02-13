@@ -296,7 +296,7 @@ clean: ultrabrite-smart-wp-clean
 ## Word Clock
 ##
 
-word-clock.bin: word-clock.yaml
+word-clock.bin: word-clock.yaml word-clock.cpp word-clock.h
 	$(ESPHOME) compile $<
 	cp .esphome/build/word-clock/.pioenvs/word-clock/firmware.bin $@.tmp
 	mv -f $@.tmp $@
