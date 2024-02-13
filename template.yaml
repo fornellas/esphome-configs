@@ -78,7 +78,7 @@ wifi:
   id: wifi_component
   ap:
     ap_timeout: 0s
-  reboot_timeout: 60s
+  reboot_timeout: 0s
   power_save_mode: none
 
 captive_portal:
@@ -86,7 +86,7 @@ captive_portal:
 web_server:
 
 api:
-  reboot_timeout: 60s
+  reboot_timeout: 0s
 
 ota:
   safe_mode: false
