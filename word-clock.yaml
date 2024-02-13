@@ -5,28 +5,44 @@ esphome:
   on_boot:
     - priority: 600.0
       then:
-        # - lambda: |-
-        #     // Default: Connecting
-        #     id(wifi_led_pwm).set_level(0.5);
-        #     id(wifi_led_pwm).set_period(1000);
-        #     id(wifi_led_pwm).turn_on();
+        - script.execute: word_clock_light_connecting
         - script.execute: fast_reboot_factory_reset
-  # on_loop:
-  #   then:
-  #     - lambda: |-
-  #         // Captive portal
-  #         if(id(wifi_component).has_ap() && !id(wifi_component).has_sta()) {
-  #           id(wifi_led_pwm).set_level(0.5);
-  #           id(wifi_led_pwm).set_period(200);
-  #         } else {
-  #           id(wifi_led_pwm).set_period(1000);
-  #           // Connected
-  #           if(id(wifi_component).is_connected())
-  #             id(wifi_led_pwm).set_level(1);
-  #           // Connecting
-  #           else
-  #             id(wifi_led_pwm).set_level(0.5);
-  #         }
+  on_loop:
+    then:
+      - lambda: |-
+          const uint8_t state_connecting = 0;
+          const uint8_t state_captive_portal = 1;
+          const uint8_t state_connected = 2;
+          static uint8_t last_state = state_connecting;
+
+          uint8_t state;
+          if (id(wifi_component).has_ap() && !id(wifi_component).has_sta()) {
+            state = state_captive_portal;
+          } else {
+            if (id(wifi_component).is_connected())
+              state = state_connected;
+            else
+              state = state_connecting;
+          }
+
+          if (state != last_state) {
+            switch (state) {
+              case state_connecting:
+                id(word_clock_light_connecting).execute();
+                break;
+              case state_captive_portal:
+                id(word_clock_light_captive_portal).execute();
+                break;
+              case state_connected:
+                auto call = id(word_clock_light).turn_on();
+                call.set_brightness(1);
+                call.set_rgb(1, 1, 1);
+                call.set_effect(0);
+                call.perform();
+                break;
+            }
+            last_state = state;
+          }
 
 esp32:
   board: esp32-c3-devkitm-1
@@ -72,6 +88,30 @@ script:
           id(fast_reboot) = 0;
           fast_reboot->loop();
           global_preferences->sync();
+
+  - id: word_clock_light_connecting
+    then:
+      - light.turn_on:
+          id: word_clock_light
+          brightness: 0%
+          red: 0%
+          green: 0%
+          blue: 100%
+      - light.turn_on:
+          id: word_clock_light
+          effect: "Connecting"
+
+  - id: word_clock_light_captive_portal
+    then:
+      - light.turn_on:
+          id: word_clock_light
+          brightness: 0%
+          red: 0%
+          green: 0%
+          blue: 100%
+      - light.turn_on:
+          id: word_clock_light
+          effect: "Captive Portal"
 
 wifi:
   id: wifi_component
@@ -128,6 +168,19 @@ light:
     pin: 8
     method:
       type: esp32_rmt
+    effects:
+      - pulse:
+          name: "Connecting"
+          transition_length: 500ms
+          update_interval: 500ms
+          min_brightness: 0%
+          max_brightness: 100%
+      - pulse:
+          name: "Captive Portal"
+          transition_length: 250ms
+          update_interval: 250ms
+          min_brightness: 0%
+          max_brightness: 100%
 
 button:
   - platform: factory_reset
