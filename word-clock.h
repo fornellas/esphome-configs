@@ -16,8 +16,11 @@ private:
 	uint8_t rainbow;
 
 	esphome::Color get_pixel_color_(uint32_t i);
-	void lit_pixel_(esphome::light::AddressableLight &addressable_light, uint32_t pos);
-	void lit_pixels_(uint32_t from, uint32_t to);
+	void lit_pixel_color_(esphome::light::AddressableLight &addressable_light, uint32_t pos, esphome::Color color);
+	void lit_pixel_color_(uint32_t pos, esphome::Color color);
+	void lit_pixels_color_(uint32_t from, uint32_t to, esphome::Color color);
+	void lit_pixel_rainbow_(uint32_t pos);
+	void lit_pixels_rainbow_(uint32_t from, uint32_t to);
 	void lit_word_its_();
 	void lit_word_half_();
 	void lit_word_ten_hours_();

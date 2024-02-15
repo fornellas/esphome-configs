@@ -35,9 +35,8 @@ esphome:
                 break;
               case state_connected:
                 auto call = id(word_clock_light).turn_on();
-                call.set_brightness(1);
-                call.set_rgb(0, 0, 0);
                 call.set_effect(0);
+                call.set_brightness(1);
                 call.perform();
                 break;
             }
@@ -47,7 +46,7 @@ esphome:
           if (state == state_connected) {
             uint32_t now = millis();
             static uint32_t last_millis = millis();
-            if (now - last_millis > 50) {
+            if (now - last_millis > 500) {
               static WordClock word_clock = WordClock((AddressableLight *) id(word_clock_light).get_output());
               word_clock.set_time(id(sntp_time).now());
               last_millis = now;
@@ -71,10 +70,7 @@ globals:
     initial_value: '2'
 
 logger:
-  # baud_rate: 115200
   baud_rate: 0
-  # hardware_uart: UART0
-  # level: debug
   level: info
 
 script:
@@ -106,7 +102,7 @@ script:
     then:
       - light.turn_on:
           id: word_clock_light
-          brightness: 0%
+          brightness: 100%
           red: 0%
           green: 0%
           blue: 100%
@@ -118,7 +114,7 @@ script:
     then:
       - light.turn_on:
           id: word_clock_light
-          brightness: 0%
+          brightness: 100%
           red: 0%
           green: 0%
           blue: 100%
@@ -166,34 +162,50 @@ sensor:
     address: 0x23
     update_interval: 1s
 
-# output:
-#   - platform: slow_pwm
-#     id: wifi_led_pwm
-#     period: 1s
-#     pin: 5
-
 light:
   - platform: neopixelbus
+    name: "Word Clock"
     id: word_clock_light
     num_leds: 76
     type: GRB
-    variant: 800KBPS
-    pin: 8
+    variant: 800KBPS # Unstable
+    # variant: 400KBPS # All white-ish
+    # variant: WS2811 # Unstable
+    # variant: WS2812 # Unstable
+    # variant: WS2812X # Unstable
+    # variant: WS2813 # Unstable
+    # variant: SK6812 # Unstable
+    # variant: TM1814 # All white-ish
+    # variant: TM1829 # All white-ish & rainbow
+    # variant: TM1914 # 
+    # variant: APA106 # 
+    # variant: LC8812 # 
+    pin: 7
     method:
       type: esp32_rmt
     effects:
-      - pulse:
+      - strobe:
           name: "Connecting"
-          transition_length: 500ms
-          update_interval: 500ms
-          min_brightness: 0%
-          max_brightness: 100%
-      - pulse:
+          colors:
+            - state: true
+              brightness: 100%
+              red: 0%
+              green: 0%
+              blue: 100%
+              duration: 500ms
+            - state: false
+              duration: 500ms
+      - strobe:
           name: "Captive Portal"
-          transition_length: 250ms
-          update_interval: 250ms
-          min_brightness: 0%
-          max_brightness: 100%
+          colors:
+            - state: true
+              brightness: 100%
+              red: 0%
+              green: 0%
+              blue: 100%
+              duration: 250ms
+            - state: false
+              duration: 250ms
 
 button:
   - platform: factory_reset

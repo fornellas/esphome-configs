@@ -15,102 +15,114 @@ esphome::Color WordClock::get_pixel_color_(uint32_t i) {
   }
 }
 
-void WordClock::lit_pixel_(esphome::light::AddressableLight &addressable_light, uint32_t pos) {
-  addressable_light[pos] = get_pixel_color_(pos);
+void WordClock::lit_pixel_color_(esphome::light::AddressableLight &addressable_light, uint32_t pos, esphome::Color color) {
+  addressable_light[pos] = color;
 }
 
-void WordClock::lit_pixels_(uint32_t from, uint32_t to) {
-  for(uint32_t i=from ; i<=to ; i++) {
-    lit_pixel_(*addressable_light, i);
-  }
+void WordClock::lit_pixel_color_(uint32_t pos, esphome::Color color) {
+  lit_pixel_color_(*addressable_light, pos, color);
+}
+
+void WordClock::lit_pixels_color_(uint32_t from, uint32_t to, esphome::Color color) {
+  for(uint32_t i=from ; i<=to ; i++)
+    lit_pixel_color_(i, color);
+}
+
+void WordClock::lit_pixel_rainbow_(uint32_t pos) {
+  lit_pixel_color_(pos, get_pixel_color_(pos));
+}
+
+void WordClock::lit_pixels_rainbow_(uint32_t from, uint32_t to) {
+  for(uint32_t i=from ; i<=to ; i++)
+    lit_pixel_rainbow_(i);
 }
 
 void WordClock::lit_word_its_() {
-  lit_pixels_(74, 76);
+  lit_pixels_rainbow_(74, 76);
 }
 
 void WordClock::lit_word_half_() {
-  lit_pixels_(71, 73);
+  lit_pixels_rainbow_(71, 73);
 }
 
 void WordClock::lit_word_ten_hours_() {
-  lit_pixels_(14, 15);
+  lit_pixels_rainbow_(14, 15);
 }
 
 void WordClock::lit_word_quarter_() {
-  lit_pixels_(58, 63);
+  lit_pixels_rainbow_(58, 63);
 }
 
 void WordClock::lit_word_twenty_() {
-  lit_pixels_(64, 68);
+  lit_pixels_rainbow_(64, 68);
 }
 
 void WordClock::lit_word_five_hours_() {
-  lit_pixels_(29, 30);
+  lit_pixels_rainbow_(29, 30);
 }
 
 void WordClock::lit_word_minutes_() {
-  lit_pixels_(49, 54);
+  lit_pixels_rainbow_(49, 54);
 }
 
 void WordClock::lit_word_to_() {
-  lit_pixels_(47, 48);
+  lit_pixels_rainbow_(47, 48);
 }
 
 void WordClock::lit_word_past_() {
-  lit_pixels_(37, 39);
+  lit_pixels_rainbow_(37, 39);
 }
 
 void WordClock::lit_word_one_() {
-  lit_pixels_(40, 42);
+  lit_pixels_rainbow_(40, 42);
 }
 
 void WordClock::lit_word_three_() {
-  lit_pixels_(43, 46);
+  lit_pixels_rainbow_(43, 46);
 }
 
 void WordClock::lit_word_two_() {
-  lit_pixels_(34, 36);
+  lit_pixels_rainbow_(34, 36);
 }
 
 void WordClock::lit_word_four_() {
-  lit_pixels_(31, 33);
+  lit_pixels_rainbow_(31, 33);
 }
 
 void WordClock::lit_word_five_minutes_() {
-  lit_pixels_(55, 57);
+  lit_pixels_rainbow_(55, 57);
 }
 
 void WordClock::lit_word_six_() {
-  lit_pixels_(19, 20);
+  lit_pixels_rainbow_(19, 20);
 }
 
 void WordClock::lit_word_seven_() {
-  lit_pixels_(21, 24);
+  lit_pixels_rainbow_(21, 24);
 }
 
 void WordClock::lit_word_eight_() {
-  lit_pixels_(25, 28);
+  lit_pixels_rainbow_(25, 28);
 }
 
 void WordClock::lit_word_nine_() {
-  lit_pixels_(16, 18);
+  lit_pixels_rainbow_(16, 18);
 }
 
 void WordClock::lit_word_ten_minutes_() {
-  lit_pixels_(69, 70);
+  lit_pixels_rainbow_(69, 70);
 }
 
 void WordClock::lit_word_eleven_() {
-  lit_pixels_(10, 13);
+  lit_pixels_rainbow_(10, 13);
 }
 
 void WordClock::lit_word_twelve_() {
-  lit_pixels_(0, 4);
+  lit_pixels_rainbow_(0, 4);
 }
 
 void WordClock::lit_word_o_clock_() {
-  lit_pixels_(5, 9);
+  lit_pixels_rainbow_(5, 9);
 }
 
 void WordClock::lit_hour_(uint8_t hour) {
@@ -157,7 +169,8 @@ void WordClock::lit_hour_(uint8_t hour) {
 
 void WordClock::set_time(esphome::ESPTime esp_time) {
   if (!esp_time.is_valid()) {
-    this->addressable_light->all() = esphome::Color(1, 0, 0);
+    rainbow = 0;
+    lit_pixels_rainbow_(0, 75);
     this->addressable_light->schedule_show();
     return;
   }
