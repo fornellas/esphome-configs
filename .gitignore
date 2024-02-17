@@ -5,6 +5,7 @@
 /.energy-monitor-devices
 /.environmental-devices
 /.environmental-v2-devices
+/.esp32-cam-devices
 /.esphome/
 /.password
 /.powered-devices
@@ -17,6 +18,7 @@
 /energy-monitor.bin
 /environmental-v2.bin
 /environmental.bin
+/esp32-cam.bin
 /powered.bin
 /presence.bin
 /template.bin

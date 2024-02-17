@@ -46,6 +46,11 @@ ifneq ($(.SHELLSTATUS),0)
   $(error cat .environmental-v2-devices failed: $(ENVIRONMENTAL_V2_DEVICES))
 endif
 
+ESP32_CAM_DEVICES := $(shell cat .esp32-cam-devices)
+ifneq ($(.SHELLSTATUS),0)
+  $(error cat .esp32-cam-devices failed: $(ESP32_CAM_DEVICES))
+endif
+
 POWERED_DEVICES := $(shell cat .powered-devices)
 ifneq ($(.SHELLSTATUS),0)
   $(error cat .powered-devices failed: $(POWERED_DEVICES))
@@ -74,6 +79,7 @@ all: \
 	energy-monitor.bin \
 	environmental.bin \
 	environmental-v2.bin \
+	esp32-cam.bin \
 	powered.bin \
 	presence.bin \
 	ultrabrite-smart-wp.uf2 \
@@ -216,6 +222,31 @@ environmental-v2-upload-serial:
 environmental-v2-clean:
 	rm -f environmental-v2.bin.tmp environmental-v2.bin
 clean: environmental-v2-clean
+
+##
+## ESP32 Cam
+##
+
+esp32-cam.bin: esp32-cam.yaml
+	$(ESPHOME) compile $<
+	cp .esphome/build/esp32-cam/.pioenvs/esp32-cam/firmware.bin $@.tmp
+	mv -f $@.tmp $@
+
+.PHONY: esp32-cam-upload
+esp32-cam-upload: esp32-cam.bin
+	@echo Uploaing esp32-cam:
+	@for device in $(ESP32_CAM_DEVICES) ; do echo -n "  esp32-cam-$${device}.$(DOMAIN)..." ; curl -f -X POST https://esp32-cam-$${device}.$(DOMAIN)/update -F upload=@esp32-cam.bin -u "$(USERNAME):$(PASSWORD)" ; done
+	@echo
+upload: esp32-cam-upload
+
+.PHONY: esp32-cam-upload-serial
+esp32-cam-upload-serial:
+	$(ESPHOME) compile esp32-cam.yaml
+	$(ESPHOME) upload --device $(SERIAL) esp32-cam.yaml
+
+esp32-cam-clean:
+	rm -f esp32-cam.bin.tmp esp32-cam.bin
+clean: esp32-cam-clean
 
 ##
 ## Powered
