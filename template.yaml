@@ -91,10 +91,10 @@ api:
 ota:
   safe_mode: false
 
-prometheus:
+#prometheus:
 
-debug:
-  update_interval: 5s
+#debug:
+#  update_interval: 5s
 
 binary_sensor:
   - platform: status
@@ -109,19 +109,19 @@ sensor:
     name: "WiFi Signal"
     update_interval: 15s
 
-  - platform: debug
-    free:
-      name: "Debug: Heap Free"
-    # esp8266
-    # fragmentation:
-    #   name: "Debug: Heap Fragmentation"
-    block:
-      name: "Debug: Heap Largest Contiguous Free Block"
-    loop_time:
-      name: "Debug: Loop Time"
-    # esp32
-    # psram:
-    #   name: "Debug: Free PSRAM"
+  # - platform: debug
+  #   free:
+  #     name: "Debug: Heap Free"
+  #   # esp8266
+  #   # fragmentation:
+  #   #   name: "Debug: Heap Fragmentation"
+  #   block:
+  #     name: "Debug: Heap Largest Contiguous Free Block"
+  #   loop_time:
+  #     name: "Debug: Loop Time"
+  #   # esp32
+  #   # psram:
+  #   #   name: "Debug: Free PSRAM"
 
 output:
   - platform: slow_pwm
@@ -153,8 +153,8 @@ text_sensor:
     dns_address:
       name: "Wifi Info: DNS Address"
 
-  - platform: debug
-    device:
-      name: "Debug: Device Info"
-    reset_reason:
-      name: "Debug: Reset Reason"
+  # - platform: debug
+  #   device:
+  #     name: "Debug: Device Info"
+  #   reset_reason:
+  #     name: "Debug: Reset Reason"
