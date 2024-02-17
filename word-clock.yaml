@@ -1,3 +1,6 @@
+# TODO
+# - Test all hours
+# - Add text field to set timezone
 esphome:
   name: "word-clock"
   friendly_name: "Word Clock"
