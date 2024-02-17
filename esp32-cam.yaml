@@ -29,7 +29,7 @@ esphome:
           }
 
 esp32:
-  board: TODO
+  board: esp32cam
 
 globals:
   - id: fast_reboot
@@ -87,6 +87,66 @@ api:
 ota:
   safe_mode: false
 
+esp32_camera:
+  external_clock:
+    pin: GPIO0
+    frequency: 20MHz
+  i2c_pins:
+    sda: GPIO26
+    scl: GPIO27
+  data_pins: [GPIO5, GPIO18, GPIO19, GPIO21, GPIO36, GPIO39, GPIO34, GPIO35]
+  vsync_pin: GPIO25
+  href_pin: GPIO23
+  pixel_clock_pin: GPIO22
+  power_down_pin: GPIO32
+  name: "ESP32 Cam"
+  # resolution: 160x120 # (QQVGA)
+  # resolution: 176x144 # (QCIF)
+  # resolution: 240x176 # (HQVGA)
+  # resolution: 320x240 # (QVGA)
+  # resolution: 400x296 # (CIF)
+  # resolution: 640x480 # (VGA, default)
+  # resolution: 800x600 # (SVGA)
+  # resolution: 1024x768 # (XGA)
+  # resolution: 1280x1024 # (SXGA)
+  resolution: 1600x1200 # (UXGA)
+  # jpeg_quality: 10 # From 10 (best) to 63 (worst)
+  # vertical_flip: true
+  # horizontal_mirror: true
+  # contrast: 0 # from -2 to 2
+  # brightness: 0 # from -2 to 2
+  # saturation: 0 # from -2 to 2
+  # special_effect: none # Picture without effect
+  # special_effect: negative # Colors of picture are inverted
+  # special_effect: grayscale # Only luminance of picture is kept
+  # special_effect: red_tint # Picture appear red-tinted
+  # special_effect: green_tint # Picture appear green-tinted
+  # special_effect: blue_tint # Picture appear blue-tinted
+  # special_effect: sepia # Sepia effect is applied to picture
+  # aec_mode: manual
+  # aec_mode: auto
+  # aec2: false
+  # ae_level: 0 # when aec_mode is set to auto, from -2 to 2
+  # aec_value: 300 # when aec_mode is set to manual, from 0 to 1200
+  # agc_mode: manual
+  # agc_mode: auto
+  # agc_value: 0 # when aec_mode is set to manual,from 0 to 30
+  # agc_gain_ceiling: 2x # when aec_mode is set to manual, 2x, 4x, 8x, 16x, 32x, 64x, 128x
+  # wb_mode: auto
+  # wb_mode: sunny
+  # wb_mode: cloudy
+  # wb_mode: office
+  # wb_mode: home
+  # on_stream_start:
+  # on_stream_stop:
+  # on_image:
+
+esp32_camera_web_server:
+  - port: 8080
+    mode: stream
+  - port: 8081
+    mode: snapshot
+
 binary_sensor:
   - platform: status
     name: "Status"
@@ -105,6 +165,7 @@ output:
     id: wifi_led_pwm
     period: 1s
     pin: GPIO33
+    inverted: true
 
 button:
   - platform: factory_reset
