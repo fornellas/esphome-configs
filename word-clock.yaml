@@ -268,7 +268,7 @@ number:
     set_action:
       - globals.set:
           id: brightness
-          value: !lambda "return x / 100;"
+          value: !lambda "return std::pow(x / 100.0, 1.0/2.8);"
 
 time:
   - platform: sntp
