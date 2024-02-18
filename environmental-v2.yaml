@@ -71,7 +71,7 @@ globals:
 
   - id: factory_reset_reboot_counter
     type: int
-    initial_value: '2'
+    initial_value: '5'
 
   - id: mhz19_calibrate_zero_timestamp
     type: time_t
