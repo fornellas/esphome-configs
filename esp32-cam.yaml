@@ -97,7 +97,9 @@ ota:
 
 esp32_camera:
   external_clock:
-    pin: GPIO0
+    pin:
+      number: GPIO0
+      ignore_strapping_warning: true
     frequency: 20MHz
   i2c_pins:
     sda: GPIO26
@@ -209,48 +211,48 @@ switch:
           id(esp32cam_update) = true;
 
 select:
-  - platform: template
-    name: "Resolution"
-    icon: mdi:video-standard-definition
-    entity_category: config
-    optimistic: true
-    options:
-      - "160x120 (QQVGA)"
-      - "176x144 (QCIF)"
-      - "240x176 (HQVGA)"
-      - "320x240 (QVGA)"
-      - "400x296 (CIF)"
-      - "640x480 (VGA)"
-      - "800x600 (SVGA)"
-      - "1024x768 (XGA)"
-      - "1280x1024 (SXGA)"
-      - "1600x1200 (UXGA)"
-    initial_option: "640x480 (VGA)"
-    restore_value: true
-    on_value:
-      then:
-      - lambda: |-
-          if ("160x120 (QQVGA)" == x )
-            id(esp32cam).set_jpeg_quality(esphome::esp32_camera::ESP32_CAMERA_SIZE_160X120);
-          else if ("176x144 (QCIF)" == x)
-            id(esp32cam).set_jpeg_quality(esphome::esp32_camera::ESP32_CAMERA_SIZE_176X144);
-          else if ("240x176 (HQVGA)" == x)
-            id(esp32cam).set_jpeg_quality(esphome::esp32_camera::ESP32_CAMERA_SIZE_240X176);
-          else if ("320x240 (QVGA)" == x)
-            id(esp32cam).set_jpeg_quality(esphome::esp32_camera::ESP32_CAMERA_SIZE_320X240);
-          else if ("400x296 (CIF)" == x)
-            id(esp32cam).set_jpeg_quality(esphome::esp32_camera::ESP32_CAMERA_SIZE_400X296);
-          else if ("640x480 (VGA)" == x)
-            id(esp32cam).set_jpeg_quality(esphome::esp32_camera::ESP32_CAMERA_SIZE_640X480);
-          else if ("800x600 (SVGA)" == x)
-            id(esp32cam).set_jpeg_quality(esphome::esp32_camera::ESP32_CAMERA_SIZE_800X600);
-          else if ("1024x768 (XGA)" == x)
-            id(esp32cam).set_jpeg_quality(esphome::esp32_camera::ESP32_CAMERA_SIZE_1024X768);
-          else if ("1280x1024 (SXGA)" == x)
-            id(esp32cam).set_jpeg_quality(esphome::esp32_camera::ESP32_CAMERA_SIZE_1280X1024);
-          else if ("1600x1200 (UXGA)" == x)
-            id(esp32cam).set_jpeg_quality(esphome::esp32_camera::ESP32_CAMERA_SIZE_1600X1200);
-          id(esp32cam_update) = true;
+#   - platform: template
+#     name: "Resolution"
+#     icon: mdi:video-standard-definition
+#     entity_category: config
+#     optimistic: true
+#     options:
+#       - "160x120 (QQVGA)"
+#       - "176x144 (QCIF)"
+#       - "240x176 (HQVGA)"
+#       - "320x240 (QVGA)"
+#       - "400x296 (CIF)"
+#       - "640x480 (VGA)"
+#       - "800x600 (SVGA)"
+#       - "1024x768 (XGA)"
+#       - "1280x1024 (SXGA)"
+#       - "1600x1200 (UXGA)"
+#     initial_option: "640x480 (VGA)"
+#     restore_value: true
+#     on_value:
+#       then:
+#       - lambda: |-
+#           if ("160x120 (QQVGA)" == x )
+#             id(esp32cam).set_jpeg_quality(esphome::esp32_camera::ESP32_CAMERA_SIZE_160X120);
+#           else if ("176x144 (QCIF)" == x)
+#             id(esp32cam).set_jpeg_quality(esphome::esp32_camera::ESP32_CAMERA_SIZE_176X144);
+#           else if ("240x176 (HQVGA)" == x)
+#             id(esp32cam).set_jpeg_quality(esphome::esp32_camera::ESP32_CAMERA_SIZE_240X176);
+#           else if ("320x240 (QVGA)" == x)
+#             id(esp32cam).set_jpeg_quality(esphome::esp32_camera::ESP32_CAMERA_SIZE_320X240);
+#           else if ("400x296 (CIF)" == x)
+#             id(esp32cam).set_jpeg_quality(esphome::esp32_camera::ESP32_CAMERA_SIZE_400X296);
+#           else if ("640x480 (VGA)" == x)
+#             id(esp32cam).set_jpeg_quality(esphome::esp32_camera::ESP32_CAMERA_SIZE_640X480);
+#           else if ("800x600 (SVGA)" == x)
+#             id(esp32cam).set_jpeg_quality(esphome::esp32_camera::ESP32_CAMERA_SIZE_800X600);
+#           else if ("1024x768 (XGA)" == x)
+#             id(esp32cam).set_jpeg_quality(esphome::esp32_camera::ESP32_CAMERA_SIZE_1024X768);
+#           else if ("1280x1024 (SXGA)" == x)
+#             id(esp32cam).set_jpeg_quality(esphome::esp32_camera::ESP32_CAMERA_SIZE_1280X1024);
+#           else if ("1600x1200 (UXGA)" == x)
+#             id(esp32cam).set_jpeg_quality(esphome::esp32_camera::ESP32_CAMERA_SIZE_1600X1200);
+#           id(esp32cam_update) = true;
 
   - platform: template
     name: "Special effect"
@@ -387,19 +389,19 @@ select:
           id(esp32cam_update) = true;
 
 number:
-  - platform: template
-    name: "JPEG Quality"
-    icon: mdi:file-jpg-box
-    entity_category: config
-    mode: slider
-    initial_value: 10
-    min_value: 10
-    max_value: 63
-    step: 1
-    set_action:
-      - lambda: |-
-          id(esp32cam).set_jpeg_quality(x);
-          id(esp32cam_update) = true;
+#   - platform: template
+#     name: "JPEG Quality"
+#     icon: mdi:file-jpg-box
+#     entity_category: config
+#     mode: slider
+#     initial_value: 10
+#     min_value: 10
+#     max_value: 63
+#     step: 1
+#     set_action:
+#       - lambda: |-
+#           id(esp32cam).set_jpeg_quality(x);
+#           id(esp32cam_update) = true;
 
   - platform: template
     name: "Contrast"
