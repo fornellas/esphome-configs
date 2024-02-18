@@ -50,7 +50,7 @@ esphome:
 
               auto light_call = light_state->turn_on();
               light_call.set_effect(0);
-              light_call.set_brightness(1);
+              light_call.set_brightness(id(brightness));
               light_call.perform();
 
               auto light_output = light_state->get_output();
@@ -79,6 +79,10 @@ globals:
   - id: last_millis
     type: uint32_t
     initial_value: '0'
+
+  - id: brightness
+    type: double
+    initial_value: '1'
 
 logger:
   baud_rate: 0
@@ -249,6 +253,22 @@ switch:
     turn_off_action:
       - lambda: |-
           id(word_clock_light).turn_off().perform();
+
+number:
+  - platform: template
+    name: "Brightness"
+    icon: mdi:brightness-percent
+    unit_of_measurement: "%"
+    mode: slider
+    min_value: 0
+    max_value: 100
+    step: 0.1
+    initial_value: 100
+    optimistic: true
+    set_action:
+      - globals.set:
+          id: brightness
+          value: !lambda "return x / 100;"
 
 time:
   - platform: sntp
