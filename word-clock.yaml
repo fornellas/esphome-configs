@@ -251,7 +251,7 @@ text_sensor:
 
 switch:
   - platform: template
-    name: "Word Clock"
+    name: "Power"
     id: word_clock_switch
     icon: mdi:light-switch
     device_class: switch
