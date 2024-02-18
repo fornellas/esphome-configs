@@ -167,22 +167,10 @@ sensor:
 
 light:
   - platform: neopixelbus
-    name: "Word Clock"
     id: word_clock_light
     num_leds: 76
     type: GRB
-    variant: 800KBPS # Unstable
-    # variant: 400KBPS # All white-ish
-    # variant: WS2811 # Unstable
-    # variant: WS2812 # Unstable
-    # variant: WS2812X # Unstable
-    # variant: WS2813 # Unstable
-    # variant: SK6812 # Unstable
-    # variant: TM1814 # All white-ish
-    # variant: TM1829 # All white-ish & rainbow
-    # variant: TM1914 # 
-    # variant: APA106 # 
-    # variant: LC8812 # 
+    variant: 800KBPS
     pin: 10
     method:
       type: esp32_rmt
