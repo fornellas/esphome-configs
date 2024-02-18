@@ -143,8 +143,8 @@ ota:
   safe_mode: false
 
 i2c:
-  sda: 5
-  scl: 4
+  sda: 19
+  scl: 18
   scan: false
 
 binary_sensor:
@@ -183,7 +183,7 @@ light:
     # variant: TM1914 # 
     # variant: APA106 # 
     # variant: LC8812 # 
-    pin: 7
+    pin: 10
     method:
       type: esp32_rmt
     effects:
