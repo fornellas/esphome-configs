@@ -1,6 +1,6 @@
 # TODO
-# - Test all hours
 # - Add text field to set timezone
+# - Auto-brightness based on lux reading
 esphome:
   name: "word-clock"
   friendly_name: "Word Clock"
@@ -37,22 +37,26 @@ esphome:
                 id(word_clock_light_captive_portal).execute();
                 break;
               case state_connected:
-                auto call = id(word_clock_light).turn_on();
-                call.set_effect(0);
-                call.set_brightness(1);
-                call.perform();
+                id(last_millis) = 0;
                 break;
             }
             last_state = state;
           }
 
-          if (state == state_connected) {
+          if (state == state_connected && id(word_clock_switch).state) {
             uint32_t now = millis();
-            static uint32_t last_millis = millis();
-            if (now - last_millis > 500) {
-              static WordClock word_clock = WordClock((AddressableLight *) id(word_clock_light).get_output());
-              word_clock.set_time(id(sntp_time).now());
-              last_millis = now;
+            if (now - id(last_millis) > 500) {
+              auto light_state = id(word_clock_light);
+
+              auto light_call = light_state->turn_on();
+              light_call.set_effect(0);
+              light_call.set_brightness(1);
+              light_call.perform();
+
+              auto light_output = light_state->get_output();
+              WordClock((AddressableLight *)light_output).set_time(id(sntp_time).now());
+
+              id(last_millis) = now;
             }
           }
   includes:
@@ -71,6 +75,10 @@ globals:
   - id: factory_reset_reboot_counter
     type: int
     initial_value: '5'
+
+  - id: last_millis
+    type: uint32_t
+    initial_value: '0'
 
 logger:
   baud_rate: 0
@@ -151,6 +159,10 @@ binary_sensor:
   - platform: status
     name: "Status"
 
+  - platform: template
+    name: "NTP time"
+    lambda: return id(sntp_time).now().is_valid();
+
 sensor:
   - platform: uptime
     name: 'Uptime'
@@ -174,6 +186,7 @@ light:
     pin: 10
     method:
       type: esp32_rmt
+    default_transition_length: 0s
     effects:
       - strobe:
           name: "Connecting"
@@ -221,6 +234,21 @@ text_sensor:
       name: "Wifi Info: MAC Address"
     dns_address:
       name: "Wifi Info: DNS Address"
+
+switch:
+  - platform: template
+    name: "Word Clock"
+    id: word_clock_switch
+    icon: mdi:light-switch
+    device_class: switch
+    restore_mode: ALWAYS_ON
+    optimistic: true
+    turn_on_action:
+      - lambda: |-
+          id(last_millis) = 0;
+    turn_off_action:
+      - lambda: |-
+          id(word_clock_light).turn_off().perform();
 
 time:
   - platform: sntp
