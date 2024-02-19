@@ -219,6 +219,7 @@ sensor:
 
   - platform: template
     name: "MH-Z19: Last zero calibration timestamp"
+    unit_of_measurement: "s"
     lambda: |-
       return id(mhz19_calibrate_zero_timestamp);
     update_interval: 1s
