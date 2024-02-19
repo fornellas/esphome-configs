@@ -219,6 +219,7 @@ sensor:
 
   - platform: template
     name: "MH-Z19: Last zero calibration unix timestamp"
+    entity_category: diagnostic
     unit_of_measurement: "s"
     lambda: |-
       time_t timestamp = id(mhz19_calibrate_zero_unix_timestamp);
@@ -229,6 +230,7 @@ sensor:
 
   - platform: template
     name: "MH-Z19: Last zero calibration time ago"
+    entity_category: diagnostic
     unit_of_measurement: "s"
     lambda: |-
       time_t timestamp = id(mhz19_calibrate_zero_unix_timestamp);
