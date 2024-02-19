@@ -60,7 +60,6 @@ globals:
 logger:
   baud_rate: 0
   level: INFO
-  # hardware_uart: UART0
   deassert_rts_dtr: true
 
 script:
@@ -126,12 +125,26 @@ esp32_camera:
   # resolution: 176x144 # (QCIF)
   # resolution: 240x176 # (HQVGA)
   # resolution: 320x240 # (QVGA)
-  # resolution: 400x296 # (CIF)
+  # resolution: 400x296 # (CIF) Sub-sampled
   # resolution: 640x480 # (VGA)
-  resolution: 800x600 # (SVGA)
+  resolution: 800x600 # (SVGA) Sub-sampled
   # resolution: 1024x768 # (XGA)
   # resolution: 1280x1024 # (SXGA)
-  # resolution: 1600x1200 # (UXGA)
+  # resolution: 1600x1200 # (UXGA) Native
+  on_stream_start:
+    then:
+      - if:
+          condition:
+            lambda: return id(flash_automatic).state;
+          then:
+            - switch.turn_on: flash
+  on_stream_stop:
+    then:
+      - if:
+          condition:
+            lambda: return id(flash_automatic).state;
+          then:
+            - switch.turn_off: flash
 
 esp32_camera_web_server:
   - port: 8080
@@ -228,6 +241,20 @@ switch:
       - lambda: |-
           id(esp32cam).set_aec2(false);
           id(esp32cam_update) = true;
+
+  - platform: template
+    name: "Flash automatic on stream"
+    id: flash_automatic
+    icon: mdi:flash
+    entity_category: config
+    restore_mode: RESTORE_DEFAULT_ON
+    optimistic: true
+
+  - platform: gpio
+    name: "Flash"
+    icon: mdi:flash
+    id: flash
+    pin: GPIO4
 
 select:
   # FIXME when reset after boot, yields panic some time after
