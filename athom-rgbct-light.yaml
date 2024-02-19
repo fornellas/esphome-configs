@@ -163,7 +163,7 @@ switch:
     id: rgbct_light_rgb_switch
     icon: mdi:palette
     restore_mode: RESTORE_DEFAULT_OFF
-    entity_category: config
+    entity_category: ""
     device_class: switch
     lambda: |-
       ColorMode color_mode = id(rgbct_light).current_values.get_color_mode();
@@ -185,7 +185,7 @@ number:
   - platform: template
     name: "Red"
     icon: mdi:palette
-    entity_category: config
+    entity_category: ""
     unit_of_measurement: "%"
     mode: slider
     min_value: 0
@@ -203,7 +203,7 @@ number:
   - platform: template
     name: "Green"
     icon: mdi:palette
-    entity_category: config
+    entity_category: ""
     unit_of_measurement: "%"
     mode: slider
     min_value: 0
@@ -221,7 +221,7 @@ number:
   - platform: template
     name: "Blue"
     icon: mdi:palette
-    entity_category: config
+    entity_category: ""
     unit_of_measurement: "%"
     mode: slider
     min_value: 0
@@ -239,7 +239,7 @@ number:
   - platform: template
     name: "Color Temperature"
     icon: mdi:temperature-celsius
-    entity_category: config
+    entity_category: ""
     unit_of_measurement: "K"
     mode: slider
     min_value: 2000
@@ -258,6 +258,7 @@ number:
   - platform: template
     name: "Brightness"
     icon: mdi:brightness-percent
+    entity_category: ""
     unit_of_measurement: "%"
     mode: slider
     min_value: 0

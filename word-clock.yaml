@@ -266,6 +266,7 @@ switch:
 
   - platform: template
     name: "Auto Brightness"
+    entity_category: config
     id: auto_brightness
     icon: mdi:auto-fix
     device_class: switch
@@ -288,6 +289,7 @@ number:
 
   - platform: template
     name: "Update interval"
+    entity_category: config
     id: update_ms
     unit_of_measurement: "ms"
     icon: mdi:speedometer

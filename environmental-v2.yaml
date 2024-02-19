@@ -394,6 +394,7 @@ button:
 
   - platform: template
     name: "MH19: Calibrate Zero"
+    entity_category: config
     on_press:
       then:
         - script.execute:  mhz19_calibrate_zero
@@ -423,6 +424,7 @@ text_sensor:
 switch:
   - platform: template
     name: "MH-Z19: ABC"
+    entity_category: config
     lambda: |-
       return id(mhz19_abc);
     turn_on_action:
@@ -439,6 +441,7 @@ switch:
 text:
   - platform: template
     name: "MH-Z19: Calibration Factor"
+    entity_category: config
     optimistic: true
     mode: text
     on_value:

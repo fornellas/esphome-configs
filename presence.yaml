@@ -351,6 +351,7 @@ select:
 text:
   - platform: template
     name: "Bluetooth password"
+    entity_category: config
     optimistic: true
     min_length: 6
     max_length: 6
