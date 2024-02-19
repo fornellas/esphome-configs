@@ -73,7 +73,7 @@ globals:
     type: int
     initial_value: '5'
 
-  - id: mhz19_calibrate_zero_timestamp
+  - id: mhz19_calibrate_zero_unix_timestamp
     type: time_t
     restore_value: yes
     initial_value: '0'
@@ -124,8 +124,8 @@ script:
       - lambda: |-
           auto time = id(sntp_time).utcnow();
           if(time.is_valid()) {
-            id(mhz19_calibrate_zero_timestamp) = time.timestamp;
-            mhz19_calibrate_zero_timestamp->loop();
+            id(mhz19_calibrate_zero_unix_timestamp) = time.timestamp;
+            mhz19_calibrate_zero_unix_timestamp->loop();
             global_preferences->sync();
             ESP_LOGD("MH-Z19", "Saved zero calibration timestamp");
           } else {
@@ -218,10 +218,26 @@ sensor:
           return id(mhz19_calibration_factor) * (x/100.0*1004.0-2.0)*5.0;
 
   - platform: template
-    name: "MH-Z19: Last zero calibration timestamp"
+    name: "MH-Z19: Last zero calibration unix timestamp"
     unit_of_measurement: "s"
     lambda: |-
-      return id(mhz19_calibrate_zero_timestamp);
+      time_t timestamp = id(mhz19_calibrate_zero_unix_timestamp);
+      if (timestamp == 0)
+        return NAN;
+      return timestamp;
+    update_interval: 1s
+
+  - platform: template
+    name: "MH-Z19: Last zero calibration time ago"
+    unit_of_measurement: "s"
+    lambda: |-
+      time_t timestamp = id(mhz19_calibrate_zero_unix_timestamp);
+      if (timestamp == 0)
+        return NAN;
+      esphome::ESPTime now = id(sntp_time).utcnow();
+      if(!now.is_valid())
+        return NAN;
+      return now.timestamp - timestamp;
     update_interval: 1s
 
   - platform: sht3xd
@@ -417,7 +433,7 @@ text_sensor:
     name: "MH-Z19: Last zero calibration"
     lambda: |-
       char buffer[32];
-      auto espTime = ESPTime::from_epoch_utc(id(mhz19_calibrate_zero_timestamp));
+      auto espTime = ESPTime::from_epoch_utc(id(mhz19_calibrate_zero_unix_timestamp));
       espTime.strftime(buffer, sizeof(buffer), "%a, %d %b %Y %H:%M:%S %z");
       return {buffer};
     update_interval: 1s
