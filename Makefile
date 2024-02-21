@@ -21,6 +21,11 @@ ifneq ($(.SHELLSTATUS),0)
   $(error cat .password failed: $(PASSWORD))
 endif
 
+ATHOM_MINI_SWITCH_DEVICES := $(shell cat .athom-mini-switch-devices)
+ifneq ($(.SHELLSTATUS),0)
+  $(error cat .athom-mini-switch-devices failed: $(ATHOM_MINI_SWITCH_DEVICES))
+endif
+
 ATHOM_RGBCT_LIGHT_DEVICES := $(shell cat .athom-rgbct-light-devices)
 ifneq ($(.SHELLSTATUS),0)
   $(error cat .athom-rgbct-light-devices failed: $(ATHOM_RGBCT_LIGHT_DEVICES))
@@ -74,6 +79,7 @@ endif
 
 all: \
 	template.bin \
+	athom-mini-switch.bin \
 	athom-rgbct-light.bin \
 	athom-smart-plug-v2.bin \
 	energy-monitor.bin \
@@ -97,6 +103,31 @@ template.bin: template.yaml
 template-clean:
 	rm -f template.bin.tmp template.bin
 clean: template-clean
+
+##
+## Athom Mini Switch
+##
+
+athom-mini-switch.bin: athom-mini-switch.yaml
+	$(ESPHOME) compile $<
+	cp .esphome/build/athom-mini-switch/.pioenvs/athom-mini-switch/firmware.bin $@.tmp
+	mv -f $@.tmp $@
+
+.PHONY: athom-mini-switch-upload
+athom-mini-switch-upload: athom-mini-switch.bin
+	@echo Uploading athom-mini-switch:
+	@for device in $(ATHOM_MINI_SWITCH_DEVICES) ; do echo -n "  athom-mini-switch-$${device}.$(DOMAIN)..." ; curl -f -X POST https://athom-mini-switch-$${device}.$(DOMAIN)/update -F upload=@athom-mini-switch.bin -u "$(USERNAME):$(PASSWORD)" ; done
+	@echo
+upload: athom-mini-switch-upload
+
+.PHONY: athom-mini-switch-upload-serial
+athom-mini-switch-upload-serial:
+	$(ESPHOME) compile athom-mini-switch.yaml
+	$(ESPHOME) upload --device $(SERIAL) athom-mini-switch.yaml
+
+athom-mini-switch-clean:
+	rm -f athom-mini-switch.bin.tmp athom-mini-switch.bin
+clean: athom-mini-switch-clean
 
 ##
 ## Athom RGBCT Light
