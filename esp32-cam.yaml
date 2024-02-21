@@ -118,7 +118,7 @@ esp32_camera:
   href_pin: GPIO23
   pixel_clock_pin: GPIO22
   power_down_pin: GPIO32
-  name: "ESP32 Cam"
+  name: "Camera"
   id: esp32cam
   max_framerate: "60 fps"
   # resolution: 160x120 # (QQVGA)
