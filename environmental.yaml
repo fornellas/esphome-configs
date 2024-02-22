@@ -297,6 +297,7 @@ sensor:
 
   - platform: template
     name: "AQI"
+    unit_of_measurement: "AQI"
     lambda: |-
       double aqi = -1;
 
