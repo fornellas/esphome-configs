@@ -406,7 +406,7 @@ switch:
       name: "Bluetooth"
 
   - platform: template
-    name: "Calibrate"
+    name: "Calibrate idle energy thresholds"
     id: ld2410_calibrate
     entity_category: config
     restore_mode: ALWAYS_OFF
