@@ -413,60 +413,6 @@ switch:
     turn_on_action:
       - then:
         - switch.turn_on: ld2410_engineering_mode
-        - number.set:
-            id: ld2410_g0_move_energy_threshold
-            value: 0
-        - number.set:
-            id: ld2410_g0_still_energy_threshold
-            value: 0
-        - number.set:
-            id: ld2410_g1_move_energy_threshold
-            value: 0
-        - number.set:
-            id: ld2410_g1_still_energy_threshold
-            value: 0
-        - number.set:
-            id: ld2410_g2_move_energy_threshold
-            value: 0
-        - number.set:
-            id: ld2410_g2_still_energy_threshold
-            value: 0
-        - number.set:
-            id: ld2410_g3_move_energy_threshold
-            value: 0
-        - number.set:
-            id: ld2410_g3_still_energy_threshold
-            value: 0
-        - number.set:
-            id: ld2410_g4_move_energy_threshold
-            value: 0
-        - number.set:
-            id: ld2410_g4_still_energy_threshold
-            value: 0
-        - number.set:
-            id: ld2410_g5_move_energy_threshold
-            value: 0
-        - number.set:
-            id: ld2410_g5_still_energy_threshold
-            value: 0
-        - number.set:
-            id: ld2410_g6_move_energy_threshold
-            value: 0
-        - number.set:
-            id: ld2410_g6_still_energy_threshold
-            value: 0
-        - number.set:
-            id: ld2410_g7_move_energy_threshold
-            value: 0
-        - number.set:
-            id: ld2410_g7_still_energy_threshold
-            value: 0
-        - number.set:
-            id: ld2410_g8_move_energy_threshold
-            value: 0
-        - number.set:
-            id: ld2410_g8_still_energy_threshold
-            value: 0
     turn_off_action:
       - then:
         - switch.turn_off: ld2410_engineering_mode
@@ -567,6 +513,64 @@ button:
     query_params:
       id: ld2410_query_params
       name: "Query params"
+
+  - platform: template
+    name: "Set all move/still energy thresholds to 0%"
+    on_press:
+      - number.set:
+          id: ld2410_g0_move_energy_threshold
+          value: 0
+      - number.set:
+          id: ld2410_g0_still_energy_threshold
+          value: 0
+      - number.set:
+          id: ld2410_g1_move_energy_threshold
+          value: 0
+      - number.set:
+          id: ld2410_g1_still_energy_threshold
+          value: 0
+      - number.set:
+          id: ld2410_g2_move_energy_threshold
+          value: 0
+      - number.set:
+          id: ld2410_g2_still_energy_threshold
+          value: 0
+      - number.set:
+          id: ld2410_g3_move_energy_threshold
+          value: 0
+      - number.set:
+          id: ld2410_g3_still_energy_threshold
+          value: 0
+      - number.set:
+          id: ld2410_g4_move_energy_threshold
+          value: 0
+      - number.set:
+          id: ld2410_g4_still_energy_threshold
+          value: 0
+      - number.set:
+          id: ld2410_g5_move_energy_threshold
+          value: 0
+      - number.set:
+          id: ld2410_g5_still_energy_threshold
+          value: 0
+      - number.set:
+          id: ld2410_g6_move_energy_threshold
+          value: 0
+      - number.set:
+          id: ld2410_g6_still_energy_threshold
+          value: 0
+      - number.set:
+          id: ld2410_g7_move_energy_threshold
+          value: 0
+      - number.set:
+          id: ld2410_g7_still_energy_threshold
+          value: 0
+      - number.set:
+          id: ld2410_g8_move_energy_threshold
+          value: 0
+      - number.set:
+          id: ld2410_g8_still_energy_threshold
+          value: 0
 
 text_sensor:
   - platform: wifi_info
