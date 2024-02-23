@@ -433,7 +433,7 @@ text_sensor:
       char buffer[32];
       auto espTime = ESPTime::from_epoch_utc(id(mhz19_calibrate_zero_unix_timestamp));
       if(!espTime.is_valid())
-        return "Never";
+        return {"Never"};
       espTime.strftime(buffer, sizeof(buffer), "%a, %d %b %Y %H:%M:%S %z");
       return {buffer};
     update_interval: 1s

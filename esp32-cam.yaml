@@ -104,6 +104,7 @@ api:
 ota:
   safe_mode: false
 
+# ESP32-CAM: OV2640
 esp32_camera:
   external_clock:
     pin:

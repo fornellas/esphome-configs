@@ -161,65 +161,191 @@ sensor:
       # Engineering Mode
       move_energy:
         name: "g0 move Energy"
+        on_value:
+          - lambda: |-
+              if (!id(ld2410_calibrate).state)
+                return;
+              auto call = id(ld2410_g0_move_energy_threshold).make_call();
+              call.set_value(0);
+              call.perform();
       # Engineering Mode
       still_energy:
         name: "g0 still energy"
+        on_value:
+        - lambda: |-
+            if (!id(ld2410_calibrate).state)
+              return;
+              auto call = id(ld2410_g0_still_energy_threshold).make_call();
+              call.set_value(0);
+              call.perform();
     g1:
       # Engineering Mode
       move_energy:
         name: "g1 move energy"
+        on_value:
+          - lambda: |-
+              if (!id(ld2410_calibrate).state)
+                return;
+              auto call = id(ld2410_g1_move_energy_threshold).make_call();
+              call.set_value(0);
+              call.perform();
       # Engineering Mode
       still_energy:
         name: "g1 still energy"
+        on_value:
+        - lambda: |-
+            if (!id(ld2410_calibrate).state)
+              return;
+              auto call = id(ld2410_g1_still_energy_threshold).make_call();
+              call.set_value(0);
+              call.perform();
     g2:
       # Engineering Mode
       move_energy:
         name: "g2 move energy"
+        on_value:
+          - lambda: |-
+              if (!id(ld2410_calibrate).state)
+                return;
+              auto call = id(ld2410_g2_move_energy_threshold).make_call();
+              call.set_value(0);
+              call.perform();
       # Engineering Mode
       still_energy:
         name: "g2 still energy"
+        on_value:
+        - lambda: |-
+            if (!id(ld2410_calibrate).state)
+              return;
+              auto call = id(ld2410_g2_still_energy_threshold).make_call();
+              call.set_value(0);
+              call.perform();
     g3:
       # Engineering Mode
       move_energy:
         name: "g3 move energy"
+        on_value:
+          - lambda: |-
+              if (!id(ld2410_calibrate).state)
+                return;
+              auto call = id(ld2410_g3_move_energy_threshold).make_call();
+              call.set_value(0);
+              call.perform();
       # Engineering Mode
       still_energy:
         name: "g3 still energy"
+        on_value:
+        - lambda: |-
+            if (!id(ld2410_calibrate).state)
+              return;
+              auto call = id(ld2410_g3_still_energy_threshold).make_call();
+              call.set_value(0);
+              call.perform();
     g4:
       # Engineering Mode
       move_energy:
         name: "g4 move energy"
+        on_value:
+          - lambda: |-
+              if (!id(ld2410_calibrate).state)
+                return;
+              auto call = id(ld2410_g4_move_energy_threshold).make_call();
+              call.set_value(0);
+              call.perform();
       # Engineering Mode
       still_energy:
         name: "g4 still energy"
+        on_value:
+        - lambda: |-
+            if (!id(ld2410_calibrate).state)
+              return;
+              auto call = id(ld2410_g4_still_energy_threshold).make_call();
+              call.set_value(0);
+              call.perform();
     g5:
       # Engineering Mode
       move_energy:
         name: "g5 move energy"
+        on_value:
+          - lambda: |-
+              if (!id(ld2410_calibrate).state)
+                return;
+              auto call = id(ld2410_g5_move_energy_threshold).make_call();
+              call.set_value(0);
+              call.perform();
       # Engineering Mode
       still_energy:
         name: "g5 still energy"
+        on_value:
+        - lambda: |-
+            if (!id(ld2410_calibrate).state)
+              return;
+              auto call = id(ld2410_g5_still_energy_threshold).make_call();
+              call.set_value(0);
+              call.perform();
     g6:
       # Engineering Mode
       move_energy:
         name: "g6 move energy"
+        on_value:
+          - lambda: |-
+              if (!id(ld2410_calibrate).state)
+                return;
+              auto call = id(ld2410_g6_move_energy_threshold).make_call();
+              call.set_value(0);
+              call.perform();
       # Engineering Mode
       still_energy:
         name: "g6 still energy"
+        on_value:
+        - lambda: |-
+            if (!id(ld2410_calibrate).state)
+              return;
+              auto call = id(ld2410_g6_still_energy_threshold).make_call();
+              call.set_value(0);
+              call.perform();
     g7:
       # Engineering Mode
       move_energy:
         name: "g7 move energy"
+        on_value:
+          - lambda: |-
+              if (!id(ld2410_calibrate).state)
+                return;
+              auto call = id(ld2410_g7_move_energy_threshold).make_call();
+              call.set_value(0);
+              call.perform();
       # Engineering Mode
       still_energy:
         name: "g7 still energy"
+        on_value:
+        - lambda: |-
+            if (!id(ld2410_calibrate).state)
+              return;
+              auto call = id(ld2410_g7_still_energy_threshold).make_call();
+              call.set_value(0);
+              call.perform();
     g8:
       # Engineering Mode
       move_energy:
         name: "g8 move energy"
+        on_value:
+          - lambda: |-
+              if (!id(ld2410_calibrate).state)
+                return;
+              auto call = id(ld2410_g8_move_energy_threshold).make_call();
+              call.set_value(0);
+              call.perform();
       # Engineering Mode
       still_energy:
         name: "g8 still energy"
+        on_value:
+        - lambda: |-
+            if (!id(ld2410_calibrate).state)
+              return;
+              auto call = id(ld2410_g8_still_energy_threshold).make_call();
+              call.set_value(0);
+              call.perform();
 
 output:
   - platform: slow_pwm
@@ -236,9 +362,79 @@ switch:
     engineering_mode:
       id: ld2410_engineering_mode
       name: "Engineering mode"
+      on_turn_off:
+        - then:
+          - switch.turn_off: ld2410_calibrate
     bluetooth:
       id: ld2410_bluetooth
       name: "Bluetooth"
+
+  - platform: template
+    name: "Calibrate"
+    id: ld2410_calibrate
+    entity_category: config
+    restore_mode: ALWAYS_OFF
+    turn_on_action:
+      - then:
+        - switch.turn_on: ld2410_engineering_mode
+        - number.set:
+            id: ld2410_g0_move_energy_threshold
+            value: 0
+        - number.set:
+            id: ld2410_g0_still_energy_threshold
+            value: 0
+        - number.set:
+            id: ld2410_g1_move_energy_threshold
+            value: 0
+        - number.set:
+            id: ld2410_g1_still_energy_threshold
+            value: 0
+        - number.set:
+            id: ld2410_g2_move_energy_threshold
+            value: 0
+        - number.set:
+            id: ld2410_g2_still_energy_threshold
+            value: 0
+        - number.set:
+            id: ld2410_g3_move_energy_threshold
+            value: 0
+        - number.set:
+            id: ld2410_g3_still_energy_threshold
+            value: 0
+        - number.set:
+            id: ld2410_g4_move_energy_threshold
+            value: 0
+        - number.set:
+            id: ld2410_g4_still_energy_threshold
+            value: 0
+        - number.set:
+            id: ld2410_g5_move_energy_threshold
+            value: 0
+        - number.set:
+            id: ld2410_g5_still_energy_threshold
+            value: 0
+        - number.set:
+            id: ld2410_g6_move_energy_threshold
+            value: 0
+        - number.set:
+            id: ld2410_g6_still_energy_threshold
+            value: 0
+        - number.set:
+            id: ld2410_g7_move_energy_threshold
+            value: 0
+        - number.set:
+            id: ld2410_g7_still_energy_threshold
+            value: 0
+        - number.set:
+            id: ld2410_g8_move_energy_threshold
+            value: 0
+        - number.set:
+            id: ld2410_g8_still_energy_threshold
+            value: 0
+    turn_off_action:
+      - then:
+        - switch.turn_off: ld2410_engineering_mode
+    optimistic: true
 
 number:
   - platform: ld2410
@@ -253,49 +449,67 @@ number:
       name: "Max still distance gate"
     g0:
       move_threshold:
-        name: "g0 move threshold"
+        name: "g0 move energy threshold"
+        id: ld2410_g0_move_energy_threshold
       still_threshold:
-        name: "g0 still threshold"
+        name: "g0 still energy threshold"
+        id: ld2410_g0_still_energy_threshold
     g1:
       move_threshold:
-        name: "g1 move threshold"
+        name: "g1 move energy threshold"
+        id: ld2410_g1_move_energy_threshold
       still_threshold:
-        name: "g1 still threshold"
+        name: "g1 still energy threshold"
+        id: ld2410_g1_still_energy_threshold
     g2:
       move_threshold:
-        name: "g2 move threshold"
+        name: "g2 move energy threshold"
+        id: ld2410_g2_move_energy_threshold
       still_threshold:
-        name: "g2 still threshold"
+        name: "g2 still energy threshold"
+        id: ld2410_g2_still_energy_threshold
     g3:
       move_threshold:
-        name: "g3 move threshold"
+        name: "g3 move energy threshold"
+        id: ld2410_g3_move_energy_threshold
       still_threshold:
-        name: "g3 still threshold"
+        name: "g3 still energy threshold"
+        id: ld2410_g3_still_energy_threshold
     g4:
       move_threshold:
-        name: "g4 move threshold"
+        name: "g4 move energy threshold"
+        id: ld2410_g4_move_energy_threshold
       still_threshold:
-        name: "g4 still threshold"
+        name: "g4 still energy threshold"
+        id: ld2410_g4_still_energy_threshold
     g5:
       move_threshold:
-        name: "g5 move threshold"
+        name: "g5 move energy threshold"
+        id: ld2410_g5_move_energy_threshold
       still_threshold:
-        name: "g5 still threshold"
+        name: "g5 still energy threshold"
+        id: ld2410_g5_still_energy_threshold
     g6:
       move_threshold:
-        name: "g6 move threshold"
+        name: "g6 move energy threshold"
+        id: ld2410_g6_move_energy_threshold
       still_threshold:
-        name: "g6 still threshold"
+        name: "g6 still energy threshold"
+        id: ld2410_g6_still_energy_threshold
     g7:
       move_threshold:
-        name: "g7 move threshold"
+        name: "g7 move energy threshold"
+        id: ld2410_g7_move_energy_threshold
       still_threshold:
-        name: "g7 still threshold"
+        name: "g7 still energy threshold"
+        id: ld2410_g7_still_energy_threshold
     g8:
       move_threshold:
-        name: "g8 move threshold"
+        name: "g8 move energy threshold"
+        id: ld2410_g8_move_energy_threshold
       still_threshold:
-        name: "g8 still threshold"
+        name: "g8 still energy threshold"
+        id: ld2410_g8_still_energy_threshold
 
 button:
   - platform: restart
