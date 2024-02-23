@@ -462,8 +462,8 @@ number:
     entity_category: config
     icon: mdi:palette
     mode: box
-    min_value: 0.96
-    max_value: 1.04
+    min_value: 0.825
+    max_value: 1.175
     step: 0.001
     optimistic: true
     restore_value: true
