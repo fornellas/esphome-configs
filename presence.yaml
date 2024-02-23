@@ -166,7 +166,7 @@ sensor:
               if (!id(ld2410_calibrate).state)
                 return;
               auto call = id(ld2410_g0_move_energy_threshold).make_call();
-              call.set_value(0);
+              call.set_value(x);
               call.perform();
       # Engineering Mode
       still_energy:
@@ -176,7 +176,7 @@ sensor:
             if (!id(ld2410_calibrate).state)
               return;
               auto call = id(ld2410_g0_still_energy_threshold).make_call();
-              call.set_value(0);
+              call.set_value(x);
               call.perform();
     g1:
       # Engineering Mode
@@ -187,7 +187,7 @@ sensor:
               if (!id(ld2410_calibrate).state)
                 return;
               auto call = id(ld2410_g1_move_energy_threshold).make_call();
-              call.set_value(0);
+              call.set_value(x);
               call.perform();
       # Engineering Mode
       still_energy:
@@ -197,7 +197,7 @@ sensor:
             if (!id(ld2410_calibrate).state)
               return;
               auto call = id(ld2410_g1_still_energy_threshold).make_call();
-              call.set_value(0);
+              call.set_value(x);
               call.perform();
     g2:
       # Engineering Mode
@@ -208,7 +208,7 @@ sensor:
               if (!id(ld2410_calibrate).state)
                 return;
               auto call = id(ld2410_g2_move_energy_threshold).make_call();
-              call.set_value(0);
+              call.set_value(x);
               call.perform();
       # Engineering Mode
       still_energy:
@@ -218,7 +218,7 @@ sensor:
             if (!id(ld2410_calibrate).state)
               return;
               auto call = id(ld2410_g2_still_energy_threshold).make_call();
-              call.set_value(0);
+              call.set_value(x);
               call.perform();
     g3:
       # Engineering Mode
@@ -229,7 +229,7 @@ sensor:
               if (!id(ld2410_calibrate).state)
                 return;
               auto call = id(ld2410_g3_move_energy_threshold).make_call();
-              call.set_value(0);
+              call.set_value(x);
               call.perform();
       # Engineering Mode
       still_energy:
@@ -239,7 +239,7 @@ sensor:
             if (!id(ld2410_calibrate).state)
               return;
               auto call = id(ld2410_g3_still_energy_threshold).make_call();
-              call.set_value(0);
+              call.set_value(x);
               call.perform();
     g4:
       # Engineering Mode
@@ -250,7 +250,7 @@ sensor:
               if (!id(ld2410_calibrate).state)
                 return;
               auto call = id(ld2410_g4_move_energy_threshold).make_call();
-              call.set_value(0);
+              call.set_value(x);
               call.perform();
       # Engineering Mode
       still_energy:
@@ -260,7 +260,7 @@ sensor:
             if (!id(ld2410_calibrate).state)
               return;
               auto call = id(ld2410_g4_still_energy_threshold).make_call();
-              call.set_value(0);
+              call.set_value(x);
               call.perform();
     g5:
       # Engineering Mode
@@ -271,7 +271,7 @@ sensor:
               if (!id(ld2410_calibrate).state)
                 return;
               auto call = id(ld2410_g5_move_energy_threshold).make_call();
-              call.set_value(0);
+              call.set_value(x);
               call.perform();
       # Engineering Mode
       still_energy:
@@ -281,7 +281,7 @@ sensor:
             if (!id(ld2410_calibrate).state)
               return;
               auto call = id(ld2410_g5_still_energy_threshold).make_call();
-              call.set_value(0);
+              call.set_value(x);
               call.perform();
     g6:
       # Engineering Mode
@@ -292,7 +292,7 @@ sensor:
               if (!id(ld2410_calibrate).state)
                 return;
               auto call = id(ld2410_g6_move_energy_threshold).make_call();
-              call.set_value(0);
+              call.set_value(x);
               call.perform();
       # Engineering Mode
       still_energy:
@@ -302,7 +302,7 @@ sensor:
             if (!id(ld2410_calibrate).state)
               return;
               auto call = id(ld2410_g6_still_energy_threshold).make_call();
-              call.set_value(0);
+              call.set_value(x);
               call.perform();
     g7:
       # Engineering Mode
@@ -313,7 +313,7 @@ sensor:
               if (!id(ld2410_calibrate).state)
                 return;
               auto call = id(ld2410_g7_move_energy_threshold).make_call();
-              call.set_value(0);
+              call.set_value(x);
               call.perform();
       # Engineering Mode
       still_energy:
@@ -323,7 +323,7 @@ sensor:
             if (!id(ld2410_calibrate).state)
               return;
               auto call = id(ld2410_g7_still_energy_threshold).make_call();
-              call.set_value(0);
+              call.set_value(x);
               call.perform();
     g8:
       # Engineering Mode
@@ -334,7 +334,7 @@ sensor:
               if (!id(ld2410_calibrate).state)
                 return;
               auto call = id(ld2410_g8_move_energy_threshold).make_call();
-              call.set_value(0);
+              call.set_value(x);
               call.perform();
       # Engineering Mode
       still_energy:
@@ -344,7 +344,7 @@ sensor:
             if (!id(ld2410_calibrate).state)
               return;
               auto call = id(ld2410_g8_still_energy_threshold).make_call();
-              call.set_value(0);
+              call.set_value(x);
               call.perform();
 
 output:
