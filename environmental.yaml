@@ -83,11 +83,6 @@ globals:
     restore_value: yes
     initial_value: 'false'
 
-  - id: mhz19_calibration_factor
-    type: double
-    restore_value: yes
-    initial_value: '1'
-
 logger:
   baud_rate: 0
   level: info
@@ -198,7 +193,7 @@ sensor:
       id: mhz19_sensor_co2
       name: "CO₂ (UART)"
       filters:
-        - lambda: return id(mhz19_calibration_factor) * x;
+        - lambda: return id(mhz19_calibration_factor).state * x;
     update_interval: 1s
     automatic_baseline_calibration: true
     warmup_time: "${mhz19_warmup}s"
@@ -217,7 +212,7 @@ sensor:
       - lambda: |-
           if(millis() < ${mhz19_warmup} * 1000)
             return NAN;
-          return id(mhz19_calibration_factor) * (x/100.0*1004.0-2.0)*5.0;
+          return id(mhz19_calibration_factor).state * (x/100.0*1004.0-2.0)*5.0;
 
   - platform: template
     name: "MH-Z19: Last zero calibration unix timestamp"
@@ -458,17 +453,19 @@ switch:
           id: mhz19_abc
           value: 'false'
 
-text:
+number:
   - platform: template
     name: "MH-Z19: Calibration Factor"
+    id: mhz19_calibration_factor
     entity_category: config
+    icon: mdi:palette
+    mode: box
+    min_value: 0.96
+    max_value: 1.04
+    step: 0.001
     optimistic: true
-    mode: text
-    on_value:
-      then:
-        - globals.set:
-            id: mhz19_calibration_factor
-            value: !lambda "return std::stod(x);"
+    restore_value: true
+    initial_value: 1
 
 time:
   - platform: sntp
