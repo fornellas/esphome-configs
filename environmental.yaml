@@ -193,7 +193,8 @@ sensor:
       id: mhz19_sensor_co2
       name: "CO₂ (UART)"
       filters:
-        - lambda: return id(mhz19_calibration_factor).state * x;
+        - lambda: |-
+            return id(mhz19_non_linearity_slope).state * x + id(mhz19_non_linearity_offset).state;
     update_interval: 1s
     automatic_baseline_calibration: true
     warmup_time: "${mhz19_warmup}s"
@@ -212,7 +213,8 @@ sensor:
       - lambda: |-
           if(millis() < ${mhz19_warmup} * 1000)
             return NAN;
-          return id(mhz19_calibration_factor).state * (x/100.0*1004.0-2.0)*5.0;
+          auto ppm = (x/100.0*1004.0-2.0)*5.0;
+          return id(mhz19_non_linearity_slope).state * ppm + id(mhz19_non_linearity_offset).state;
 
   - platform: template
     name: "MH-Z19: Last zero calibration unix timestamp"
@@ -457,14 +459,27 @@ switch:
 
 number:
   - platform: template
-    name: "MH-Z19: Calibration Factor"
-    id: mhz19_calibration_factor
+    name: "MH-Z19: Non linearity slope"
+    id: mhz19_non_linearity_slope
     entity_category: config
     icon: mdi:palette
     mode: box
-    min_value: 0.825
-    max_value: 1.175
-    step: 0.0001
+    min_value: 0
+    max_value: 1
+    step: 0.00001
+    optimistic: true
+    restore_value: true
+    initial_value: 0
+
+  - platform: template
+    name: "MH-Z19: Non linearity offset"
+    id: mhz19_non_linearity_offset
+    entity_category: config
+    icon: mdi:palette
+    mode: box
+    min_value: 0
+    max_value: 2
+    step: 0.00001
     optimistic: true
     restore_value: true
     initial_value: 1
