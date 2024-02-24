@@ -465,11 +465,11 @@ number:
     icon: mdi:palette
     mode: box
     min_value: 0
-    max_value: 1
+    max_value: 2
     step: 0.00001
     optimistic: true
     restore_value: true
-    initial_value: 0
+    initial_value: 1
 
   - platform: template
     name: "MH-Z19: Non linearity offset"
@@ -477,12 +477,12 @@ number:
     entity_category: config
     icon: mdi:palette
     mode: box
-    min_value: 0
-    max_value: 2
+    min_value: -410
+    max_value: 410
     step: 0.00001
     optimistic: true
     restore_value: true
-    initial_value: 1
+    initial_value: 0
 
 time:
   - platform: sntp
