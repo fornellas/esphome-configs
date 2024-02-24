@@ -464,7 +464,7 @@ number:
     mode: box
     min_value: 0.825
     max_value: 1.175
-    step: 0.001
+    step: 0.0001
     optimistic: true
     restore_value: true
     initial_value: 1
