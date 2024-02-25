@@ -516,6 +516,8 @@ button:
 
   - platform: template
     name: "Set all move/still energy thresholds to 0%"
+    entity_category: config
+    icon: mdi:numeric-0-box-multiple-outline
     on_press:
       - number.set:
           id: ld2410_g0_move_energy_threshold
