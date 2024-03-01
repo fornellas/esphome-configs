@@ -327,8 +327,8 @@ sensor:
     unit_of_measurement: "AQI"
     icon: "mdi:gauge"
     lambda: |-
-      // comp_gas = log(R_gas[ohm]) + 0.04 log(Ohm)/%rh * hum[%rh]
-      return log(id(bme680_gas_resistance).state) + 0.04 *  id(bme680_humidity).state;
+      auto comp_gas = log(id(bme680_gas_resistance).state) + 0.04 *  id(bme680_humidity).state;
+      return comp_gas / 50;
     update_interval: 1s
 
   - platform: pmsx003
