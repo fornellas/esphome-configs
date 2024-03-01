@@ -432,11 +432,11 @@ sensor:
     lambda: |-
       double aqi = -1;
 
-      if (id(mhz19_aqi).state != NAN)
+      if (id(mhz19_aqi).state != NAN && id(mhz19_aqi).state > aqi)
         aqi = id(mhz19_aqi).state;
-      if (id(bme680_aqi).state != NAN)
+      if (id(bme680_aqi).state != NAN && id(bme680_aqi).state > aqi)
         aqi = id(bme680_aqi).state;
-      if (id(pmsx003_aqi).state != NAN)
+      if (id(pmsx003_aqi).state != NAN && id(pmsx003_aqi).state > aqi)
         aqi = id(pmsx003_aqi).state;
 
       if(aqi >= 0.0)
