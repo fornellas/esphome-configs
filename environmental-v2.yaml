@@ -329,6 +329,7 @@ sensor:
     lambda: |-
       // comp_gas = log(R_gas[ohm]) + 0.04 log(Ohm)/%rh * hum[%rh]
       return log(id(bme680_gas_resistance).state) + 0.04 *  id(bme680_humidity).state;
+    update_interval: 1s
 
   - platform: pmsx003
     type: PMSX003
