@@ -275,13 +275,60 @@ sensor:
       return now.timestamp - timestamp;
     update_interval: 1s
 
-  - platform: sht3xd
+  - platform: template
+    name: "MH-Z19 AQI"
+    id: mhz19_aqi
+    unit_of_measurement: "AQI"
+    icon: "mdi:gauge"
+    lambda: |-
+      double aqi = -1;
+
+      double co2_ppm = id(mhz19_sensor_co2).state;
+      if(!std::isnan(co2_ppm)) {
+        double aqi_co2 = 0.0;
+        if(co2_ppm < 400.0)
+          aqi_co2 = co2_ppm / 400.0;
+        else if(co2_ppm < 1000.0)
+          aqi_co2 = 1.0 + (co2_ppm - 400.0) / 600.0;
+        else if(co2_ppm < 1500.0)
+          aqi_co2 = 2.0 + (co2_ppm - 1000.0) / 500.0;
+        else if(co2_ppm < 2000.0)
+          aqi_co2 = 3.0 + (co2_ppm - 1500.0) / 500.0;
+        else if(co2_ppm < 5000.0)
+          aqi_co2 = 4.0 + (co2_ppm - 2000.0) / 3000.0;
+        else
+          aqi_co2 = 6.0;
+        if(aqi_co2 > aqi)
+          aqi = aqi_co2;
+      }
+
+      if(aqi >= 0.0)
+        return aqi;
+      return NAN;
+    update_interval: 1s
+
+  - platform: bme680
     temperature:
       name: "Temperature"
+    pressure:
+      name: "Pressure"
     humidity:
       name: "Humidity"
-    address: 0x44
+      id: bme680_humidity
+    gas_resistance:
+      name: "BME680 Gas Resistance"
+      id: bme680_gas_resistance
+    iir_filter: 127x
     update_interval: 1s
+
+  - platform: template
+    name: "BME680 AQI"
+    id: bme680_aqi
+    unit_of_measurement: "AQI"
+    icon: "mdi:gauge"
+    lambda: |-
+      // comp_gas = log(R_gas[ohm]) + 0.04 log(Ohm)/%rh * hum[%rh]
+      return log(id(bme680_gas_resistance).state) + 0.04 *  id(bme680_humidity).state;
 
   - platform: pmsx003
     type: PMSX003
@@ -327,32 +374,13 @@ sensor:
     update_interval: 60s
 
   - platform: template
-    name: "AQI"
+    name: "PMSX003 AQI"
+    id: pmsx003_aqi
     unit_of_measurement: "AQI"
     lambda: |-
       double aqi = -1;
 
-      // mhz19
-      double co2_ppm = id(mhz19_sensor_co2).state;
-      if(!std::isnan(co2_ppm)) {
-        double aqi_co2 = 0.0;
-        if(co2_ppm < 400.0)
-          aqi_co2 = co2_ppm / 400.0;
-        else if(co2_ppm < 1000.0)
-          aqi_co2 = 1.0 + (co2_ppm - 400.0) / 600.0;
-        else if(co2_ppm < 1500.0)
-          aqi_co2 = 2.0 + (co2_ppm - 1000.0) / 500.0;
-        else if(co2_ppm < 2000.0)
-          aqi_co2 = 3.0 + (co2_ppm - 1500.0) / 500.0;
-        else if(co2_ppm < 5000.0)
-          aqi_co2 = 4.0 + (co2_ppm - 2000.0) / 3000.0;
-        else
-          aqi_co2 = 6.0;
-        if(aqi_co2 > aqi)
-          aqi = aqi_co2;
-      }
-
-      // pmsx003 pm25
+      // PM2.5
       double pm25 = id(pmsx003_pm25).state;
       if(!std::isnan(pm25)) {
         double aqi_pm25 = 0.0;
@@ -372,7 +400,7 @@ sensor:
           aqi = aqi_pm25;
       }
 
-      // pmsx003 pm10
+      // PM10
       double pm10 = id(pmsx003_pm10).state;
       if(!std::isnan(pm10)) {
         double aqi_pm10 = 0.0;
@@ -396,9 +424,29 @@ sensor:
         return aqi;
       return NAN;
     update_interval: 1s
+
+  - platform: template
+    name: "AQI"
+    unit_of_measurement: "AQI"
+    lambda: |-
+      double aqi = -1;
+
+      if (id(mhz19_aqi).state != NAN)
+        aqi = id(mhz19_aqi).state;
+      if (id(bme680_aqi).state != NAN)
+        aqi = id(bme680_aqi).state;
+      if (id(pmsx003_aqi).state != NAN)
+        aqi = id(pmsx003_aqi).state;
+
+      if(aqi >= 0.0)
+        return aqi;
+      return NAN;
+    update_interval: 1s
     on_value:
       then:
         - lambda: |-
+            if (x == NAN)
+              id(aqi_led).set_level(0);
             double level = (x - 1.0) / 5.0;
             id(aqi_led).set_level(level);
 
