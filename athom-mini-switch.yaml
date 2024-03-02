@@ -127,7 +127,7 @@ switch:
     icon: mdi:toggle-switch
     entity_category: ""
     device_class: outlet
-    restore_mode: RESTORE_DEFAULT_OFF
+    restore_mode: ALWAYS_ON
 
 sensor:
   - platform: uptime
