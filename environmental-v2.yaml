@@ -327,6 +327,7 @@ sensor:
       id: bme68x_bsec_iaq
     iaq_accuracy:
       name: "BME680 IAQ Accuracy"
+      id: bme680_iaq_accuracy
     co2_equivalent:
       name: "BME680 CO₂ Equivalent"
     breath_voc_equivalent:
@@ -338,6 +339,9 @@ sensor:
     unit_of_measurement: "AQI"
     icon: "mdi:gauge"
     lambda: |-
+      // Not calibrated
+      if (id(bme680_iaq_accuracy).state != 3)
+        return NAN;
       return id(bme68x_bsec_iaq).state / 50;
     update_interval: 1s
 
