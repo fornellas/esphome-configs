@@ -328,6 +328,7 @@ sensor:
     iaq_accuracy:
       name: "BME680 IAQ Accuracy"
       id: bme680_iaq_accuracy
+      entity_category: diagnostic
     co2_equivalent:
       name: "BME680 CO₂ Equivalent"
     breath_voc_equivalent:
@@ -542,6 +543,7 @@ text_sensor:
   - platform: bme68x_bsec
     iaq_accuracy:
       name: "BME680 IAQ Accuracy"
+      entity_category: diagnostic
 
 switch:
   - platform: template
