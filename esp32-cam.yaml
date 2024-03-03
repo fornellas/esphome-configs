@@ -51,7 +51,7 @@ globals:
 
   - id: factory_reset_reboot_counter
     type: int
-    initial_value: '5'
+    initial_value: '10'
 
   - id: esp32cam_update
     type: bool

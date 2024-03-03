@@ -41,7 +41,7 @@ globals:
 
   - id: factory_reset_reboot_counter
     type: int
-    initial_value: '5'
+    initial_value: '10'
 
 logger:
   baud_rate: 0

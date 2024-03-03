@@ -87,7 +87,7 @@ globals:
 
   - id: factory_reset_reboot_counter
     type: int
-    initial_value: '5'
+    initial_value: '10'
 
   - id: last_millis
     type: uint32_t
