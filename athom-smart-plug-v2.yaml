@@ -124,7 +124,6 @@ sensor:
     update_interval: 15s
 
   - platform: cse7766
-    update_interval: 1s
     current:
       name: "Current"
       icon: mdi:current-ac
