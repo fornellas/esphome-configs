@@ -165,10 +165,13 @@ sensor:
           - lambda: |-
               if (!id(ld2410_calibrate).state)
                 return;
-              if (x <= id(ld2410_g0_move_energy_threshold).state)
+              if (x < id(ld2410_g0_move_energy_threshold).state)
                 return;
               auto call = id(ld2410_g0_move_energy_threshold).make_call();
-              call.set_value(x);
+              auto new_x = x * (1.0 + double(id(ld2410_calibrate_margin).state) / 100.0);
+              if (new_x == x)
+                new_x = x + 1;
+              call.set_value(new_x);
               call.perform();
       # Engineering Mode
       still_energy:
@@ -177,10 +180,13 @@ sensor:
         - lambda: |-
             if (!id(ld2410_calibrate).state)
               return;
-            if (x <= id(ld2410_g0_still_energy_threshold).state)
+            if (x < id(ld2410_g0_still_energy_threshold).state)
               return;
             auto call = id(ld2410_g0_still_energy_threshold).make_call();
-            call.set_value(x);
+            auto new_x = x * (1.0 + double(id(ld2410_calibrate_margin).state) / 100.0);
+            if (new_x == x)
+              new_x = x + 1;
+            call.set_value(new_x);
             call.perform();
     g1:
       # Engineering Mode
@@ -190,10 +196,13 @@ sensor:
           - lambda: |-
               if (!id(ld2410_calibrate).state)
                 return;
-              if (x <= id(ld2410_g1_move_energy_threshold).state)
+              if (x < id(ld2410_g1_move_energy_threshold).state)
                 return;
               auto call = id(ld2410_g1_move_energy_threshold).make_call();
-              call.set_value(x);
+              auto new_x = x * (1.0 + double(id(ld2410_calibrate_margin).state) / 100.0);
+              if (new_x == x)
+                new_x = x + 1;
+              call.set_value(new_x);
               call.perform();
       # Engineering Mode
       still_energy:
@@ -202,10 +211,13 @@ sensor:
         - lambda: |-
             if (!id(ld2410_calibrate).state)
               return;
-            if (x <= id(ld2410_g1_still_energy_threshold).state)
+            if (x < id(ld2410_g1_still_energy_threshold).state)
               return;
             auto call = id(ld2410_g1_still_energy_threshold).make_call();
-            call.set_value(x);
+            auto new_x = x * (1.0 + double(id(ld2410_calibrate_margin).state) / 100.0);
+            if (new_x == x)
+              new_x = x + 1;
+            call.set_value(new_x);
             call.perform();
     g2:
       # Engineering Mode
@@ -215,10 +227,13 @@ sensor:
           - lambda: |-
               if (!id(ld2410_calibrate).state)
                 return;
-              if (x <= id(ld2410_g2_move_energy_threshold).state)
+              if (x < id(ld2410_g2_move_energy_threshold).state)
                 return;
               auto call = id(ld2410_g2_move_energy_threshold).make_call();
-              call.set_value(x);
+              auto new_x = x * (1.0 + double(id(ld2410_calibrate_margin).state) / 100.0);
+              if (new_x == x)
+                new_x = x + 1;
+              call.set_value(new_x);
               call.perform();
       # Engineering Mode
       still_energy:
@@ -227,10 +242,13 @@ sensor:
         - lambda: |-
             if (!id(ld2410_calibrate).state)
               return;
-            if (x <= id(ld2410_g2_still_energy_threshold).state)
+            if (x < id(ld2410_g2_still_energy_threshold).state)
               return;
             auto call = id(ld2410_g2_still_energy_threshold).make_call();
-            call.set_value(x);
+            auto new_x = x * (1.0 + double(id(ld2410_calibrate_margin).state) / 100.0);
+            if (new_x == x)
+              new_x = x + 1;
+            call.set_value(new_x);
             call.perform();
     g3:
       # Engineering Mode
@@ -240,10 +258,13 @@ sensor:
           - lambda: |-
               if (!id(ld2410_calibrate).state)
                 return;
-              if (x <= id(ld2410_g3_move_energy_threshold).state)
+              if (x < id(ld2410_g3_move_energy_threshold).state)
                 return;
               auto call = id(ld2410_g3_move_energy_threshold).make_call();
-              call.set_value(x);
+              auto new_x = x * (1.0 + double(id(ld2410_calibrate_margin).state) / 100.0);
+              if (new_x == x)
+                new_x = x + 1;
+              call.set_value(new_x);
               call.perform();
       # Engineering Mode
       still_energy:
@@ -252,10 +273,13 @@ sensor:
         - lambda: |-
             if (!id(ld2410_calibrate).state)
               return;
-            if (x <= id(ld2410_g3_still_energy_threshold).state)
+            if (x < id(ld2410_g3_still_energy_threshold).state)
               return;
             auto call = id(ld2410_g3_still_energy_threshold).make_call();
-            call.set_value(x);
+            auto new_x = x * (1.0 + double(id(ld2410_calibrate_margin).state) / 100.0);
+            if (new_x == x)
+              new_x = x + 1;
+            call.set_value(new_x);
             call.perform();
     g4:
       # Engineering Mode
@@ -265,10 +289,13 @@ sensor:
           - lambda: |-
               if (!id(ld2410_calibrate).state)
                 return;
-              if (x <= id(ld2410_g4_move_energy_threshold).state)
+              if (x < id(ld2410_g4_move_energy_threshold).state)
                 return;
               auto call = id(ld2410_g4_move_energy_threshold).make_call();
-              call.set_value(x);
+              auto new_x = x * (1.0 + double(id(ld2410_calibrate_margin).state) / 100.0);
+              if (new_x == x)
+                new_x = x + 1;
+              call.set_value(new_x);
               call.perform();
       # Engineering Mode
       still_energy:
@@ -277,10 +304,13 @@ sensor:
         - lambda: |-
             if (!id(ld2410_calibrate).state)
               return;
-            if (x <= id(ld2410_g4_still_energy_threshold).state)
+            if (x < id(ld2410_g4_still_energy_threshold).state)
               return;
             auto call = id(ld2410_g4_still_energy_threshold).make_call();
-            call.set_value(x);
+            auto new_x = x * (1.0 + double(id(ld2410_calibrate_margin).state) / 100.0);
+            if (new_x == x)
+              new_x = x + 1;
+            call.set_value(new_x);
             call.perform();
     g5:
       # Engineering Mode
@@ -290,10 +320,13 @@ sensor:
           - lambda: |-
               if (!id(ld2410_calibrate).state)
                 return;
-              if (x <= id(ld2410_g5_move_energy_threshold).state)
+              if (x < id(ld2410_g5_move_energy_threshold).state)
                 return;
               auto call = id(ld2410_g5_move_energy_threshold).make_call();
-              call.set_value(x);
+              auto new_x = x * (1.0 + double(id(ld2410_calibrate_margin).state) / 100.0);
+              if (new_x == x)
+                new_x = x + 1;
+              call.set_value(new_x);
               call.perform();
       # Engineering Mode
       still_energy:
@@ -302,10 +335,13 @@ sensor:
         - lambda: |-
             if (!id(ld2410_calibrate).state)
               return;
-            if (x <= id(ld2410_g5_still_energy_threshold).state)
+            if (x < id(ld2410_g5_still_energy_threshold).state)
               return;
             auto call = id(ld2410_g5_still_energy_threshold).make_call();
-            call.set_value(x);
+            auto new_x = x * (1.0 + double(id(ld2410_calibrate_margin).state) / 100.0);
+            if (new_x == x)
+              new_x = x + 1;
+            call.set_value(new_x);
             call.perform();
     g6:
       # Engineering Mode
@@ -315,10 +351,13 @@ sensor:
           - lambda: |-
               if (!id(ld2410_calibrate).state)
                 return;
-              if (x <= id(ld2410_g6_move_energy_threshold).state)
+              if (x < id(ld2410_g6_move_energy_threshold).state)
                 return;
               auto call = id(ld2410_g6_move_energy_threshold).make_call();
-              call.set_value(x);
+              auto new_x = x * (1.0 + double(id(ld2410_calibrate_margin).state) / 100.0);
+              if (new_x == x)
+                new_x = x + 1;
+              call.set_value(new_x);
               call.perform();
       # Engineering Mode
       still_energy:
@@ -327,10 +366,13 @@ sensor:
         - lambda: |-
             if (!id(ld2410_calibrate).state)
               return;
-            if (x <= id(ld2410_g6_still_energy_threshold).state)
+            if (x < id(ld2410_g6_still_energy_threshold).state)
               return;
             auto call = id(ld2410_g6_still_energy_threshold).make_call();
-            call.set_value(x);
+            auto new_x = x * (1.0 + double(id(ld2410_calibrate_margin).state) / 100.0);
+            if (new_x == x)
+              new_x = x + 1;
+            call.set_value(new_x);
             call.perform();
     g7:
       # Engineering Mode
@@ -340,10 +382,13 @@ sensor:
           - lambda: |-
               if (!id(ld2410_calibrate).state)
                 return;
-              if (x <= id(ld2410_g7_move_energy_threshold).state)
+              if (x < id(ld2410_g7_move_energy_threshold).state)
                 return;
               auto call = id(ld2410_g7_move_energy_threshold).make_call();
-              call.set_value(x);
+              auto new_x = x * (1.0 + double(id(ld2410_calibrate_margin).state) / 100.0);
+              if (new_x == x)
+                new_x = x + 1;
+              call.set_value(new_x);
               call.perform();
       # Engineering Mode
       still_energy:
@@ -352,10 +397,13 @@ sensor:
         - lambda: |-
             if (!id(ld2410_calibrate).state)
               return;
-            if (x <= id(ld2410_g7_still_energy_threshold).state)
+            if (x < id(ld2410_g7_still_energy_threshold).state)
               return;
             auto call = id(ld2410_g7_still_energy_threshold).make_call();
-            call.set_value(x);
+            auto new_x = x * (1.0 + double(id(ld2410_calibrate_margin).state) / 100.0);
+            if (new_x == x)
+              new_x = x + 1;
+            call.set_value(new_x);
             call.perform();
     g8:
       # Engineering Mode
@@ -365,10 +413,13 @@ sensor:
           - lambda: |-
               if (!id(ld2410_calibrate).state)
                 return;
-              if (x <= id(ld2410_g8_move_energy_threshold).state)
+              if (x < id(ld2410_g8_move_energy_threshold).state)
                 return;
               auto call = id(ld2410_g8_move_energy_threshold).make_call();
-              call.set_value(x);
+              auto new_x = x * (1.0 + double(id(ld2410_calibrate_margin).state) / 100.0);
+              if (new_x == x)
+                new_x = x + 1;
+              call.set_value(new_x);
               call.perform();
       # Engineering Mode
       still_energy:
@@ -377,10 +428,13 @@ sensor:
         - lambda: |-
             if (!id(ld2410_calibrate).state)
               return;
-            if (x <= id(ld2410_g8_still_energy_threshold).state)
+            if (x < id(ld2410_g8_still_energy_threshold).state)
               return;
             auto call = id(ld2410_g8_still_energy_threshold).make_call();
-            call.set_value(x);
+            auto new_x = x * (1.0 + double(id(ld2410_calibrate_margin).state) / 100.0);
+            if (new_x == x)
+              new_x = x + 1;
+            call.set_value(new_x);
             call.perform();
 
 output:
@@ -406,7 +460,7 @@ switch:
       name: "Bluetooth"
 
   - platform: template
-    name: "Calibrate idle energy thresholds"
+    name: "Calibrate no presence energy thresholds"
     id: ld2410_calibrate
     entity_category: config
     restore_mode: ALWAYS_OFF
@@ -492,6 +546,18 @@ number:
       still_threshold:
         name: "g8 still energy threshold"
         id: ld2410_g8_still_energy_threshold
+
+  - platform: template
+    name: "Calibrate no presence margin percent"
+    id: ld2410_calibrate_margin
+    unit_of_measurement: "%"
+    entity_category: config
+    optimistic: true
+    min_value: 0
+    max_value: 100
+    initial_value: 5
+    step: 1
+    restore_value: true
 
 button:
   - platform: restart
