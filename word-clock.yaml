@@ -253,6 +253,7 @@ text_sensor:
     name: "Time"
     lambda: |-
       auto time = id(sntp_time).now();
+
       if(!time.is_valid()) {
         return {"N/A"};
       }
@@ -327,3 +328,19 @@ time:
   - platform: sntp
     id: sntp_time
     timezone: Etc/UTC
+
+text:
+  - platform: template
+    name: "Timezone"
+    entity_category: config
+    optimistic: true
+    min_length: 0
+    max_length: 30
+    mode: text
+    initial_value: "Etc/UTC"
+    restore_value: true
+    on_value:
+      then:
+        - lambda: |-
+            id(sntp_time).set_timezone(x);
+            id(sntp_time).call_setup();
