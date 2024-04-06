@@ -249,6 +249,28 @@ text_sensor:
     dns_address:
       name: "Wifi Info: DNS Address"
 
+  - platform: template
+    name: "Time"
+    lambda: |-
+      auto time = id(sntp_time).now();
+      if(!time.is_valid()) {
+        return {"N/A"};
+      }
+
+      static char buffer[20];
+      sprintf(
+        buffer,
+        "%04d-%02d-%02d %02d:%02d:%02d",
+        time.year,
+        time.month,
+        time.day_of_month,
+        time.hour,
+        time.minute,
+        time.second
+      );
+      return std::string(buffer);
+    update_interval: 1s
+
 switch:
   - platform: template
     name: "Power"
