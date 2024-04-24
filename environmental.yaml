@@ -63,10 +63,6 @@ external_components:
     components: [ mhz19 ]
     refresh: 0s
 
-  - source: github://neffs/esphome@bsec2_bme68x
-    components: [ bme68x_bsec ]
-    refresh: 0s
-
 globals:
   - id: fast_reboot
     type: int
@@ -205,8 +201,6 @@ select:
           else if ("0-10000ppm" == x)
             id(mhz19_sensor).detection_range(esphome::mhz19::MHZ19_DETECTION_RANGE_0_10000PPM);
 
-bme68x_bsec:
-
 sensor:
   - platform: uptime
     name: 'Uptime'
@@ -316,39 +310,12 @@ sensor:
       return NAN;
     update_interval: 1s
 
-  - platform: bme68x_bsec
+  - platform: sht3xd
+    address: 0x44
     temperature:
-      name: "BME680 Temperature"
-    pressure:
-      name: "BME680 Pressure"
+      name: "Temperature"
     humidity:
-      name: "BME680 Humidity"
-    gas_resistance:
-      name: "BME680 Gas resistance"
-    iaq:
-      name: "BME680 IAQ"
-      id: bme68x_bsec_iaq
-    iaq_accuracy:
-      name: "BME680 IAQ Accuracy"
-      id: bme680_iaq_accuracy
-      entity_category: diagnostic
-    co2_equivalent:
-      name: "BME680 CO₂ Equivalent"
-      icon: "mdi:molecule-co2"
-    breath_voc_equivalent:
-      name: "BME680 Breath VOC Equivalent"
-      icon: mdi:molecule
-
-  - platform: template
-    name: "BME680 AQI"
-    id: bme680_aqi
-    unit_of_measurement: "AQI"
-    icon: "mdi:gauge"
-    lambda: |-
-      // Not calibrated
-      if (id(bme680_iaq_accuracy).state != 3)
-        return NAN;
-      return id(bme68x_bsec_iaq).state / 50;
+      name: "Humidity"
     update_interval: 1s
 
   - platform: pmsx003
@@ -456,8 +423,6 @@ sensor:
 
       if (id(mhz19_aqi).state != NAN && id(mhz19_aqi).state > aqi)
         aqi = id(mhz19_aqi).state;
-      if (id(bme680_aqi).state != NAN && id(bme680_aqi).state > aqi)
-        aqi = id(bme680_aqi).state;
       if (id(pmsx003_aqi).state != NAN && id(pmsx003_aqi).state > aqi)
         aqi = id(pmsx003_aqi).state;
 
@@ -546,11 +511,6 @@ text_sensor:
       espTime.strftime(buffer, sizeof(buffer), "%a, %d %b %Y %H:%M:%S %z");
       return {buffer};
     update_interval: 1s
-
-  - platform: bme68x_bsec
-    iaq_accuracy:
-      name: "BME680 IAQ Accuracy"
-      entity_category: diagnostic
 
 switch:
   - platform: template
