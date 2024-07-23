@@ -144,7 +144,7 @@ api:
   reboot_timeout: 0s
 
 ota:
-  safe_mode: false
+  platform: esphome
 
 uart:
   - id: uart_mhz19

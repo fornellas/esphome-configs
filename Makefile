@@ -3,7 +3,7 @@ ifneq ($(.SHELLSTATUS),0)
   $(error cat .serial failed: $(SERIAL))
 endif
 
-ESPHOME_VERSION = 2024.5.3
+ESPHOME_VERSION = 2024.7.1
 ESPHOME = docker run --rm --privileged --net=host --device=$(SERIAL) -v "${PWD}":/config -it ghcr.io/esphome/esphome:$(ESPHOME_VERSION)
 
 DOMAIN := $(shell cat .domain)
@@ -66,6 +66,11 @@ ifneq ($(.SHELLSTATUS),0)
   $(error cat .presence-devices failed: $(PRESENCE_DEVICES))
 endif
 
+ROLLER_BLINDS_DEVICES := $(shell cat .roller-blinds-devices-devices)
+ifneq ($(.SHELLSTATUS),0)
+  $(error cat .roller-blinds-devices failed: $(ROLLER_BLINDS_DEVICES))
+endif
+
 ULTRABRITE_SMART_WIFI_PLUG_DEVICES := $(shell cat .ultrabrite-smart-wp-devices)
 ifneq ($(.SHELLSTATUS),0)
   $(error cat .ultrabrite-smart-wp-devices failed: $(ULTRABRITE_SMART_WIFI_PLUG_DEVICES))
@@ -88,6 +93,7 @@ all: \
 	esp32-cam.bin \
 	powered.bin \
 	presence.bin \
+	roller-blinds.bin \
 	ultrabrite-smart-wp.uf2 \
 	word-clock.bin
 
@@ -328,6 +334,31 @@ presence-upload-serial:
 presence-clean:
 	rm -f presence.bin.tmp presence.bin
 clean: presence-clean
+
+##
+## Roller Blinds
+##
+
+roller-blinds.bin: roller-blinds.yaml
+	$(ESPHOME) compile $<
+	cp .esphome/build/roller-blinds/.pioenvs/roller-blinds/firmware.bin $@.tmp
+	mv -f $@.tmp $@
+
+.PHONY: roller-blinds-upload
+roller-blinds-upload: roller-blinds.bin
+	@echo Uploading roller-blinds:
+	@for device in $(ROLLER_BLINDS_DEVICES) ; do echo -n "  roller-blinds-$${device}.$(DOMAIN)..." ; curl -f -X POST https://roller-blinds-$${device}.$(DOMAIN)/update -F upload=@roller-blinds.bin -u "$(USERNAME):$(PASSWORD)" ; done
+	@echo
+upload: roller-blinds-upload
+
+.PHONY: roller-blinds-upload-serial
+roller-blinds-upload-serial:
+	$(ESPHOME) compile roller-blinds.yaml
+	$(ESPHOME) upload --device $(SERIAL) roller-blinds.yaml
+
+roller-blinds-clean:
+	rm -f roller-blinds.bin.tmp roller-blinds.bin
+clean: roller-blinds-clean
 
 ##
 ## Ultrabrite Plug

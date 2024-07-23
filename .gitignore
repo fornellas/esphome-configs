@@ -11,6 +11,8 @@
 /.password
 /.powered-devices
 /.presence-devices
+/.roller-blinds-devices-devices
+/.roller-blinds-devices-devices
 /.ultrabrite-smart-wp-devices
 /.username
 /.word-clock-devices
@@ -23,6 +25,7 @@
 /esp32-cam.bin
 /powered.bin
 /presence.bin
+/roller-blinds.bin
 /template.bin
 /ultrabrite-smart-wp.uf2
 /word-clock.bin

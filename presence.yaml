@@ -87,7 +87,7 @@ api:
   reboot_timeout: 0s
 
 ota:
-  safe_mode: false
+  platform: esphome
 
 uart:
   baud_rate: 256000

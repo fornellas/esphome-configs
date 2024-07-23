@@ -89,7 +89,7 @@ api:
   reboot_timeout: 0s
 
 ota:
-  safe_mode: false
+  platform: esphome
 
 #prometheus:
 
