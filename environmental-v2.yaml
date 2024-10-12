@@ -60,28 +60,28 @@ external_components:
       type: git
       url: https://github.com/fornellas/esphome
       ref: mhz19_patches
-    components: [ mhz19 ]
+    components: [mhz19]
     refresh: 0s
 
 globals:
   - id: fast_reboot
     type: int
     restore_value: yes
-    initial_value: '0'
+    initial_value: "0"
 
   - id: factory_reset_reboot_counter
     type: int
-    initial_value: '10'
+    initial_value: "10"
 
   - id: mhz19_calibrate_zero_unix_timestamp
     type: time_t
     restore_value: yes
-    initial_value: '0'
+    initial_value: "0"
 
   - id: mhz19_abc
     type: bool
     restore_value: yes
-    initial_value: 'false'
+    initial_value: "false"
 
 logger:
   baud_rate: 0
@@ -137,7 +137,7 @@ wifi:
   power_save_mode: none
 
 captive_portal:
-    
+
 web_server:
 
 api:
@@ -173,7 +173,7 @@ binary_sensor:
       mode: INPUT_PULLUP
     on_press:
       then:
-        - script.execute:  mhz19_calibrate_zero
+        - script.execute: mhz19_calibrate_zero
 
 select:
   - platform: template
@@ -191,17 +191,17 @@ select:
     restore_value: true
     on_value:
       then:
-      - lambda: |-
-          if ("0-2000ppm" == x)
-            id(mhz19_sensor).detection_range(esphome::mhz19::MHZ19_DETECTION_RANGE_0_2000PPM);
-          else if ("0-5000ppm" == x)
-            id(mhz19_sensor).detection_range(esphome::mhz19::MHZ19_DETECTION_RANGE_0_5000PPM);
-          else if ("0-10000ppm" == x)
-            id(mhz19_sensor).detection_range(esphome::mhz19::MHZ19_DETECTION_RANGE_0_10000PPM);
+        - lambda: |-
+            if ("0-2000ppm" == x)
+              id(mhz19_sensor).detection_range(esphome::mhz19::MHZ19_DETECTION_RANGE_0_2000PPM);
+            else if ("0-5000ppm" == x)
+              id(mhz19_sensor).detection_range(esphome::mhz19::MHZ19_DETECTION_RANGE_0_5000PPM);
+            else if ("0-10000ppm" == x)
+              id(mhz19_sensor).detection_range(esphome::mhz19::MHZ19_DETECTION_RANGE_0_10000PPM);
 
 sensor:
   - platform: uptime
-    name: 'Uptime'
+    name: "Uptime"
     update_interval: 15s
 
   - platform: wifi_signal
@@ -484,7 +484,7 @@ button:
     entity_category: config
     on_press:
       then:
-        - script.execute:  mhz19_calibrate_zero
+        - script.execute: mhz19_calibrate_zero
 
 text_sensor:
   - platform: wifi_info
@@ -522,12 +522,12 @@ switch:
       - mhz19.abc_enable: mhz19_sensor
       - globals.set:
           id: mhz19_abc
-          value: 'true'
+          value: "true"
     turn_off_action:
       - mhz19.abc_disable: mhz19_sensor
       - globals.set:
           id: mhz19_abc
-          value: 'false'
+          value: "false"
 
 number:
   - platform: template
@@ -538,7 +538,7 @@ number:
     mode: box
     min_value: 0
     max_value: 2
-    step: 0.00001
+    step: 0.0001
     optimistic: true
     restore_value: true
     initial_value: 1
@@ -551,7 +551,7 @@ number:
     mode: box
     min_value: -410
     max_value: 410
-    step: 0.00001
+    step: 1
     optimistic: true
     restore_value: true
     initial_value: 0
