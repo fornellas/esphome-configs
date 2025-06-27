@@ -3,7 +3,7 @@ ifneq ($(.SHELLSTATUS),0)
   $(error cat .serial failed: $(SERIAL))
 endif
 
-ESPHOME_VERSION = 2024.9.2
+ESPHOME_VERSION = 2025.6.1
 ESPHOME = docker run --rm --privileged --net=host --device=$(SERIAL) -v "${PWD}":/config -it ghcr.io/esphome/esphome:$(ESPHOME_VERSION)
 
 DOMAIN := $(shell cat .domain)
@@ -101,6 +101,7 @@ all: \
 ## Template
 ##
 
+.PHONY: template.bin
 template.bin: template.yaml
 	$(ESPHOME) compile $<
 	cp .esphome/build/template/.pioenvs/template/firmware.bin $@.tmp
@@ -114,6 +115,7 @@ clean: template-clean
 ## Athom Mini Switch
 ##
 
+.PHONY: athom-mini-switch.bin
 athom-mini-switch.bin: athom-mini-switch.yaml
 	$(ESPHOME) compile $<
 	cp .esphome/build/athom-mini-switch/.pioenvs/athom-mini-switch/firmware.bin $@.tmp
@@ -139,6 +141,7 @@ clean: athom-mini-switch-clean
 ## Athom RGBCT Light
 ##
 
+.PHONY: athom-rgbct-light.bin
 athom-rgbct-light.bin: athom-rgbct-light.yaml
 	$(ESPHOME) compile $<
 	cp .esphome/build/athom-rgbct-light/.pioenvs/athom-rgbct-light/firmware.bin $@.tmp
@@ -164,6 +167,7 @@ clean: athom-rgbct-light-clean
 ## Athom Smart Plug V2
 ##
 
+.PHONY: athom-smart-plug-v2.bin
 athom-smart-plug-v2.bin: athom-smart-plug-v2.yaml
 	$(ESPHOME) compile $<
 	cp .esphome/build/athom-smart-plug-v2/.pioenvs/athom-smart-plug-v2/firmware.bin $@.tmp
@@ -189,6 +193,7 @@ clean: athom-smart-plug-v2-clean
 ## Energy Monitor
 ##
 
+.PHONY: energy-monitor.bin
 energy-monitor.bin: energy-monitor.yaml
 	$(ESPHOME) compile $<
 	cp .esphome/build/energy-monitor/.pioenvs/energy-monitor/firmware.bin $@.tmp
@@ -214,6 +219,7 @@ clean: energy-monitor-clean
 ## Environmental
 ##
 
+.PHONY: environmental.bin
 environmental.bin: environmental.yaml
 	$(ESPHOME) compile $<
 	cp .esphome/build/environmental/.pioenvs/environmental/firmware.bin $@.tmp
@@ -239,6 +245,7 @@ clean: environmental-clean
 ## Environmental v2
 ##
 
+.PHONY: environmental-v2.bin
 environmental-v2.bin: environmental-v2.yaml
 	$(ESPHOME) compile $<
 	cp .esphome/build/environmental-v2/.pioenvs/environmental-v2/firmware.bin $@.tmp
@@ -264,6 +271,7 @@ clean: environmental-v2-clean
 ## ESP32 Cam
 ##
 
+.PHONY: esp32-cam.bin
 esp32-cam.bin: esp32-cam.yaml
 	$(ESPHOME) compile $<
 	cp .esphome/build/esp32-cam/.pioenvs/esp32-cam/firmware.bin $@.tmp
@@ -289,6 +297,7 @@ clean: esp32-cam-clean
 ## Powered
 ##
 
+.PHONY: powered.bin
 powered.bin: powered.yaml
 	$(ESPHOME) compile $<
 	cp .esphome/build/powered/.pioenvs/powered/firmware.bin $@.tmp
@@ -314,6 +323,7 @@ clean: powered-clean
 ## Presence
 ##
 
+.PHONY: presence.bin
 presence.bin: presence.yaml
 	$(ESPHOME) compile $<
 	cp .esphome/build/presence/.pioenvs/presence/firmware.bin $@.tmp
@@ -339,6 +349,7 @@ clean: presence-clean
 ## Roller Blinds
 ##
 
+.PHONY: roller-blinds.bin
 roller-blinds.bin: roller-blinds.yaml
 	$(ESPHOME) compile $<
 	cp .esphome/build/roller-blinds/.pioenvs/roller-blinds/firmware.bin $@.tmp
@@ -389,6 +400,7 @@ clean: ultrabrite-smart-wp-clean
 ## Word Clock
 ##
 
+.PHONY: word-clock.bin
 word-clock.bin: word-clock.yaml word-clock.cpp word-clock.h
 	$(ESPHOME) compile $<
 	cp .esphome/build/word-clock/.pioenvs/word-clock/firmware.bin $@.tmp
