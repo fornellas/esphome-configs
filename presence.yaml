@@ -32,16 +32,18 @@ esphome:
 
 esp32:
   board: esp32-c3-devkitm-1
+  framework:
+    type: esp-idf
 
 globals:
   - id: fast_reboot
     type: int
     restore_value: yes
-    initial_value: '0'
+    initial_value: "0"
 
   - id: factory_reset_reboot_counter
     type: int
-    initial_value: '10'
+    initial_value: "10"
 
 logger:
   baud_rate: 0
@@ -80,7 +82,7 @@ wifi:
   power_save_mode: none
 
 captive_portal:
-    
+
 web_server:
 
 api:
@@ -177,17 +179,17 @@ sensor:
       still_energy:
         name: "g0 still energy"
         on_value:
-        - lambda: |-
-            if (!id(ld2410_calibrate).state)
-              return;
-            if (x < id(ld2410_g0_still_energy_threshold).state)
-              return;
-            auto new_x = x * (1.0 + double(id(ld2410_calibrate_margin).state) / 100.0);
-            if (new_x == x)
-              new_x = x + 1;
-            auto call = id(ld2410_g0_still_energy_threshold).make_call();
-            call.set_value(std::round(new_x));
-            call.perform();
+          - lambda: |-
+              if (!id(ld2410_calibrate).state)
+                return;
+              if (x < id(ld2410_g0_still_energy_threshold).state)
+                return;
+              auto new_x = x * (1.0 + double(id(ld2410_calibrate_margin).state) / 100.0);
+              if (new_x == x)
+                new_x = x + 1;
+              auto call = id(ld2410_g0_still_energy_threshold).make_call();
+              call.set_value(std::round(new_x));
+              call.perform();
     g1:
       # Engineering Mode
       move_energy:
@@ -208,17 +210,17 @@ sensor:
       still_energy:
         name: "g1 still energy"
         on_value:
-        - lambda: |-
-            if (!id(ld2410_calibrate).state)
-              return;
-            if (x < id(ld2410_g1_still_energy_threshold).state)
-              return;
-            auto new_x = x * (1.0 + double(id(ld2410_calibrate_margin).state) / 100.0);
-            if (new_x == x)
-              new_x = x + 1;
-            auto call = id(ld2410_g1_still_energy_threshold).make_call();
-            call.set_value(std::round(new_x));
-            call.perform();
+          - lambda: |-
+              if (!id(ld2410_calibrate).state)
+                return;
+              if (x < id(ld2410_g1_still_energy_threshold).state)
+                return;
+              auto new_x = x * (1.0 + double(id(ld2410_calibrate_margin).state) / 100.0);
+              if (new_x == x)
+                new_x = x + 1;
+              auto call = id(ld2410_g1_still_energy_threshold).make_call();
+              call.set_value(std::round(new_x));
+              call.perform();
     g2:
       # Engineering Mode
       move_energy:
@@ -239,17 +241,17 @@ sensor:
       still_energy:
         name: "g2 still energy"
         on_value:
-        - lambda: |-
-            if (!id(ld2410_calibrate).state)
-              return;
-            if (x < id(ld2410_g2_still_energy_threshold).state)
-              return;
-            auto new_x = x * (1.0 + double(id(ld2410_calibrate_margin).state) / 100.0);
-            if (new_x == x)
-              new_x = x + 1;
-            auto call = id(ld2410_g2_still_energy_threshold).make_call();
-            call.set_value(std::round(new_x));
-            call.perform();
+          - lambda: |-
+              if (!id(ld2410_calibrate).state)
+                return;
+              if (x < id(ld2410_g2_still_energy_threshold).state)
+                return;
+              auto new_x = x * (1.0 + double(id(ld2410_calibrate_margin).state) / 100.0);
+              if (new_x == x)
+                new_x = x + 1;
+              auto call = id(ld2410_g2_still_energy_threshold).make_call();
+              call.set_value(std::round(new_x));
+              call.perform();
     g3:
       # Engineering Mode
       move_energy:
@@ -270,17 +272,17 @@ sensor:
       still_energy:
         name: "g3 still energy"
         on_value:
-        - lambda: |-
-            if (!id(ld2410_calibrate).state)
-              return;
-            if (x < id(ld2410_g3_still_energy_threshold).state)
-              return;
-            auto new_x = x * (1.0 + double(id(ld2410_calibrate_margin).state) / 100.0);
-            if (new_x == x)
-              new_x = x + 1;
-            auto call = id(ld2410_g3_still_energy_threshold).make_call();
-            call.set_value(std::round(new_x));
-            call.perform();
+          - lambda: |-
+              if (!id(ld2410_calibrate).state)
+                return;
+              if (x < id(ld2410_g3_still_energy_threshold).state)
+                return;
+              auto new_x = x * (1.0 + double(id(ld2410_calibrate_margin).state) / 100.0);
+              if (new_x == x)
+                new_x = x + 1;
+              auto call = id(ld2410_g3_still_energy_threshold).make_call();
+              call.set_value(std::round(new_x));
+              call.perform();
     g4:
       # Engineering Mode
       move_energy:
@@ -301,17 +303,17 @@ sensor:
       still_energy:
         name: "g4 still energy"
         on_value:
-        - lambda: |-
-            if (!id(ld2410_calibrate).state)
-              return;
-            if (x < id(ld2410_g4_still_energy_threshold).state)
-              return;
-            auto new_x = x * (1.0 + double(id(ld2410_calibrate_margin).state) / 100.0);
-            if (new_x == x)
-              new_x = x + 1;
-            auto call = id(ld2410_g4_still_energy_threshold).make_call();
-            call.set_value(std::round(new_x));
-            call.perform();
+          - lambda: |-
+              if (!id(ld2410_calibrate).state)
+                return;
+              if (x < id(ld2410_g4_still_energy_threshold).state)
+                return;
+              auto new_x = x * (1.0 + double(id(ld2410_calibrate_margin).state) / 100.0);
+              if (new_x == x)
+                new_x = x + 1;
+              auto call = id(ld2410_g4_still_energy_threshold).make_call();
+              call.set_value(std::round(new_x));
+              call.perform();
     g5:
       # Engineering Mode
       move_energy:
@@ -332,17 +334,17 @@ sensor:
       still_energy:
         name: "g5 still energy"
         on_value:
-        - lambda: |-
-            if (!id(ld2410_calibrate).state)
-              return;
-            if (x < id(ld2410_g5_still_energy_threshold).state)
-              return;
-            auto new_x = x * (1.0 + double(id(ld2410_calibrate_margin).state) / 100.0);
-            if (new_x == x)
-              new_x = x + 1;
-            auto call = id(ld2410_g5_still_energy_threshold).make_call();
-            call.set_value(std::round(new_x));
-            call.perform();
+          - lambda: |-
+              if (!id(ld2410_calibrate).state)
+                return;
+              if (x < id(ld2410_g5_still_energy_threshold).state)
+                return;
+              auto new_x = x * (1.0 + double(id(ld2410_calibrate_margin).state) / 100.0);
+              if (new_x == x)
+                new_x = x + 1;
+              auto call = id(ld2410_g5_still_energy_threshold).make_call();
+              call.set_value(std::round(new_x));
+              call.perform();
     g6:
       # Engineering Mode
       move_energy:
@@ -363,17 +365,17 @@ sensor:
       still_energy:
         name: "g6 still energy"
         on_value:
-        - lambda: |-
-            if (!id(ld2410_calibrate).state)
-              return;
-            if (x < id(ld2410_g6_still_energy_threshold).state)
-              return;
-            auto new_x = x * (1.0 + double(id(ld2410_calibrate_margin).state) / 100.0);
-            if (new_x == x)
-              new_x = x + 1;
-            auto call = id(ld2410_g6_still_energy_threshold).make_call();
-            call.set_value(std::round(new_x));
-            call.perform();
+          - lambda: |-
+              if (!id(ld2410_calibrate).state)
+                return;
+              if (x < id(ld2410_g6_still_energy_threshold).state)
+                return;
+              auto new_x = x * (1.0 + double(id(ld2410_calibrate_margin).state) / 100.0);
+              if (new_x == x)
+                new_x = x + 1;
+              auto call = id(ld2410_g6_still_energy_threshold).make_call();
+              call.set_value(std::round(new_x));
+              call.perform();
     g7:
       # Engineering Mode
       move_energy:
@@ -394,17 +396,17 @@ sensor:
       still_energy:
         name: "g7 still energy"
         on_value:
-        - lambda: |-
-            if (!id(ld2410_calibrate).state)
-              return;
-            if (x < id(ld2410_g7_still_energy_threshold).state)
-              return;
-            auto new_x = x * (1.0 + double(id(ld2410_calibrate_margin).state) / 100.0);
-            if (new_x == x)
-              new_x = x + 1;
-            auto call = id(ld2410_g7_still_energy_threshold).make_call();
-            call.set_value(std::round(new_x));
-            call.perform();
+          - lambda: |-
+              if (!id(ld2410_calibrate).state)
+                return;
+              if (x < id(ld2410_g7_still_energy_threshold).state)
+                return;
+              auto new_x = x * (1.0 + double(id(ld2410_calibrate_margin).state) / 100.0);
+              if (new_x == x)
+                new_x = x + 1;
+              auto call = id(ld2410_g7_still_energy_threshold).make_call();
+              call.set_value(std::round(new_x));
+              call.perform();
     g8:
       # Engineering Mode
       move_energy:
@@ -425,17 +427,17 @@ sensor:
       still_energy:
         name: "g8 still energy"
         on_value:
-        - lambda: |-
-            if (!id(ld2410_calibrate).state)
-              return;
-            if (x < id(ld2410_g8_still_energy_threshold).state)
-              return;
-            auto new_x = x * (1.0 + double(id(ld2410_calibrate_margin).state) / 100.0);
-            if (new_x == x)
-              new_x = x + 1;
-            auto call = id(ld2410_g8_still_energy_threshold).make_call();
-            call.set_value(std::round(new_x));
-            call.perform();
+          - lambda: |-
+              if (!id(ld2410_calibrate).state)
+                return;
+              if (x < id(ld2410_g8_still_energy_threshold).state)
+                return;
+              auto new_x = x * (1.0 + double(id(ld2410_calibrate_margin).state) / 100.0);
+              if (new_x == x)
+                new_x = x + 1;
+              auto call = id(ld2410_g8_still_energy_threshold).make_call();
+              call.set_value(std::round(new_x));
+              call.perform();
 
 output:
   - platform: slow_pwm
@@ -454,7 +456,7 @@ switch:
       name: "Engineering mode"
       on_turn_off:
         - then:
-          - switch.turn_off: ld2410_calibrate
+            - switch.turn_off: ld2410_calibrate
     bluetooth:
       id: ld2410_bluetooth
       name: "Bluetooth"
@@ -466,10 +468,10 @@ switch:
     restore_mode: ALWAYS_OFF
     turn_on_action:
       - then:
-        - switch.turn_on: ld2410_engineering_mode
+          - switch.turn_on: ld2410_engineering_mode
     turn_off_action:
       - then:
-        - switch.turn_off: ld2410_engineering_mode
+          - switch.turn_off: ld2410_engineering_mode
     optimistic: true
 
 number:
@@ -572,10 +574,10 @@ button:
 
   - platform: ld2410
     factory_reset:
-      name: "Factory reset"
+      name: "Factory reset LD2410"
     restart:
       id: ld2410_restart
-      name: "Restart"
+      name: "Restart LD2410"
     query_params:
       id: ld2410_query_params
       name: "Query params"

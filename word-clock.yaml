@@ -1,5 +1,3 @@
-# TODO
-# - Add text field to set timezone
 esphome:
   name: "word-clock"
   friendly_name: "Word Clock"
@@ -78,20 +76,22 @@ esphome:
 
 esp32:
   board: esp32-c3-devkitm-1
+  framework:
+    type: esp-idf
 
 globals:
   - id: fast_reboot
     type: int
     restore_value: yes
-    initial_value: '0'
+    initial_value: "0"
 
   - id: factory_reset_reboot_counter
     type: int
-    initial_value: '10'
+    initial_value: "10"
 
   - id: last_millis
     type: uint32_t
-    initial_value: '0'
+    initial_value: "0"
 
 logger:
   baud_rate: 0
@@ -154,7 +154,7 @@ wifi:
   power_save_mode: none
 
 captive_portal:
-    
+
 web_server:
 
 api:
@@ -178,7 +178,7 @@ binary_sensor:
 
 sensor:
   - platform: uptime
-    name: 'Uptime'
+    name: "Uptime"
     update_interval: 15s
 
   - platform: wifi_signal
@@ -192,14 +192,12 @@ sensor:
     update_interval: 1s
 
 light:
-  - platform: neopixelbus
+  - platform: esp32_rmt_led_strip
     id: word_clock_light
     num_leds: 76
-    type: GRB
-    variant: 800KBPS
+    rgb_order: GRB
+    chipset: WS2812
     pin: 10
-    method:
-      type: esp32_rmt
     default_transition_length: 0s
     effects:
       - strobe:
@@ -295,7 +293,6 @@ switch:
     device_class: switch
     restore_mode: RESTORE_DEFAULT_ON
     optimistic: true
-
 number:
   - platform: template
     name: "Brightness"
@@ -320,15 +317,14 @@ number:
     min_value: 20
     max_value: 600
     step: 1
-    initial_value: 450
+    initial_value: 200
     restore_value: true
     optimistic: true
 
 time:
   - platform: sntp
     id: sntp_time
-    timezone: Etc/UTC
-
+    timezone: UTC0
 text:
   - platform: template
     name: "Timezone"
@@ -337,10 +333,10 @@ text:
     min_length: 0
     max_length: 30
     mode: text
-    initial_value: "Etc/UTC"
+    # Europe/Dublin: IST-1GMT0,M10.5.0,M3.5.0/1
+    initial_value: "UTC0"
     restore_value: true
     on_value:
       then:
         - lambda: |-
             id(sntp_time).set_timezone(x);
-            id(sntp_time).call_setup();

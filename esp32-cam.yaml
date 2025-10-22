@@ -34,28 +34,30 @@ esphome:
 
 esp32:
   board: esp32cam
+  framework:
+    type: esp-idf
 
 external_components:
   - source:
       type: git
       url: https://github.com/fornellas/esphome
       ref: fix_esp32_camera_update
-    components: [ esp32_camera ]
+    components: [esp32_camera]
     refresh: 0s
 
 globals:
   - id: fast_reboot
     type: int
     restore_value: yes
-    initial_value: '0'
+    initial_value: "0"
 
   - id: factory_reset_reboot_counter
     type: int
-    initial_value: '10'
+    initial_value: "10"
 
   - id: esp32cam_update
     type: bool
-    initial_value: 'false'
+    initial_value: "false"
 
 logger:
   baud_rate: 0
@@ -159,7 +161,7 @@ binary_sensor:
 
 sensor:
   - platform: uptime
-    name: 'Uptime'
+    name: "Uptime"
     update_interval: 15s
 
   - platform: wifi_signal
@@ -319,22 +321,22 @@ select:
     restore_value: true
     on_value:
       then:
-      - lambda: |-
-          if ("none" == x)
-            id(esp32cam).set_special_effect(esphome::esp32_camera::ESP32_SPECIAL_EFFECT_NONE);
-          else if ("negative" == x)
-            id(esp32cam).set_special_effect(esphome::esp32_camera::ESP32_SPECIAL_EFFECT_NEGATIVE);
-          else if ("grayscale" == x)
-            id(esp32cam).set_special_effect(esphome::esp32_camera::ESP32_SPECIAL_EFFECT_GRAYSCALE);
-          else if ("red_tint" == x)
-            id(esp32cam).set_special_effect(esphome::esp32_camera::ESP32_SPECIAL_EFFECT_RED_TINT);
-          else if ("green_tint" == x)
-            id(esp32cam).set_special_effect(esphome::esp32_camera::ESP32_SPECIAL_EFFECT_GREEN_TINT);
-          else if ("blue_tint" == x)
-            id(esp32cam).set_special_effect(esphome::esp32_camera::ESP32_SPECIAL_EFFECT_BLUE_TINT);
-          else if ("sepia" == x)
-            id(esp32cam).set_special_effect(esphome::esp32_camera::ESP32_SPECIAL_EFFECT_SEPIA);
-          id(esp32cam_update) = true;
+        - lambda: |-
+            if ("none" == x)
+              id(esp32cam).set_special_effect(esphome::esp32_camera::ESP32_SPECIAL_EFFECT_NONE);
+            else if ("negative" == x)
+              id(esp32cam).set_special_effect(esphome::esp32_camera::ESP32_SPECIAL_EFFECT_NEGATIVE);
+            else if ("grayscale" == x)
+              id(esp32cam).set_special_effect(esphome::esp32_camera::ESP32_SPECIAL_EFFECT_GRAYSCALE);
+            else if ("red_tint" == x)
+              id(esp32cam).set_special_effect(esphome::esp32_camera::ESP32_SPECIAL_EFFECT_RED_TINT);
+            else if ("green_tint" == x)
+              id(esp32cam).set_special_effect(esphome::esp32_camera::ESP32_SPECIAL_EFFECT_GREEN_TINT);
+            else if ("blue_tint" == x)
+              id(esp32cam).set_special_effect(esphome::esp32_camera::ESP32_SPECIAL_EFFECT_BLUE_TINT);
+            else if ("sepia" == x)
+              id(esp32cam).set_special_effect(esphome::esp32_camera::ESP32_SPECIAL_EFFECT_SEPIA);
+            id(esp32cam_update) = true;
 
   - platform: template
     name: "Auto exposure compensation"
@@ -348,12 +350,12 @@ select:
     restore_value: true
     on_value:
       then:
-      - lambda: |-
-          if ("manual" == x)
-            id(esp32cam).set_aec_mode(esphome::esp32_camera::ESP32_GC_MODE_MANU);
-          else if ("auto" == x)
-            id(esp32cam).set_aec_mode(esphome::esp32_camera::ESP32_GC_MODE_AUTO);
-          id(esp32cam_update) = true;
+        - lambda: |-
+            if ("manual" == x)
+              id(esp32cam).set_aec_mode(esphome::esp32_camera::ESP32_GC_MODE_MANU);
+            else if ("auto" == x)
+              id(esp32cam).set_aec_mode(esphome::esp32_camera::ESP32_GC_MODE_AUTO);
+            id(esp32cam_update) = true;
 
   - platform: template
     name: "Auto gain control"
@@ -367,12 +369,12 @@ select:
     restore_value: true
     on_value:
       then:
-      - lambda: |-
-          if ("manual" == x)
-            id(esp32cam).set_agc_mode(esphome::esp32_camera::ESP32_GC_MODE_MANU);
-          else if ("auto" == x)
-            id(esp32cam).set_agc_mode(esphome::esp32_camera::ESP32_GC_MODE_AUTO);
-          id(esp32cam_update) = true;
+        - lambda: |-
+            if ("manual" == x)
+              id(esp32cam).set_agc_mode(esphome::esp32_camera::ESP32_GC_MODE_MANU);
+            else if ("auto" == x)
+              id(esp32cam).set_agc_mode(esphome::esp32_camera::ESP32_GC_MODE_AUTO);
+            id(esp32cam_update) = true;
 
   - platform: template
     name: "Auto gain control ceiling"
@@ -391,22 +393,22 @@ select:
     restore_value: true
     on_value:
       then:
-      - lambda: |-
-          if ("2x" == x)
-            id(esp32cam).set_agc_gain_ceiling(esphome::esp32_camera::ESP32_GAINCEILING_2X);
-          else if ("4x" == x)
-            id(esp32cam).set_agc_gain_ceiling(esphome::esp32_camera::ESP32_GAINCEILING_4X);
-          else if ("8x" == x)
-            id(esp32cam).set_agc_gain_ceiling(esphome::esp32_camera::ESP32_GAINCEILING_8X);
-          else if ("16x" == x)
-            id(esp32cam).set_agc_gain_ceiling(esphome::esp32_camera::ESP32_GAINCEILING_16X);
-          else if ("32x" == x)
-            id(esp32cam).set_agc_gain_ceiling(esphome::esp32_camera::ESP32_GAINCEILING_32X);
-          else if ("64x" == x)
-            id(esp32cam).set_agc_gain_ceiling(esphome::esp32_camera::ESP32_GAINCEILING_64X);
-          else if ("128x" == x)
-            id(esp32cam).set_agc_gain_ceiling(esphome::esp32_camera::ESP32_GAINCEILING_128X);
-          id(esp32cam_update) = true;
+        - lambda: |-
+            if ("2x" == x)
+              id(esp32cam).set_agc_gain_ceiling(esphome::esp32_camera::ESP32_GAINCEILING_2X);
+            else if ("4x" == x)
+              id(esp32cam).set_agc_gain_ceiling(esphome::esp32_camera::ESP32_GAINCEILING_4X);
+            else if ("8x" == x)
+              id(esp32cam).set_agc_gain_ceiling(esphome::esp32_camera::ESP32_GAINCEILING_8X);
+            else if ("16x" == x)
+              id(esp32cam).set_agc_gain_ceiling(esphome::esp32_camera::ESP32_GAINCEILING_16X);
+            else if ("32x" == x)
+              id(esp32cam).set_agc_gain_ceiling(esphome::esp32_camera::ESP32_GAINCEILING_32X);
+            else if ("64x" == x)
+              id(esp32cam).set_agc_gain_ceiling(esphome::esp32_camera::ESP32_GAINCEILING_64X);
+            else if ("128x" == x)
+              id(esp32cam).set_agc_gain_ceiling(esphome::esp32_camera::ESP32_GAINCEILING_128X);
+            id(esp32cam_update) = true;
 
   - platform: template
     name: "White balance mode"
@@ -423,18 +425,18 @@ select:
     restore_value: true
     on_value:
       then:
-      - lambda: |-
-          if ("auto" == x)
-            id(esp32cam).set_wb_mode(esphome::esp32_camera::ESP32_WB_MODE_AUTO);
-          else if ("sunny" == x)
-            id(esp32cam).set_wb_mode(esphome::esp32_camera::ESP32_WB_MODE_SUNNY);
-          else if ("cloudy" == x)
-            id(esp32cam).set_wb_mode(esphome::esp32_camera::ESP32_WB_MODE_CLOUDY);
-          else if ("office" == x)
-            id(esp32cam).set_wb_mode(esphome::esp32_camera::ESP32_WB_MODE_OFFICE);
-          else if ("home" == x)
-            id(esp32cam).set_wb_mode(esphome::esp32_camera::ESP32_WB_MODE_HOME);
-          id(esp32cam_update) = true;
+        - lambda: |-
+            if ("auto" == x)
+              id(esp32cam).set_wb_mode(esphome::esp32_camera::ESP32_WB_MODE_AUTO);
+            else if ("sunny" == x)
+              id(esp32cam).set_wb_mode(esphome::esp32_camera::ESP32_WB_MODE_SUNNY);
+            else if ("cloudy" == x)
+              id(esp32cam).set_wb_mode(esphome::esp32_camera::ESP32_WB_MODE_CLOUDY);
+            else if ("office" == x)
+              id(esp32cam).set_wb_mode(esphome::esp32_camera::ESP32_WB_MODE_OFFICE);
+            else if ("home" == x)
+              id(esp32cam).set_wb_mode(esphome::esp32_camera::ESP32_WB_MODE_HOME);
+            id(esp32cam_update) = true;
 
 number:
   - platform: template

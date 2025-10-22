@@ -30,16 +30,18 @@ esphome:
 
 esp32:
   board: esp32-c3-devkitm-1
+  framework:
+    type: esp-idf
 
 globals:
   - id: fast_reboot
     type: int
     restore_value: yes
-    initial_value: '0'
+    initial_value: "0"
 
   - id: factory_reset_reboot_counter
     type: int
-    initial_value: '10'
+    initial_value: "10"
 
 logger:
   baud_rate: 0
@@ -78,7 +80,7 @@ wifi:
   power_save_mode: none
 
 captive_portal:
-    
+
 web_server:
 
 api:
@@ -93,7 +95,7 @@ binary_sensor:
 
 sensor:
   - platform: uptime
-    name: 'Uptime'
+    name: "Uptime"
     update_interval: 15s
 
   - platform: wifi_signal

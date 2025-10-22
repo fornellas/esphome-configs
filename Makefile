@@ -3,7 +3,8 @@ ifneq ($(.SHELLSTATUS),0)
   $(error cat .serial failed: $(SERIAL))
 endif
 
-ESPHOME_VERSION = 2025.6.1
+ESPHOME_VERSION = 2025.10.2
+
 ESPHOME = docker run --rm --privileged --net=host --device=$(SERIAL) -v "${PWD}":/config -it ghcr.io/esphome/esphome:$(ESPHOME_VERSION)
 
 DOMAIN := $(shell cat .domain)
@@ -282,7 +283,7 @@ esp32-cam-upload: esp32-cam.bin
 	@echo Uploaing esp32-cam:
 	@for device in $(ESP32_CAM_DEVICES) ; do echo -n "  esp32-cam-$${device}.$(DOMAIN)..." ; curl -f -X POST https://esp32-cam-$${device}.$(DOMAIN)/update -F upload=@esp32-cam.bin -u "$(USERNAME):$(PASSWORD)" ; done
 	@echo
-upload: esp32-cam-upload
+# upload: esp32-cam-upload
 
 .PHONY: esp32-cam-upload-serial
 esp32-cam-upload-serial:
@@ -360,7 +361,7 @@ roller-blinds-upload: roller-blinds.bin
 	@echo Uploading roller-blinds:
 	@for device in $(ROLLER_BLINDS_DEVICES) ; do echo -n "  roller-blinds-$${device}.$(DOMAIN)..." ; curl -f -X POST https://roller-blinds-$${device}.$(DOMAIN)/update -F upload=@roller-blinds.bin -u "$(USERNAME):$(PASSWORD)" ; done
 	@echo
-upload: roller-blinds-upload
+#upload: roller-blinds-upload
 
 .PHONY: roller-blinds-upload-serial
 roller-blinds-upload-serial:
