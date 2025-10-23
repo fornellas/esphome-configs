@@ -5,28 +5,14 @@ esphome:
   on_boot:
     - priority: 600.0
       then:
-        - lambda: |-
-            // Default: Connecting
-            id(wifi_led_pwm).set_level(0.5);
-            id(wifi_led_pwm).set_period(1000);
-            id(wifi_led_pwm).turn_on();
         - script.execute: fast_reboot_factory_reset
+        - delay: 5s
+        - script.execute: fast_reboot_clear
+
   on_loop:
     then:
-      - lambda: |-
-          // Captive portal
-          if(id(wifi_component).has_ap() && !id(wifi_component).has_sta()) {
-            id(wifi_led_pwm).set_level(0.5);
-            id(wifi_led_pwm).set_period(200);
-          } else {
-            id(wifi_led_pwm).set_period(1000);
-            // Connected
-            if(id(wifi_component).is_connected())
-              id(wifi_led_pwm).set_level(1);
-            // Connecting
-            else
-              id(wifi_led_pwm).set_level(0.5);
-          }
+      - script.wait: fast_reboot_factory_reset
+      - script.execute: status_light_set
 
 esp32:
   board: esp32-c3-devkitm-1
@@ -48,6 +34,7 @@ globals:
     initial_value: "10"
 
 logger:
+  hardware_uart: UART0
   baud_rate: 0
   level: info
 
@@ -58,23 +45,119 @@ script:
           condition:
             lambda: return ( id(fast_reboot) >= id(factory_reset_reboot_counter) );
           then:
-            - lambda: |-
-                ESP_LOGI("Fast Boot Factory Reset", "Performing factotry reset");
-                id(fast_reboot) = 0;
-                fast_reboot->loop();
-                global_preferences->sync();
+            - logger.log:
+                format: "Performing factory reset"
+                level: WARN
+            - script.execute: status_light_factory_reset
+            - delay: 3s
             - button.press: factory_reset_button
+      - if:
+          condition:
+            lambda: return id(fast_reboot) > 0;
+          then:
+            - logger.log:
+                format: "Fast reboot %d/%d: do it %d more times to factory reset"
+                args:
+                  [
+                    "id(fast_reboot)",
+                    "id(factory_reset_reboot_counter)",
+                    "id(factory_reset_reboot_counter) - id(fast_reboot)",
+                  ]
+                level: WARN
+            - script.execute: status_light_factory_reset
+            - delay: 500ms
       - lambda: |-
-          if(id(fast_reboot) > 0)
-            ESP_LOGI("Fast Boot Factory Reset", "Quick reboot %d/%d, do it %d more times to factory reset", id(fast_reboot), id(factory_reset_reboot_counter), id(factory_reset_reboot_counter) - id(fast_reboot));
           id(fast_reboot) += 1;
           fast_reboot->loop();
           global_preferences->sync();
-      - delay: 10s
+      - script.execute: status_light_boot
+
+  - id: fast_reboot_clear
+    then:
       - lambda: |-
           id(fast_reboot) = 0;
           fast_reboot->loop();
           global_preferences->sync();
+      - logger.log: "Fast reboot flag cleared"
+
+  - id: status_light_boot
+    then:
+      - light.turn_on:
+          id: status_light
+          effect: "boot"
+
+  - id: status_light_connecting
+    then:
+      - light.turn_on:
+          id: status_light
+          effect: "connecting"
+
+  - id: status_light_captive_portal
+    then:
+      - light.turn_on:
+          id: status_light
+          effect: "captive_portal"
+
+  - id: status_light_connected
+    then:
+      - light.turn_off:
+          id: status_light
+      - light.turn_on:
+          id: status_light
+          brightness: 100%
+          red: 0%
+          green: 100%
+          blue: 0%
+
+  - id: status_light_factory_reset
+    then:
+      - light.turn_off:
+          id: status_light
+      - light.turn_on:
+          id: status_light
+          brightness: 100%
+          red: 100%
+          green: 0%
+          blue: 0%
+
+  - id: status_light_set
+    then:
+      lambda: |-
+        const uint8_t state_boot = 0;
+        const uint8_t state_connecting = 1;
+        const uint8_t state_captive_portal = 2;
+        const uint8_t state_connected = 3;
+
+        static uint8_t last_state = state_connecting;
+
+        uint8_t state;
+        if(id(wifi_component).has_ap() && !id(wifi_component).has_sta()) {
+            state = state_captive_portal;
+        } else {
+          if(id(wifi_component).is_connected()) {
+            state = state_connected;
+          } else {
+            state = state_connecting;
+          }
+        }
+
+        if (state != last_state) {
+          switch (state) {
+            case state_boot:
+              id(status_light_boot).execute();
+              break;
+            case state_connecting:
+              id(status_light_connecting).execute();
+              break;
+            case state_captive_portal:
+              id(status_light_captive_portal).execute();
+              break;
+            case state_connected:
+              id(status_light_connected).execute();
+              break;
+          }
+          last_state = state;
+        }
 
 wifi:
   id: wifi_component
@@ -111,6 +194,49 @@ sensor:
     name: "WiFi Signal"
     update_interval: 15s
 
+light:
+  - platform: esp32_rmt_led_strip
+    id: status_light
+    num_leds: 1
+    rgb_order: GRB
+    chipset: WS2812
+    pin: 8
+    default_transition_length: 0s
+    effects:
+      - strobe:
+          name: "boot"
+          colors:
+            - state: true
+              brightness: 100%
+              red: 100%
+              green: 100%
+              blue: 100%
+              duration: 250ms
+            - state: false
+              duration: 250ms
+      - strobe:
+          name: "connecting"
+          colors:
+            - state: true
+              brightness: 100%
+              red: 0%
+              green: 0%
+              blue: 100%
+              duration: 250ms
+            - state: false
+              duration: 250ms
+      - strobe:
+          name: "captive_portal"
+          colors:
+            - state: true
+              brightness: 100%
+              red: 100%
+              green: 100%
+              blue: 0%
+              duration: 250ms
+            - state: false
+              duration: 250ms
+
   # - platform: debug
   #   free:
   #     name: "Debug: Heap Free"
@@ -124,12 +250,6 @@ sensor:
   #   # esp32
   #   # psram:
   #   #   name: "Debug: Free PSRAM"
-
-output:
-  - platform: slow_pwm
-    id: wifi_led_pwm
-    period: 1s
-    pin: 5
 
 button:
   - platform: factory_reset
