@@ -189,6 +189,14 @@ modbus_controller:
     modbus_id: modbus_s88
     update_interval: 3s
     max_cmd_retries: 0
+    on_online:
+      - binary_sensor.template.publish:
+          id: offline
+          state: OFF
+    on_offline:
+      - binary_sensor.template.publish:
+          id: offline
+          state: ON
 
 #prometheus:
 
@@ -272,6 +280,10 @@ binary_sensor:
     register_type: read
     address: 0x02
     bitmask: 0x02
+
+  - platform: template
+    name: "Offline"
+    id: offline
 
 sensor:
   - platform: uptime
