@@ -99,6 +99,7 @@ wifi:
 captive_portal:
 
 web_server:
+  local: true
 
 api:
   reboot_timeout: 0s

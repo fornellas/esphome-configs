@@ -15,11 +15,11 @@ globals:
   - id: fast_reboot
     type: int
     restore_value: yes
-    initial_value: '0'
+    initial_value: "0"
 
   - id: factory_reset_reboot_counter
     type: int
-    initial_value: '10'
+    initial_value: "10"
 
 logger:
   baud_rate: 0
@@ -58,8 +58,9 @@ wifi:
   power_save_mode: none
 
 captive_portal:
-    
+
 web_server:
+  local: true
 
 api:
   reboot_timeout: 0s
@@ -154,7 +155,7 @@ switch:
         return false;
       }
     turn_on_action:
-     - light.turn_on: rgbct_light
+      - light.turn_on: rgbct_light
     turn_off_action:
       - light.turn_off: rgbct_light
 
