@@ -424,6 +424,32 @@ word-clock-clean:
 clean: word-clock-clean
 
 ##
+## S88 Test
+##
+
+.PHONY: s88-test.bin
+s88-test.bin: s88-test.yaml
+	$(ESPHOME) compile $<
+	cp .esphome/build/s88-test/.pioenvs/s88-test/firmware.bin $@.tmp
+	mv -f $@.tmp $@
+
+.PHONY: s88-test-upload
+s88-test-upload: s88-test.bin
+	@echo Uploaing s88-test:
+	@for device in $(WORD_CLOCK_DEVICES) ; do echo -n "  s88-test-$${device}.$(DOMAIN)..." ; curl -f -X POST https://s88-test-$${device}.$(DOMAIN)/update -F upload=@s88-test.bin -u "$(USERNAME):$(PASSWORD)" ; done
+	@echo
+upload: s88-test-upload
+
+.PHONY: s88-test-upload-serial
+s88-test-upload-serial:
+	$(ESPHOME) compile s88-test.yaml
+	$(ESPHOME) upload --device $(SERIAL) s88-test.yaml
+
+s88-test-clean:
+	rm -f s88-test.bin.tmp s88-test.bin
+clean: s88-test-clean
+
+##
 ## Upload
 #
 
