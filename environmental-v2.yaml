@@ -1,5 +1,6 @@
 substitutions:
-  mhz19_warmup: "75"
+  pmsx003_model: "PMS7003"
+  sht3xd_model: "SHT31"
 
 esphome:
   name: "environmental-v2"
@@ -8,62 +9,22 @@ esphome:
   on_boot:
     - priority: 600.0
       then:
-        - lambda: |-
-            // Default: Connecting
-            id(wifi_led_pwm).set_level(0.5);
-            id(wifi_led_pwm).set_period(1000);
-            id(wifi_led_pwm).turn_on();
         - script.execute: fast_reboot_factory_reset
+        - delay: 5s
+        - script.execute: fast_reboot_clear
     - priority: 800.0
       then:
-        - lambda: |-
-            // mhz19
-            if(id(mhz19_abc))
-              id(mhz19_sensor).abc_enable();
-            else
-              id(mhz19_sensor).abc_disable();
-            id(mhz19_hd).turn_on();
-
-            // pmsx003
-            id(pmsx003_reset).turn_off();
-            id(pmsx003_set).turn_off();
-            delay(20);
-            id(pmsx003_reset).turn_on();
-            id(pmsx003_set).turn_on();
-
-            // aqi_led
-            id(aqi_led).set_level(0.0);
-            id(aqi_led).turn_on();
+        - script.execute: pmsx003_reset_script
 
   on_loop:
     then:
-      - lambda: |-
-          // Captive portal
-          if(id(wifi_component).has_ap() && !id(wifi_component).has_sta()) {
-            id(wifi_led_pwm).set_level(0.5);
-            id(wifi_led_pwm).set_period(200);
-          } else {
-            id(wifi_led_pwm).set_period(1000);
-            // Connected
-            if(id(wifi_component).is_connected())
-              id(wifi_led_pwm).set_level(1);
-            // Connecting
-            else
-              id(wifi_led_pwm).set_level(0.5);
-          }
+      - script.wait: fast_reboot_factory_reset
+      - script.execute: status_light_set
 
 esp32:
   board: esp32-c3-devkitm-1
   framework:
     type: esp-idf
-
-external_components:
-  - source:
-      type: git
-      url: https://github.com/fornellas/esphome
-      ref: mhz19_patches
-    components: [mhz19]
-    refresh: 0s
 
 globals:
   - id: fast_reboot
@@ -74,16 +35,6 @@ globals:
   - id: factory_reset_reboot_counter
     type: int
     initial_value: "10"
-
-  - id: mhz19_calibrate_zero_unix_timestamp
-    type: time_t
-    restore_value: yes
-    initial_value: "0"
-
-  - id: mhz19_abc
-    type: bool
-    restore_value: yes
-    initial_value: "false"
 
 logger:
   baud_rate: 0
@@ -96,40 +47,128 @@ script:
           condition:
             lambda: return ( id(fast_reboot) >= id(factory_reset_reboot_counter) );
           then:
-            - lambda: |-
-                ESP_LOGI("Fast Boot Factory Reset", "Performing factotry reset");
-                id(fast_reboot) = 0;
-                fast_reboot->loop();
-                global_preferences->sync();
+            - logger.log:
+                format: "Performing factory reset"
+                level: WARN
+            - script.execute: status_light_factory_reset
+            - delay: 3s
             - button.press: factory_reset_button
+      - if:
+          condition:
+            lambda: return id(fast_reboot) > 0;
+          then:
+            - logger.log:
+                format: "Fast reboot %d/%d: do it %d more times to factory reset"
+                args:
+                  [
+                    "id(fast_reboot)",
+                    "id(factory_reset_reboot_counter)",
+                    "id(factory_reset_reboot_counter) - id(fast_reboot)",
+                  ]
+                level: WARN
+            - script.execute: status_light_factory_reset
+            - delay: 500ms
       - lambda: |-
-          if(id(fast_reboot) > 0)
-            ESP_LOGI("Fast Boot Factory Reset", "Quick reboot %d/%d, do it %d more times to factory reset", id(fast_reboot), id(factory_reset_reboot_counter), id(factory_reset_reboot_counter) - id(fast_reboot));
           id(fast_reboot) += 1;
           fast_reboot->loop();
           global_preferences->sync();
-      - delay: 10s
+      - script.execute: status_light_boot
+
+  - id: fast_reboot_clear
+    then:
       - lambda: |-
           id(fast_reboot) = 0;
           fast_reboot->loop();
           global_preferences->sync();
+      - logger.log: "Fast reboot flag cleared"
 
-  - id: mhz19_calibrate_zero
+  - id: status_light_boot
     then:
-      - output.turn_on: mhz19_calibration_led
-      - mhz19.calibrate_zero: mhz19_sensor
-      - lambda: |-
-          auto time = id(sntp_time).utcnow();
-          if(time.is_valid()) {
-            id(mhz19_calibrate_zero_unix_timestamp) = time.timestamp;
-            mhz19_calibrate_zero_unix_timestamp->loop();
-            global_preferences->sync();
-            ESP_LOGD("MH-Z19", "Saved zero calibration timestamp");
+      - light.turn_on:
+          id: blue_led_light
+          effect: "slow_strobe"
+      - light.turn_off: yellow_led_light
+      - light.turn_off: white_led_light
+
+  - id: status_light_connecting
+    then:
+      - light.turn_on:
+          id: blue_led_light
+          effect: "slow_strobe"
+      - light.turn_off: yellow_led_light
+      - light.turn_off: white_led_light
+
+  - id: status_light_captive_portal
+    then:
+      - light.turn_on:
+          id: blue_led_light
+          effect: "fast_strobe"
+      - light.turn_off: yellow_led_light
+      - light.turn_off: white_led_light
+
+  - id: status_light_connected
+    then:
+      - light.turn_off: blue_led_light
+      - light.turn_on: blue_led_light
+      - light.turn_off: yellow_led_light
+      - light.turn_off: white_led_light
+
+  - id: status_light_factory_reset
+    then:
+      - light.turn_off: blue_led_light
+      - light.turn_on: blue_led_light
+      - light.turn_off: yellow_led_light
+      - light.turn_on: yellow_led_light
+      - light.turn_off: white_led_light
+      - light.turn_on: white_led_light
+
+  - id: status_light_set
+    then:
+      lambda: |-
+        const uint8_t state_boot = 0;
+        const uint8_t state_connecting = 1;
+        const uint8_t state_captive_portal = 2;
+        const uint8_t state_connected = 3;
+
+        static uint8_t last_state = state_connecting;
+
+        uint8_t state;
+        if(id(wifi_component).has_ap() && !id(wifi_component).has_sta()) {
+            state = state_captive_portal;
+        } else {
+          if(id(wifi_component).is_connected()) {
+            state = state_connected;
           } else {
-            ESP_LOGW("MH-Z19", "Time unavailable, can't save zero calibration timestamp");
+            state = state_connecting;
           }
-      - delay: 2s
-      - output.turn_off: mhz19_calibration_led
+        }
+
+        if (state != last_state) {
+          switch (state) {
+            case state_boot:
+              id(status_light_boot).execute();
+              break;
+            case state_connecting:
+              id(status_light_connecting).execute();
+              break;
+            case state_captive_portal:
+              id(status_light_captive_portal).execute();
+              break;
+            case state_connected:
+              id(status_light_connected).execute();
+              break;
+          }
+          last_state = state;
+        }
+
+  - id: pmsx003_reset_script
+    then:
+      lambda: |-
+        id(pmsx003_reset).turn_off();
+        id(pmsx003_set).turn_off();
+        delay(20);
+        id(pmsx003_reset).turn_on();
+        id(pmsx003_set).turn_on();
 
 wifi:
   id: wifi_component
@@ -150,15 +189,34 @@ ota:
   platform: esphome
 
 uart:
-  - id: uart_mhz19
-    rx_pin: 5
-    tx_pin: 6
-    baud_rate: 9600
-
   - id: uart_pmsx003
     rx_pin: 3
     tx_pin: 19
     baud_rate: 9600
+
+  - id: uart_s88
+    rx_pin: 5
+    tx_pin: 6
+    baud_rate: 9600
+
+modbus:
+  id: modbus_s88
+  uart_id: uart_s88
+
+modbus_controller:
+  - id: s88_modbus_controller
+    address: 0xFE
+    modbus_id: modbus_s88
+    update_interval: 3s
+    max_cmd_retries: 0
+    on_online:
+      - binary_sensor.template.publish:
+          id: s88_offline
+          state: OFF
+    on_offline:
+      - binary_sensor.template.publish:
+          id: s88_offline
+          state: ON
 
 i2c:
   sda: 1
@@ -169,38 +227,83 @@ binary_sensor:
   - platform: status
     name: "Status"
 
-  - platform: gpio
-    id: mhz19_sensor_calibrate_zero
-    pin:
-      number: 10
-      mode: INPUT_PULLUP
-    on_press:
-      then:
-        - script.execute: mhz19_calibrate_zero
+  # MeterStatus: Fatal error (IR1/DI1)
+  - platform: modbus_controller
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Status: Fatal error"
+    register_type: read
+    address: 0x00
+    bitmask: 0x01 # 1
 
-select:
+  # MeterStatus: Algorithm Error (IR1/DI3)
+  - platform: modbus_controller
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Status: Algorithm Error"
+    register_type: read
+    address: 0x00
+    bitmask: 0x04 # 3
+
+  # MeterStatus: Output Error (IR1/DI4)
+  - platform: modbus_controller
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Status: Output Error"
+    register_type: read
+    address: 0x00
+    bitmask: 0x08 # 4
+
+  # MeterStatus: Self diagnostics error (IR1/DI5)
+  - platform: modbus_controller
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Status: Self diagnostics error"
+    register_type: read
+    address: 0x00
+    bitmask: 0x10 # 5
+
+  # MeterStatus: Out Of Range (IR1/DI6)
+  - platform: modbus_controller
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Status: Out Of Range"
+    register_type: read
+    address: 0x00
+    bitmask: 0x20 # 6
+
+  # MeterStatus: Memory error (IR1/DI7)
+  - platform: modbus_controller
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Status: Memory error"
+    register_type: read
+    address: 0x00
+    bitmask: 0x40 # 7
+
+  # MeterStatus: Warm Up (IR1/DI8)
+  - platform: modbus_controller
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Status: Warm Up"
+    register_type: read
+    address: 0x00
+    bitmask: 0x80 # 8
+
+  # Alarm Output satus (IR3/DI33)
+  # - platform: modbus_controller
+  #   modbus_controller_id: s88_modbus_controller
+  #   name: "S88: Alarm: Status"
+  #   register_type: read
+  #   address: 0x02
+  #   bitmask: 0x01
+  #   filters:
+  #     - invert:
+
+  # PWM Output status (IR3/DI34)
+  # - platform: modbus_controller
+  #   modbus_controller_id: s88_modbus_controller
+  #   name: "S88: PWM: Full Output"
+  #   register_type: read
+  #   address: 0x02
+  #   bitmask: 0x02
+
   - platform: template
-    name: "MH-Z19: Detection range"
-    id: mhz19_detection_range
-    icon: mdi:dots-horizontal
-    entity_category: config
-    optimistic: true
-    options:
-      - "Default"
-      - "0-2000ppm"
-      - "0-5000ppm"
-      - "0-10000ppm"
-    initial_option: "Default"
-    restore_value: true
-    on_value:
-      then:
-        - lambda: |-
-            if ("0-2000ppm" == x)
-              id(mhz19_sensor).detection_range(esphome::mhz19::MHZ19_DETECTION_RANGE_0_2000PPM);
-            else if ("0-5000ppm" == x)
-              id(mhz19_sensor).detection_range(esphome::mhz19::MHZ19_DETECTION_RANGE_0_5000PPM);
-            else if ("0-10000ppm" == x)
-              id(mhz19_sensor).detection_range(esphome::mhz19::MHZ19_DETECTION_RANGE_0_10000PPM);
+    name: "S88: Offline"
+    id: s88_offline
 
 sensor:
   - platform: uptime
@@ -211,159 +314,59 @@ sensor:
     name: "WiFi Signal"
     update_interval: 15s
 
-  - platform: mhz19
-    id: mhz19_sensor
-    uart_id: uart_mhz19
-    co2:
-      id: mhz19_sensor_co2
-      name: "CO₂ (UART)"
-      filters:
-        - lambda: |-
-            return id(mhz19_non_linearity_slope).state * x + id(mhz19_non_linearity_offset).state;
-    update_interval: 1s
-    automatic_baseline_calibration: true
-    warmup_time: "${mhz19_warmup}s"
-
-  - platform: duty_cycle
-    name: "CO₂ (PWM)"
-    unit_of_measurement: "ppm"
-    icon: "mdi:molecule-co2"
-    accuracy_decimals: 0
-    pin:
-      number: 7
-      mode:
-        input: true
-    update_interval: 1s
-    filters:
-      - lambda: |-
-          if(millis() < ${mhz19_warmup} * 1000)
-            return NAN;
-
-          if (id(mhz19_detection_range).state == "Default")
-            return NAN;
-          double mul;
-          if (id(mhz19_detection_range).state == "0-2000ppm")
-            mul = 2.0;
-          else if (id(mhz19_detection_range).state == "0-5000ppm")
-            mul = 5.0;
-          else if (id(mhz19_detection_range).state == "0-10000ppm")
-            mul = 10.0;
-
-          auto ppm = (x/100.0*1004.0-2.0)*mul;
-
-          return id(mhz19_non_linearity_slope).state * ppm + id(mhz19_non_linearity_offset).state;
-
-  - platform: template
-    name: "MH-Z19: Last zero calibration unix timestamp"
-    icon: "mdi:calendar"
-    entity_category: diagnostic
-    unit_of_measurement: "s"
-    lambda: |-
-      time_t timestamp = id(mhz19_calibrate_zero_unix_timestamp);
-      if (timestamp == 0)
-        return NAN;
-      return timestamp;
-    update_interval: 1s
-
-  - platform: template
-    name: "MH-Z19: Last zero calibration time ago"
-    entity_category: diagnostic
-    unit_of_measurement: "s"
-    lambda: |-
-      time_t timestamp = id(mhz19_calibrate_zero_unix_timestamp);
-      if (timestamp == 0)
-        return NAN;
-      esphome::ESPTime now = id(sntp_time).utcnow();
-      if(!now.is_valid())
-        return NAN;
-      return now.timestamp - timestamp;
-    update_interval: 1s
-
-  - platform: template
-    name: "MH-Z19 AQI"
-    id: mhz19_aqi
-    unit_of_measurement: "AQI"
-    icon: "mdi:gauge"
-    lambda: |-
-      double aqi = -1;
-
-      double co2_ppm = id(mhz19_sensor_co2).state;
-      if(!std::isnan(co2_ppm)) {
-        double aqi_co2 = 0.0;
-        if(co2_ppm < 400.0)
-          aqi_co2 = co2_ppm / 400.0;
-        else if(co2_ppm < 1000.0)
-          aqi_co2 = 1.0 + (co2_ppm - 400.0) / 600.0;
-        else if(co2_ppm < 1500.0)
-          aqi_co2 = 2.0 + (co2_ppm - 1000.0) / 500.0;
-        else if(co2_ppm < 2000.0)
-          aqi_co2 = 3.0 + (co2_ppm - 1500.0) / 500.0;
-        else if(co2_ppm < 5000.0)
-          aqi_co2 = 4.0 + (co2_ppm - 2000.0) / 3000.0;
-        else
-          aqi_co2 = 6.0;
-        if(aqi_co2 > aqi)
-          aqi = aqi_co2;
-      }
-
-      if(aqi >= 0.0)
-        return aqi;
-      return NAN;
-    update_interval: 1s
-
   - platform: sht3xd
     address: 0x44
     temperature:
-      name: "Temperature"
+      name: "${sht3xd_model}: Temperature"
     humidity:
-      name: "Humidity"
+      name: "${sht3xd_model}: Humidity"
     update_interval: 1s
 
   - platform: pmsx003
     type: PMSX003
     uart_id: uart_pmsx003
     pm_1_0_std:
-      name: "PM1.0 (CF=1，standard particle)"
+      name: "${pmsx003_model}: PM1.0 (CF=1，standard particle)"
       unit_of_measurement: "μg/m³"
     pm_2_5_std:
-      name: "PM2.5 (CF=1，standard particle)"
+      name: "${pmsx003_model}: PM2.5 (CF=1，standard particle)"
       unit_of_measurement: "μg/m³"
     pm_10_0_std:
-      name: "PM10.0 (CF=1，standard particle)"
+      name: "${pmsx003_model}: PM10.0 (CF=1，standard particle)"
       unit_of_measurement: "μg/m³"
     pm_1_0:
-      name: "PM1.0 (under atmospheric environment)"
+      name: "${pmsx003_model}: PM1.0 (under atmospheric environment)"
       unit_of_measurement: "μg/m³"
     pm_2_5:
-      name: "PM2.5 (under atmospheric environment)"
+      name: "${pmsx003_model}: PM2.5 (under atmospheric environment)"
       unit_of_measurement: "μg/m³"
       id: pmsx003_pm25
     pm_10_0:
-      name: "PM10.0 (under atmospheric environment)"
+      name: "${pmsx003_model}: PM10.0 (under atmospheric environment)"
       unit_of_measurement: "μg/m³"
       id: pmsx003_pm10
     pm_0_3um:
-      name: "Number of particles with diameter beyond 0.3μm in 0.1 L of air"
+      name: "${pmsx003_model}: Number of particles with diameter beyond 0.3μm in 0.1 L of air"
       unit_of_measurement: ""
     pm_0_5um:
-      name: "Number of particles with diameter beyond 0.5μm in 0.1 L of air"
+      name: "${pmsx003_model}: Number of particles with diameter beyond 0.5μm in 0.1 L of air"
       unit_of_measurement: ""
     pm_1_0um:
-      name: "Number of particles with diameter beyond 1.0μm in 0.1 L of air"
+      name: "${pmsx003_model}: Number of particles with diameter beyond 1.0μm in 0.1 L of air"
       unit_of_measurement: ""
     pm_2_5um:
-      name: "Number of particles with diameter beyond 2.5μm in 0.1 L of air"
+      name: "${pmsx003_model}: Number of particles with diameter beyond 2.5μm in 0.1 L of air"
       unit_of_measurement: ""
     pm_5_0um:
-      name: "Number of particles with diameter beyond 5.0μm in 0.1 L of air"
+      name: "${pmsx003_model}: Number of particles with diameter beyond 5.0μm in 0.1 L of air"
       unit_of_measurement: ""
     pm_10_0um:
-      name: "Number of particles with diameter beyond 10.0μm in 0.1 L of air"
+      name: "${pmsx003_model}: Number of particles with diameter beyond 10.0μm in 0.1 L of air"
       unit_of_measurement: ""
     update_interval: 60s
 
   - platform: template
-    name: "PMSX003 AQI"
+    name: "${pmsx003_model}: AQI"
     icon: "mdi:gauge"
     id: pmsx003_aqi
     unit_of_measurement: "AQI"
@@ -415,42 +418,574 @@ sensor:
       return NAN;
     update_interval: 1s
 
+  # Space CO₂ (IR4)
+  - platform: modbus_controller
+    modbus_controller_id: s88_modbus_controller
+    id: s88_sensor_space_co2
+    name: "S88: Sensor: Space CO₂"
+    register_type: "read"
+    address: 0x03
+    value_type: U_WORD
+    unit_of_measurement: "ppm"
+
   - platform: template
-    name: "AQI"
+    name: "S88: AQI"
+    id: s88_aqi
     unit_of_measurement: "AQI"
     icon: "mdi:gauge"
     lambda: |-
       double aqi = -1;
 
-      if (id(mhz19_aqi).state != NAN && id(mhz19_aqi).state > aqi)
-        aqi = id(mhz19_aqi).state;
-      if (id(pmsx003_aqi).state != NAN && id(pmsx003_aqi).state > aqi)
-        aqi = id(pmsx003_aqi).state;
+      double co2_ppm = id(s88_sensor_space_co2).state;
+      if(!std::isnan(co2_ppm)) {
+        double aqi_co2 = 0.0;
+        if(co2_ppm < 400.0)
+          aqi_co2 = co2_ppm / 400.0;
+        else if(co2_ppm < 1000.0)
+          aqi_co2 = 1.0 + (co2_ppm - 400.0) / 600.0;
+        else if(co2_ppm < 1500.0)
+          aqi_co2 = 2.0 + (co2_ppm - 1000.0) / 500.0;
+        else if(co2_ppm < 2000.0)
+          aqi_co2 = 3.0 + (co2_ppm - 1500.0) / 500.0;
+        else if(co2_ppm < 5000.0)
+          aqi_co2 = 4.0 + (co2_ppm - 2000.0) / 3000.0;
+        else
+          aqi_co2 = 6.0;
+        if(aqi_co2 > aqi)
+          aqi = aqi_co2;
+      }
 
       if(aqi >= 0.0)
         return aqi;
       return NAN;
     update_interval: 1s
-    on_value:
-      then:
-        - lambda: |-
-            if (x == NAN)
-              id(aqi_led).set_level(0);
-            double level = (x - 1.0) / 5.0;
-            id(aqi_led).set_level(level);
+
+  # Space Temp (IR5)
+  - platform: modbus_controller
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Sensor: Space Temperature"
+    register_type: "read"
+    address: 0x04
+    value_type: U_WORD
+    unit_of_measurement: "C"
+    accuracy_decimals: 2
+    filters:
+      - multiply: 0.01
+
+  # Synchro (IR6)
+  - platform: modbus_controller
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Sensor: Synchro"
+    register_type: "read"
+    address: 0x05
+    value_type: U_WORD
+    unit_of_measurement: "measurement periods"
+
+  # Vbb (IR7)
+  - platform: modbus_controller
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Sensor: Vbb"
+    register_type: "read"
+    address: 0x06
+    value_type: U_WORD
+    unit_of_measurement: "V"
+    accuracy_decimals: 3
+    filters:
+      - multiply: 0.001
+
+  # Elapsed Time counter (IR24,IR25)
+  - platform: modbus_controller
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Sensor: Elapsed Time"
+    register_type: "read"
+    address: 23
+    register_count: 2
+    value_type: U_DWORD
+    unit_of_measurement: "h"
+
+  # Memory Map Version (IR28)
+  - platform: modbus_controller
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Info: Memory Map Version"
+    register_type: "read"
+    address: 27
+    value_type: U_WORD
+
+  # Sensor ID (IR30,IR31)
+  - platform: modbus_controller
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Info: Sensor ID"
+    register_type: "read"
+    address: 29
+    register_count: 2
+    value_type: U_DWORD
+
+  # PWM Output (IR22)
+  # - platform: modbus_controller
+  #   modbus_controller_id: s88_modbus_controller
+  #   name: "S88: PWM: Duty cycle"
+  #   register_type: "read"
+  #   address: 21
+  #   value_type: U_WORD
+  #   lambda: "return x * 100.0 / 16383.0;"
+  #   unit_of_measurement: "%"
+
+  # Sensor Type ID (IR26,IR27)
+  - platform: modbus_controller
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Info: Sensor Type ID"
+    register_type: "read"
+    address: 25
+    register_count: 2
+    value_type: U_DWORD
+    bitmask: 0x0FFF
+
+select:
+  # Static IIR Config (HR28)
+  - platform: modbus_controller
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: IIR Filter"
+    address: 27
+    value_type: U_WORD
+    optionsmap:
+      "disabled": 0
+      "1 static": 1
+      "2 static": 2
+      "3 static": 3
+      "4 static": 4
+      "5 static": 5
+      "6 static": 6
+      "7 static": 7
+      "8 static": 8
+      "9 static": 9
+      "10 static": 10
+      "11 static": 11
+      "12 static": 12
+      "13 static": 13
+      "14 static": 14
+      "15 static": 15
+      "16 static": 16
+      "factory default settings": 255
+
+number:
+  # Communication address (HR20)
+  # - platform: modbus_controller
+  #   modbus_controller_id: s88_modbus_controller
+  #   name: "S88: Communication address"
+  #   address: 19
+  #   value_type: U_WORD
+  #   min_value: 1
+  #   max_value: 254
+  #   step: 1
+  #   mode: box
+
+  # Pressure (HR4)
+  - platform: modbus_controller
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Pressure compensation"
+    address: 3
+    value_type: S_WORD
+    unit_of_measurement: "hPa"
+    multiply: 10
+    min_value: 0
+    step: 0.1
+    max_value: 32767
+    mode: box
+    lambda: |-
+      if(x<=0)
+        return NAN;
+      return x;
+
+  # Default pressure (HR27)
+  - platform: modbus_controller
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Pressure compensation: default"
+    address: 26
+    value_type: S_WORD
+    unit_of_measurement: "hPa"
+    multiply: 10
+    min_value: 0
+    step: 0.1
+    max_value: 32767
+    mode: box
+    lambda: |-
+      if(x<=0)
+        return NAN;
+      return x;
+
+  # ABC Period (HR32)
+  - platform: modbus_controller
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Calibration: ABC Period"
+    address: 31
+    value_type: U_WORD
+    unit_of_measurement: "h"
+    min_value: 0
+    step: 1
+    max_value: 65535
+    mode: box
+    lambda: |-
+      if(x==0)
+        return NAN;
+      return x;
+
+  # ABC Target
+  - platform: modbus_controller
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Calibration: ABC Target"
+    address: 32
+    value_type: U_WORD
+    unit_of_measurement: "ppm"
+    min_value: 0
+    step: 1
+    max_value: 65535
+    mode: box
+
+  # Calibration Target Register (HR3)
+  - platform: modbus_controller
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Calibration: Target"
+    address: 2
+    value_type: U_WORD
+    unit_of_measurement: "ppm"
+    min_value: 0
+    step: 1
+    max_value: 65535
+    mode: box
+
+  # OUT0 RDB (HR10)
+  # - platform: modbus_controller
+  #   modbus_controller_id: s88_modbus_controller
+  #   name: "S88: Alarm: Regulator Dead Band"
+  #   id: alarm_regulator_dead_band
+  #   address: 9
+  #   value_type: U_WORD
+  #   min_value: 0
+  #   step: 1
+  #   max_value: 32767
+  #   mode: box
+  #   unit_of_measurement: "ppm"
+  #   lambda: |-
+  #     uint16_t high = static_cast<uint16_t>(data[item->offset] & 0x7F);
+  #     uint16_t low = static_cast<uint16_t>(data[item->offset+1]);
+  #     return (high << 8) | low;
+  #   write_lambda: |-
+  #     uint8_t shape_bit;
+  #     if (id(alarm_mirror_in_y_axis).state) {
+  #       shape_bit = 0x80;
+  #     } else {
+  #       shape_bit = 0x00;
+  #     }
+  #     uint16_t value = x;
+  #     uint16_t high = (value & 0xFF00) >> 8;
+  #     uint16_t low = value & 0xff;
+  #     return ((shape_bit|high) << 8) | low;
+
+  # OUT0 RDB (HR10)
+  - platform: modbus_controller
+    modbus_controller_id: s88_modbus_controller
+    id: alarm_regulator_dead_band_internal
+    internal: true
+    address: 9
+    value_type: U_WORD
+
+  # OUT0 PRC (HR11)
+  # - platform: modbus_controller
+  #   modbus_controller_id: s88_modbus_controller
+  #   name: "S88: Alarm: Proportional Regulator Constant"
+  #   id: alarm_proportional_regulator_constant
+  #   address: 10
+  #   value_type: U_WORD
+  #   min_value: 0
+  #   step: 1
+  #   max_value: 32767
+  #   mode: box
+  #   unit_of_measurement: "ppm"
+  #   lambda: |-
+  #     uint16_t high = static_cast<uint16_t>(data[item->offset] & 0x7F);
+  #     uint16_t low = static_cast<uint16_t>(data[item->offset+1]);
+  #     return (high << 8) | low;
+  #   write_lambda: |-
+  #     uint8_t shape_bit;
+  #     if (id(alarm_mirror_in_x_axis).state) {
+  #       shape_bit = 0x80;
+  #     } else {
+  #       shape_bit = 0x00;
+  #     }
+  #     uint16_t value = x;
+  #     uint16_t high = (value & 0xFF00) >> 8;
+  #     uint16_t low = value & 0xff;
+  #     return ((shape_bit|high) << 8) | low;
+
+  # OUT0 PRC (HR11)
+  - platform: modbus_controller
+    modbus_controller_id: s88_modbus_controller
+    id: alarm_proportional_regulator_constant_internal
+    internal: true
+    address: 10
+    value_type: U_WORD
+
+  # OUT1 RDB (HR12)
+  # - platform: modbus_controller
+  #   modbus_controller_id: s88_modbus_controller
+  #   name: "S88: PWM: Regulator Dead Band"
+  #   id: pwm_regulator_dead_band
+  #   address: 11
+  #   value_type: U_WORD
+  #   min_value: 0
+  #   step: 1
+  #   max_value: 32767
+  #   mode: box
+  #   unit_of_measurement: "ppm"
+  #   lambda: |-
+  #     uint16_t high = static_cast<uint16_t>(data[item->offset] & 0x7F);
+  #     uint16_t low = static_cast<uint16_t>(data[item->offset+1]);
+  #     return (high << 8) | low;
+  #   write_lambda: |-
+  #     uint8_t shape_bit;
+  #     if (id(pwm_mirror_in_y_axis).state) {
+  #       shape_bit = 0x80;
+  #     } else {
+  #       shape_bit = 0x00;
+  #     }
+  #     uint16_t value = x;
+  #     uint16_t high = (value & 0xFF00) >> 8;
+  #     uint16_t low = value & 0xff;
+  #     return ((shape_bit|high) << 8) | low;
+
+  # OUT1 RDB (HR12)
+  - platform: modbus_controller
+    modbus_controller_id: s88_modbus_controller
+    id: pwm_regulator_dead_band_internal
+    internal: true
+    address: 11
+    value_type: U_WORD
+
+  # OUT1 PRC (HR13)
+  # - platform: modbus_controller
+  #   modbus_controller_id: s88_modbus_controller
+  #   name: "S88: PWM: Proportional Regulator Constant"
+  #   id: pwm_proportional_regulator_constant
+  #   address: 12
+  #   value_type: U_WORD
+  #   min_value: 0
+  #   step: 1
+  #   max_value: 32767
+  #   mode: box
+  #   unit_of_measurement: "ppm"
+  #   lambda: |-
+  #     uint16_t high = static_cast<uint16_t>(data[item->offset] & 0x7F);
+  #     uint16_t low = static_cast<uint16_t>(data[item->offset+1]);
+  #     return (high << 8) | low;
+  #   write_lambda: |-
+  #     uint8_t shape_bit;
+  #     if (id(pwm_mirror_in_x_axis).state) {
+  #       shape_bit = 0x80;
+  #     } else {
+  #       shape_bit = 0x00;
+  #     }
+  #     uint16_t value = x;
+  #     uint16_t high = (value & 0xFF00) >> 8;
+  #     uint16_t low = value & 0xff;
+  #     return ((shape_bit|high) << 8) | low;
+
+  # OUT1 PRC (HR13)
+  - platform: modbus_controller
+    modbus_controller_id: s88_modbus_controller
+    id: pwm_proportional_regulator_constant_internal
+    address: 12
+    value_type: U_WORD
+
+  # OUT1 MinLimit (HR14)
+  # - platform: modbus_controller
+  #   modbus_controller_id: s88_modbus_controller
+  #   name: "S88: PWM: Min output duty cycle"
+  #   address: 13
+  #   value_type: U_WORD
+  #   min_value: 0
+  #   step: 1
+  #   max_value: 100
+  #   mode: box
+  #   lambda: "return x * 100.0 / 16383.0;"
+  #   write_lambda: "return x * 16383.0 / 100.0;"
+  #   unit_of_measurement: "%"
+
+  # OUT1 MaxLimit (HR15)
+  # - platform: modbus_controller
+  #   modbus_controller_id: s88_modbus_controller
+  #   name: "S88: PWM: Max output duty cycle"
+  #   address: 14
+  #   value_type: U_WORD
+  #   min_value: 0
+  #   step: 1
+  #   max_value: 100
+  #   mode: box
+  #   lambda: "return x * 100.0 / 16383.0;"
+  #   write_lambda: "return x * 16383.0 / 100.0;"
+  #   unit_of_measurement: "%"
+
+  # OUT1 Offset (HR16)
+  # - platform: modbus_controller
+  #   modbus_controller_id: s88_modbus_controller
+  #   name: "S88: PWM: Offset"
+  #   address: 15
+  #   value_type: U_WORD
+  #   min_value: 0
+  #   step: 1
+  #   max_value: 100
+  #   mode: box
+  #   lambda: "return x * 100.0 / 16383.0;"
+  #   write_lambda: "return x * 16383.0 / 100.0;"
+  #   unit_of_measurement: "%"
+
+  # OUT1 Override (HR22)
+  # - platform: modbus_controller
+  #   modbus_controller_id: s88_modbus_controller
+  #   name: "S88: PWM: Override"
+  #   address: 21
+  #   value_type: U_WORD
+  #   min_value: 0
+  #   step: 1
+  #   max_value: 100
+  #   mode: box
+  #   lambda: |-
+  #     if(x==65535)
+  #       return NAN;
+  #     return x * 100.0 / 16383.0;
+  #   write_lambda: "return x * 16383.0 / 100.0;"
+  #   unit_of_measurement: "%"
+
+switch:
+  # OUT0 RDB (HR10)
+  # - platform: modbus_controller
+  #   modbus_controller_id: s88_modbus_controller
+  #   name: "S88: Alarm: Mirror in y-axis"
+  #   id: alarm_mirror_in_y_axis
+  #   register_type: holding
+  #   address: 9
+  #   bitmask: 0x8000
+  #   restore_mode: DISABLED
+  #   write_lambda: |-
+  #     uint16_t number = (uint16_t)id(alarm_regulator_dead_band).state;
+  #     uint16_t value;
+  #     if(x)
+  #       value = number | 0x8000;
+  #     else
+  #       value = number;
+  #     auto call = id(alarm_regulator_dead_band_internal).make_call();
+  #     call.set_value(value);
+  #     call.perform();
+  #     return {};
+
+  # OUT0 PRC (HR11)
+  # - platform: modbus_controller
+  #   modbus_controller_id: s88_modbus_controller
+  #   name: "S88: Alarm: Mirror in x-axis"
+  #   id: alarm_mirror_in_x_axis
+  #   register_type: holding
+  #   address: 10
+  #   bitmask: 0x8000
+  #   restore_mode: DISABLED
+  #   write_lambda: |-
+  #     uint16_t number = (uint16_t)id(alarm_proportional_regulator_constant).state;
+  #     uint16_t value;
+  #     if(x)
+  #       value = number | 0x8000;
+  #     else
+  #       value = number;
+  #     auto call = id(alarm_proportional_regulator_constant_internal).make_call();
+  #     call.set_value(value);
+  #     call.perform();
+  #     return {};
+
+  # OUT1 RDB (HR12)
+  # - platform: modbus_controller
+  #   modbus_controller_id: s88_modbus_controller
+  #   name: "S88: PWM: Mirror in y-axis"
+  #   id: pwm_mirror_in_y_axis
+  #   register_type: holding
+  #   address: 11
+  #   bitmask: 0x8000
+  #   restore_mode: DISABLED
+  #   write_lambda: |-
+  #     uint16_t number = (uint16_t)id(pwm_regulator_dead_band).state;
+  #     uint16_t value;
+  #     if(x)
+  #       value = number | 0x8000;
+  #     else
+  #       value = number;
+  #     auto call = id(pwm_regulator_dead_band_internal).make_call();
+  #     call.set_value(value);
+  #     call.perform();
+  #     return {};
+
+  # OUT1 PRC (HR13)
+  # - platform: modbus_controller
+  #   modbus_controller_id: s88_modbus_controller
+  #   name: "S88: PWM: Mirror in x-axis"
+  #   id: pwm_mirror_in_x_axis
+  #   register_type: holding
+  #   address: 12
+  #   bitmask: 0x8000
+  #   restore_mode: DISABLED
+  #   write_lambda: |-
+  #     uint16_t number = (uint16_t)id(pwm_proportional_regulator_constant).state;
+  #     uint16_t value;
+  #     if(x)
+  #       value = number | 0x8000;
+  #     else
+  #       value = number;
+  #     auto call = id(pwm_proportional_regulator_constant_internal).make_call();
+  #     call.set_value(value);
+  #     call.perform();
+  #     return {};
+
+light:
+  - platform: binary
+    id: blue_led_light
+    output: blue_led_output
+    internal: true
+    effects:
+      - strobe:
+          name: "slow_strobe"
+          colors:
+            - state: true
+              duration: 250ms
+            - state: false
+              duration: 250ms
+      - strobe:
+          name: "fast_strobe"
+          colors:
+            - state: true
+              duration: 125ms
+            - state: false
+              duration: 125ms
+
+  - platform: binary
+    id: yellow_led_light
+    output: yellow_led_output
+    internal: true
+
+  - platform: binary
+    id: white_led_light
+    output: white_led_output
+    internal: true
 
 output:
-  - platform: slow_pwm
-    id: wifi_led_pwm
-    period: 1s
+  - platform: gpio
     pin:
       inverted: true
       number: 9
       ignore_strapping_warning: true
+    id: blue_led_output
 
   - platform: gpio
-    id: mhz19_hd
-    pin: 4
+    pin: 20
+    id: yellow_led_output
+
+  - platform: gpio
+    pin: 21
+    id: white_led_output
 
   - platform: gpio
     id: pmsx003_set
@@ -462,15 +997,6 @@ output:
     id: pmsx003_reset
     pin: 18
 
-  - platform: gpio
-    id: mhz19_calibration_led
-    pin: 21
-
-  - platform: slow_pwm
-    id: aqi_led
-    period: 1s
-    pin: 20
-
 button:
   - platform: factory_reset
     id: factory_reset_button
@@ -481,13 +1007,6 @@ button:
 
   - platform: safe_mode
     name: "Safe Mode"
-
-  - platform: template
-    name: "MH19: Calibrate Zero"
-    entity_category: config
-    on_press:
-      then:
-        - script.execute: mhz19_calibrate_zero
 
 text_sensor:
   - platform: wifi_info
@@ -502,64 +1021,13 @@ text_sensor:
     dns_address:
       name: "Wifi Info: DNS Address"
 
-  - platform: template
-    name: "MH-Z19: Last zero calibration"
-    icon: "mdi:calendar"
-    entity_category: diagnostic
+  # FW version (IR29)
+  - platform: modbus_controller
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: FW Version"
+    raw_encode: NONE
+    register_type: "read"
+    address: 28
+    response_size: 2
     lambda: |-
-      char buffer[32];
-      auto espTime = ESPTime::from_epoch_utc(id(mhz19_calibrate_zero_unix_timestamp));
-      if(!espTime.is_valid())
-        return {"Never"};
-      espTime.strftime(buffer, sizeof(buffer), "%a, %d %b %Y %H:%M:%S %z");
-      return {buffer};
-    update_interval: 1s
-
-switch:
-  - platform: template
-    name: "MH-Z19: ABC"
-    entity_category: config
-    lambda: |-
-      return id(mhz19_abc);
-    turn_on_action:
-      - mhz19.abc_enable: mhz19_sensor
-      - globals.set:
-          id: mhz19_abc
-          value: "true"
-    turn_off_action:
-      - mhz19.abc_disable: mhz19_sensor
-      - globals.set:
-          id: mhz19_abc
-          value: "false"
-
-number:
-  - platform: template
-    name: "MH-Z19: Non linearity slope"
-    icon: "mdi:slope-downhill"
-    id: mhz19_non_linearity_slope
-    entity_category: config
-    mode: box
-    min_value: 0
-    max_value: 2
-    step: 0.0001
-    optimistic: true
-    restore_value: true
-    initial_value: 1
-
-  - platform: template
-    name: "MH-Z19: Non linearity offset"
-    icon: "mdi:align-vertical-distribute"
-    id: mhz19_non_linearity_offset
-    entity_category: config
-    mode: box
-    min_value: -410
-    max_value: 410
-    step: 1
-    optimistic: true
-    restore_value: true
-    initial_value: 0
-
-time:
-  - platform: sntp
-    id: sntp_time
-    timezone: Etc/UTC
+      return std::to_string(data[item->offset]) + "." + std::to_string(data[item->offset+1]);
