@@ -174,28 +174,28 @@ ota:
   platform: esphome
 
 uart:
-  id: uart_s88
+  id: s88_uart
   tx_pin: GPIO1
   rx_pin: GPIO10
   baud_rate: 9600
 
 modbus:
-  id: modbus_s88
-  uart_id: uart_s88
+  id: s88_modbus
+  uart_id: s88_uart
 
 modbus_controller:
-  - id: modbus_controller_s88
+  - id: s88_modbus_controller
     address: 0xFE
-    modbus_id: modbus_s88
+    modbus_id: s88_modbus
     update_interval: 3s
     max_cmd_retries: 0
     on_online:
       - binary_sensor.template.publish:
-          id: offline
+          id: s88_offline
           state: OFF
     on_offline:
       - binary_sensor.template.publish:
-          id: offline
+          id: s88_offline
           state: ON
 
 #prometheus:
@@ -209,64 +209,64 @@ binary_sensor:
 
   # MeterStatus: Fatal error (IR1/DI1)
   - platform: modbus_controller
-    modbus_controller_id: modbus_controller_s88
-    name: "Status: Fatal error"
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Status: Fatal error"
     register_type: read
     address: 0x00
     bitmask: 0x01 # 1
 
   # MeterStatus: Algorithm Error (IR1/DI3)
   - platform: modbus_controller
-    modbus_controller_id: modbus_controller_s88
-    name: "Status: Algorithm Error"
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Status: Algorithm Error"
     register_type: read
     address: 0x00
     bitmask: 0x04 # 3
 
   # MeterStatus: Output Error (IR1/DI4)
   - platform: modbus_controller
-    modbus_controller_id: modbus_controller_s88
-    name: "Status: Output Error"
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Status: Output Error"
     register_type: read
     address: 0x00
     bitmask: 0x08 # 4
 
   # MeterStatus: Self diagnostics error (IR1/DI5)
   - platform: modbus_controller
-    modbus_controller_id: modbus_controller_s88
-    name: "Status: Self diagnostics error"
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Status: Self diagnostics error"
     register_type: read
     address: 0x00
     bitmask: 0x10 # 5
 
   # MeterStatus: Out Of Range (IR1/DI6)
   - platform: modbus_controller
-    modbus_controller_id: modbus_controller_s88
-    name: "Status: Out Of Range"
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Status: Out Of Range"
     register_type: read
     address: 0x00
     bitmask: 0x20 # 6
 
   # MeterStatus: Memory error (IR1/DI7)
   - platform: modbus_controller
-    modbus_controller_id: modbus_controller_s88
-    name: "Status: Memory error"
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Status: Memory error"
     register_type: read
     address: 0x00
     bitmask: 0x40 # 7
 
   # MeterStatus: Warm Up (IR1/DI8)
   - platform: modbus_controller
-    modbus_controller_id: modbus_controller_s88
-    name: "Status: Warm Up"
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Status: Warm Up"
     register_type: read
     address: 0x00
     bitmask: 0x80 # 8
 
   # Alarm Output satus (IR3/DI33)
   - platform: modbus_controller
-    modbus_controller_id: modbus_controller_s88
-    name: "Alarm: Status"
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Alarm: Status"
     register_type: read
     address: 0x02
     bitmask: 0x01
@@ -275,15 +275,15 @@ binary_sensor:
 
   # PWM Output status (IR3/DI34)
   - platform: modbus_controller
-    modbus_controller_id: modbus_controller_s88
-    name: "PWM: Full Output"
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: PWM: Full Output"
     register_type: read
     address: 0x02
     bitmask: 0x02
 
   - platform: template
-    name: "Offline"
-    id: offline
+    name: "S88: Offline"
+    id: s88_offline
 
 sensor:
   - platform: uptime
@@ -296,8 +296,8 @@ sensor:
 
   # Space CO₂ (IR4)
   - platform: modbus_controller
-    modbus_controller_id: modbus_controller_s88
-    name: "Sensor: Space CO₂"
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Sensor: Space CO₂"
     register_type: "read"
     address: 0x03
     value_type: U_WORD
@@ -305,8 +305,8 @@ sensor:
 
   # Space Temp (IR5)
   - platform: modbus_controller
-    modbus_controller_id: modbus_controller_s88
-    name: "Sensor: Space Temperature"
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Sensor: Space Temperature"
     register_type: "read"
     address: 0x04
     value_type: U_WORD
@@ -317,8 +317,8 @@ sensor:
 
   # Synchro (IR6)
   - platform: modbus_controller
-    modbus_controller_id: modbus_controller_s88
-    name: "Sensor: Synchro"
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Sensor: Synchro"
     register_type: "read"
     address: 0x05
     value_type: U_WORD
@@ -326,8 +326,8 @@ sensor:
 
   # Vbb (IR7)
   - platform: modbus_controller
-    modbus_controller_id: modbus_controller_s88
-    name: "Sensor: Vbb"
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Sensor: Vbb"
     register_type: "read"
     address: 0x06
     value_type: U_WORD
@@ -338,8 +338,8 @@ sensor:
 
   # Elapsed Time counter (IR24,IR25)
   - platform: modbus_controller
-    modbus_controller_id: modbus_controller_s88
-    name: "Sensor: Elapsed Time"
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Sensor: Elapsed Time"
     register_type: "read"
     address: 23
     register_count: 2
@@ -348,16 +348,16 @@ sensor:
 
   # Memory Map Version (IR28)
   - platform: modbus_controller
-    modbus_controller_id: modbus_controller_s88
-    name: "Info: Memory Map Version"
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Info: Memory Map Version"
     register_type: "read"
     address: 27
     value_type: U_WORD
 
   # Sensor ID (IR30,IR31)
   - platform: modbus_controller
-    modbus_controller_id: modbus_controller_s88
-    name: "Info: Sensor ID"
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Info: Sensor ID"
     register_type: "read"
     address: 29
     register_count: 2
@@ -365,8 +365,8 @@ sensor:
 
   # PWM Output (IR22)
   - platform: modbus_controller
-    modbus_controller_id: modbus_controller_s88
-    name: "PWM: Duty cycle"
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: PWM: Duty cycle"
     register_type: "read"
     address: 21
     value_type: U_WORD
@@ -375,8 +375,8 @@ sensor:
 
   # Sensor Type ID (IR26,IR27)
   - platform: modbus_controller
-    modbus_controller_id: modbus_controller_s88
-    name: "Info: Sensor Type ID"
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Info: Sensor Type ID"
     register_type: "read"
     address: 25
     register_count: 2
@@ -386,8 +386,8 @@ sensor:
 select:
   # Static IIR Config (HR28)
   - platform: modbus_controller
-    modbus_controller_id: modbus_controller_s88
-    name: "IIR Filter"
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: IIR Filter"
     address: 27
     value_type: U_WORD
     optionsmap:
@@ -413,8 +413,8 @@ select:
 number:
   # Communication address (HR20)
   - platform: modbus_controller
-    modbus_controller_id: modbus_controller_s88
-    name: "Communication address"
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Communication address"
     address: 19
     value_type: U_WORD
     min_value: 1
@@ -424,8 +424,8 @@ number:
 
   # Pressure (HR4)
   - platform: modbus_controller
-    modbus_controller_id: modbus_controller_s88
-    name: "Pressure compensation"
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Pressure compensation"
     address: 3
     value_type: S_WORD
     unit_of_measurement: "hPa"
@@ -441,8 +441,8 @@ number:
 
   # Default pressure (HR27)
   - platform: modbus_controller
-    modbus_controller_id: modbus_controller_s88
-    name: "Pressure compensation: default"
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Pressure compensation: default"
     address: 26
     value_type: S_WORD
     unit_of_measurement: "hPa"
@@ -458,8 +458,8 @@ number:
 
   # ABC Period (HR32)
   - platform: modbus_controller
-    modbus_controller_id: modbus_controller_s88
-    name: "Calibration: ABC Period"
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Calibration: ABC Period"
     address: 31
     value_type: U_WORD
     unit_of_measurement: "h"
@@ -474,8 +474,8 @@ number:
 
   # ABC Target
   - platform: modbus_controller
-    modbus_controller_id: modbus_controller_s88
-    name: "Calibration: ABC Target"
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Calibration: ABC Target"
     address: 32
     value_type: U_WORD
     unit_of_measurement: "ppm"
@@ -486,8 +486,8 @@ number:
 
   # Calibration Target Register (HR3)
   - platform: modbus_controller
-    modbus_controller_id: modbus_controller_s88
-    name: "Calibration: Target"
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Calibration: Target"
     address: 2
     value_type: U_WORD
     unit_of_measurement: "ppm"
@@ -498,8 +498,8 @@ number:
 
   # OUT0 RDB (HR10)
   - platform: modbus_controller
-    modbus_controller_id: modbus_controller_s88
-    name: "Alarm: Regulator Dead Band"
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Alarm: Regulator Dead Band"
     id: alarm_regulator_dead_band
     address: 9
     value_type: U_WORD
@@ -526,7 +526,7 @@ number:
 
   # OUT0 RDB (HR10)
   - platform: modbus_controller
-    modbus_controller_id: modbus_controller_s88
+    modbus_controller_id: s88_modbus_controller
     id: alarm_regulator_dead_band_internal
     internal: true
     address: 9
@@ -534,8 +534,8 @@ number:
 
   # OUT0 PRC (HR11)
   - platform: modbus_controller
-    modbus_controller_id: modbus_controller_s88
-    name: "Alarm: Proportional Regulator Constant"
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Alarm: Proportional Regulator Constant"
     id: alarm_proportional_regulator_constant
     address: 10
     value_type: U_WORD
@@ -562,7 +562,7 @@ number:
 
   # OUT0 PRC (HR11)
   - platform: modbus_controller
-    modbus_controller_id: modbus_controller_s88
+    modbus_controller_id: s88_modbus_controller
     id: alarm_proportional_regulator_constant_internal
     internal: true
     address: 10
@@ -570,8 +570,8 @@ number:
 
   # OUT1 RDB (HR12)
   - platform: modbus_controller
-    modbus_controller_id: modbus_controller_s88
-    name: "PWM: Regulator Dead Band"
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: PWM: Regulator Dead Band"
     id: pwm_regulator_dead_band
     address: 11
     value_type: U_WORD
@@ -598,7 +598,7 @@ number:
 
   # OUT1 RDB (HR12)
   - platform: modbus_controller
-    modbus_controller_id: modbus_controller_s88
+    modbus_controller_id: s88_modbus_controller
     id: pwm_regulator_dead_band_internal
     internal: true
     address: 11
@@ -606,8 +606,8 @@ number:
 
   # OUT1 PRC (HR13)
   - platform: modbus_controller
-    modbus_controller_id: modbus_controller_s88
-    name: "PWM: Proportional Regulator Constant"
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: PWM: Proportional Regulator Constant"
     id: pwm_proportional_regulator_constant
     address: 12
     value_type: U_WORD
@@ -634,15 +634,15 @@ number:
 
   # OUT1 PRC (HR13)
   - platform: modbus_controller
-    modbus_controller_id: modbus_controller_s88
+    modbus_controller_id: s88_modbus_controller
     id: pwm_proportional_regulator_constant_internal
     address: 12
     value_type: U_WORD
 
   # OUT1 MinLimit (HR14)
   - platform: modbus_controller
-    modbus_controller_id: modbus_controller_s88
-    name: "PWM: Min output duty cycle"
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: PWM: Min output duty cycle"
     address: 13
     value_type: U_WORD
     min_value: 0
@@ -655,8 +655,8 @@ number:
 
   # OUT1 MaxLimit (HR15)
   - platform: modbus_controller
-    modbus_controller_id: modbus_controller_s88
-    name: "PWM: Max output duty cycle"
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: PWM: Max output duty cycle"
     address: 14
     value_type: U_WORD
     min_value: 0
@@ -669,8 +669,8 @@ number:
 
   # OUT1 Offset (HR16)
   - platform: modbus_controller
-    modbus_controller_id: modbus_controller_s88
-    name: "PWM: Offset"
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: PWM: Offset"
     address: 15
     value_type: U_WORD
     min_value: 0
@@ -683,8 +683,8 @@ number:
 
   # OUT1 Override (HR22)
   - platform: modbus_controller
-    modbus_controller_id: modbus_controller_s88
-    name: "PWM: Override"
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: PWM: Override"
     address: 21
     value_type: U_WORD
     min_value: 0
@@ -701,8 +701,8 @@ number:
 switch:
   # OUT0 RDB (HR10)
   - platform: modbus_controller
-    modbus_controller_id: modbus_controller_s88
-    name: "Alarm: Mirror in y-axis"
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Alarm: Mirror in y-axis"
     id: alarm_mirror_in_y_axis
     register_type: holding
     address: 9
@@ -722,8 +722,8 @@ switch:
 
   # OUT0 PRC (HR11)
   - platform: modbus_controller
-    modbus_controller_id: modbus_controller_s88
-    name: "Alarm: Mirror in x-axis"
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Alarm: Mirror in x-axis"
     id: alarm_mirror_in_x_axis
     register_type: holding
     address: 10
@@ -743,8 +743,8 @@ switch:
 
   # OUT1 RDB (HR12)
   - platform: modbus_controller
-    modbus_controller_id: modbus_controller_s88
-    name: "PWM: Mirror in y-axis"
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: PWM: Mirror in y-axis"
     id: pwm_mirror_in_y_axis
     register_type: holding
     address: 11
@@ -764,8 +764,8 @@ switch:
 
   # OUT1 PRC (HR13)
   - platform: modbus_controller
-    modbus_controller_id: modbus_controller_s88
-    name: "PWM: Mirror in x-axis"
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: PWM: Mirror in x-axis"
     id: pwm_mirror_in_x_axis
     register_type: holding
     address: 12
@@ -872,8 +872,8 @@ text_sensor:
 
   # FW version (IR29)
   - platform: modbus_controller
-    modbus_controller_id: modbus_controller_s88
-    name: "FW Version"
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: FW Version"
     raw_encode: NONE
     register_type: "read"
     address: 28
