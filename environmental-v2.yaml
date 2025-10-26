@@ -760,12 +760,12 @@ number:
   #     return ((shape_bit|high) << 8) | low;
 
   # OUT0 RDB (HR10)
-  - platform: modbus_controller
-    modbus_controller_id: s88_modbus_controller
-    id: alarm_regulator_dead_band_internal
-    internal: true
-    address: 9
-    value_type: U_WORD
+  # - platform: modbus_controller
+  #   modbus_controller_id: s88_modbus_controller
+  #   id: alarm_regulator_dead_band_internal
+  #   internal: true
+  #   address: 9
+  #   value_type: U_WORD
 
   # OUT0 PRC (HR11)
   # - platform: modbus_controller
