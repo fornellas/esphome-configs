@@ -263,27 +263,35 @@ binary_sensor:
     address: 0x00
     bitmask: 0x80 # 8
 
-  # Alarm Output satus (IR3/DI33)
-  - platform: modbus_controller
-    modbus_controller_id: s88_modbus_controller
-    name: "S88: Alarm: Status"
-    register_type: read
-    address: 0x02
-    bitmask: 0x01
-    filters:
-      - invert:
+  # # Alarm Output satus (IR3/DI33)
+  # - platform: modbus_controller
+  #   modbus_controller_id: s88_modbus_controller
+  #   name: "S88: Alarm: Status"
+  #   register_type: read
+  #   address: 0x02
+  #   bitmask: 0x01
+  #   filters:
+  #     - invert:
 
   # PWM Output status (IR3/DI34)
-  - platform: modbus_controller
-    modbus_controller_id: s88_modbus_controller
-    name: "S88: PWM: Full Output"
-    register_type: read
-    address: 0x02
-    bitmask: 0x02
+  # - platform: modbus_controller
+  #   modbus_controller_id: s88_modbus_controller
+  #   name: "S88: PWM: Full Output"
+  #   register_type: read
+  #   address: 0x02
+  #   bitmask: 0x02
 
   - platform: template
     name: "S88: Offline"
     id: s88_offline
+
+  # Acknowledgement register: Reset calibration has been performed (HR1/CI1)
+  - platform: modbus_controller
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Calibration: Reset CO₂ calibration to factory defaults: Acknowledged"
+    register_type: holding
+    address: 0
+    bitmask: 1
 
 sensor:
   - platform: uptime
@@ -364,14 +372,14 @@ sensor:
     value_type: U_DWORD
 
   # PWM Output (IR22)
-  - platform: modbus_controller
-    modbus_controller_id: s88_modbus_controller
-    name: "S88: PWM: Duty cycle"
-    register_type: "read"
-    address: 21
-    value_type: U_WORD
-    lambda: "return x * 100.0 / 16383.0;"
-    unit_of_measurement: "%"
+  # - platform: modbus_controller
+  #   modbus_controller_id: s88_modbus_controller
+  #   name: "S88: PWM: Duty cycle"
+  #   register_type: "read"
+  #   address: 21
+  #   value_type: U_WORD
+  #   lambda: "return x * 100.0 / 16383.0;"
+  #   unit_of_measurement: "%"
 
   # Sensor Type ID (IR26,IR27)
   - platform: modbus_controller
@@ -496,292 +504,292 @@ number:
     max_value: 65535
     mode: box
 
-  # OUT0 RDB (HR10)
-  - platform: modbus_controller
-    modbus_controller_id: s88_modbus_controller
-    name: "S88: Alarm: Regulator Dead Band"
-    id: alarm_regulator_dead_band
-    address: 9
-    value_type: U_WORD
-    min_value: 0
-    step: 1
-    max_value: 32767
-    mode: box
-    unit_of_measurement: "ppm"
-    lambda: |-
-      uint16_t high = static_cast<uint16_t>(data[item->offset] & 0x7F);
-      uint16_t low = static_cast<uint16_t>(data[item->offset+1]);
-      return (high << 8) | low;
-    write_lambda: |-
-      uint8_t shape_bit;
-      if (id(alarm_mirror_in_y_axis).state) {
-        shape_bit = 0x80;
-      } else {
-        shape_bit = 0x00;
-      }
-      uint16_t value = x;
-      uint16_t high = (value & 0xFF00) >> 8;
-      uint16_t low = value & 0xff;
-      return ((shape_bit|high) << 8) | low;
+  # # OUT0 RDB (HR10)
+  # - platform: modbus_controller
+  #   modbus_controller_id: s88_modbus_controller
+  #   name: "S88: Alarm: Regulator Dead Band"
+  #   id: alarm_regulator_dead_band
+  #   address: 9
+  #   value_type: U_WORD
+  #   min_value: 0
+  #   step: 1
+  #   max_value: 32767
+  #   mode: box
+  #   unit_of_measurement: "ppm"
+  #   lambda: |-
+  #     uint16_t high = static_cast<uint16_t>(data[item->offset] & 0x7F);
+  #     uint16_t low = static_cast<uint16_t>(data[item->offset+1]);
+  #     return (high << 8) | low;
+  #   write_lambda: |-
+  #     uint8_t shape_bit;
+  #     if (id(alarm_mirror_in_y_axis).state) {
+  #       shape_bit = 0x80;
+  #     } else {
+  #       shape_bit = 0x00;
+  #     }
+  #     uint16_t value = x;
+  #     uint16_t high = (value & 0xFF00) >> 8;
+  #     uint16_t low = value & 0xff;
+  #     return ((shape_bit|high) << 8) | low;
 
-  # OUT0 RDB (HR10)
-  - platform: modbus_controller
-    modbus_controller_id: s88_modbus_controller
-    id: alarm_regulator_dead_band_internal
-    internal: true
-    address: 9
-    value_type: U_WORD
+  # # OUT0 RDB (HR10)
+  # - platform: modbus_controller
+  #   modbus_controller_id: s88_modbus_controller
+  #   id: alarm_regulator_dead_band_internal
+  #   internal: true
+  #   address: 9
+  #   value_type: U_WORD
+
+  # # OUT0 PRC (HR11)
+  # - platform: modbus_controller
+  #   modbus_controller_id: s88_modbus_controller
+  #   name: "S88: Alarm: Proportional Regulator Constant"
+  #   id: alarm_proportional_regulator_constant
+  #   address: 10
+  #   value_type: U_WORD
+  #   min_value: 0
+  #   step: 1
+  #   max_value: 32767
+  #   mode: box
+  #   unit_of_measurement: "ppm"
+  #   lambda: |-
+  #     uint16_t high = static_cast<uint16_t>(data[item->offset] & 0x7F);
+  #     uint16_t low = static_cast<uint16_t>(data[item->offset+1]);
+  #     return (high << 8) | low;
+  #   write_lambda: |-
+  #     uint8_t shape_bit;
+  #     if (id(alarm_mirror_in_x_axis).state) {
+  #       shape_bit = 0x80;
+  #     } else {
+  #       shape_bit = 0x00;
+  #     }
+  #     uint16_t value = x;
+  #     uint16_t high = (value & 0xFF00) >> 8;
+  #     uint16_t low = value & 0xff;
+  #     return ((shape_bit|high) << 8) | low;
 
   # OUT0 PRC (HR11)
-  - platform: modbus_controller
-    modbus_controller_id: s88_modbus_controller
-    name: "S88: Alarm: Proportional Regulator Constant"
-    id: alarm_proportional_regulator_constant
-    address: 10
-    value_type: U_WORD
-    min_value: 0
-    step: 1
-    max_value: 32767
-    mode: box
-    unit_of_measurement: "ppm"
-    lambda: |-
-      uint16_t high = static_cast<uint16_t>(data[item->offset] & 0x7F);
-      uint16_t low = static_cast<uint16_t>(data[item->offset+1]);
-      return (high << 8) | low;
-    write_lambda: |-
-      uint8_t shape_bit;
-      if (id(alarm_mirror_in_x_axis).state) {
-        shape_bit = 0x80;
-      } else {
-        shape_bit = 0x00;
-      }
-      uint16_t value = x;
-      uint16_t high = (value & 0xFF00) >> 8;
-      uint16_t low = value & 0xff;
-      return ((shape_bit|high) << 8) | low;
-
-  # OUT0 PRC (HR11)
-  - platform: modbus_controller
-    modbus_controller_id: s88_modbus_controller
-    id: alarm_proportional_regulator_constant_internal
-    internal: true
-    address: 10
-    value_type: U_WORD
+  # - platform: modbus_controller
+  #   modbus_controller_id: s88_modbus_controller
+  #   id: alarm_proportional_regulator_constant_internal
+  #   internal: true
+  #   address: 10
+  #   value_type: U_WORD
 
   # OUT1 RDB (HR12)
-  - platform: modbus_controller
-    modbus_controller_id: s88_modbus_controller
-    name: "S88: PWM: Regulator Dead Band"
-    id: pwm_regulator_dead_band
-    address: 11
-    value_type: U_WORD
-    min_value: 0
-    step: 1
-    max_value: 32767
-    mode: box
-    unit_of_measurement: "ppm"
-    lambda: |-
-      uint16_t high = static_cast<uint16_t>(data[item->offset] & 0x7F);
-      uint16_t low = static_cast<uint16_t>(data[item->offset+1]);
-      return (high << 8) | low;
-    write_lambda: |-
-      uint8_t shape_bit;
-      if (id(pwm_mirror_in_y_axis).state) {
-        shape_bit = 0x80;
-      } else {
-        shape_bit = 0x00;
-      }
-      uint16_t value = x;
-      uint16_t high = (value & 0xFF00) >> 8;
-      uint16_t low = value & 0xff;
-      return ((shape_bit|high) << 8) | low;
+  # - platform: modbus_controller
+  #   modbus_controller_id: s88_modbus_controller
+  #   name: "S88: PWM: Regulator Dead Band"
+  #   id: pwm_regulator_dead_band
+  #   address: 11
+  #   value_type: U_WORD
+  #   min_value: 0
+  #   step: 1
+  #   max_value: 32767
+  #   mode: box
+  #   unit_of_measurement: "ppm"
+  #   lambda: |-
+  #     uint16_t high = static_cast<uint16_t>(data[item->offset] & 0x7F);
+  #     uint16_t low = static_cast<uint16_t>(data[item->offset+1]);
+  #     return (high << 8) | low;
+  #   write_lambda: |-
+  #     uint8_t shape_bit;
+  #     if (id(pwm_mirror_in_y_axis).state) {
+  #       shape_bit = 0x80;
+  #     } else {
+  #       shape_bit = 0x00;
+  #     }
+  #     uint16_t value = x;
+  #     uint16_t high = (value & 0xFF00) >> 8;
+  #     uint16_t low = value & 0xff;
+  #     return ((shape_bit|high) << 8) | low;
 
   # OUT1 RDB (HR12)
-  - platform: modbus_controller
-    modbus_controller_id: s88_modbus_controller
-    id: pwm_regulator_dead_band_internal
-    internal: true
-    address: 11
-    value_type: U_WORD
+  # - platform: modbus_controller
+  #   modbus_controller_id: s88_modbus_controller
+  #   id: pwm_regulator_dead_band_internal
+  #   internal: true
+  #   address: 11
+  #   value_type: U_WORD
 
   # OUT1 PRC (HR13)
-  - platform: modbus_controller
-    modbus_controller_id: s88_modbus_controller
-    name: "S88: PWM: Proportional Regulator Constant"
-    id: pwm_proportional_regulator_constant
-    address: 12
-    value_type: U_WORD
-    min_value: 0
-    step: 1
-    max_value: 32767
-    mode: box
-    unit_of_measurement: "ppm"
-    lambda: |-
-      uint16_t high = static_cast<uint16_t>(data[item->offset] & 0x7F);
-      uint16_t low = static_cast<uint16_t>(data[item->offset+1]);
-      return (high << 8) | low;
-    write_lambda: |-
-      uint8_t shape_bit;
-      if (id(pwm_mirror_in_x_axis).state) {
-        shape_bit = 0x80;
-      } else {
-        shape_bit = 0x00;
-      }
-      uint16_t value = x;
-      uint16_t high = (value & 0xFF00) >> 8;
-      uint16_t low = value & 0xff;
-      return ((shape_bit|high) << 8) | low;
+  # - platform: modbus_controller
+  #   modbus_controller_id: s88_modbus_controller
+  #   name: "S88: PWM: Proportional Regulator Constant"
+  #   id: pwm_proportional_regulator_constant
+  #   address: 12
+  #   value_type: U_WORD
+  #   min_value: 0
+  #   step: 1
+  #   max_value: 32767
+  #   mode: box
+  #   unit_of_measurement: "ppm"
+  #   lambda: |-
+  #     uint16_t high = static_cast<uint16_t>(data[item->offset] & 0x7F);
+  #     uint16_t low = static_cast<uint16_t>(data[item->offset+1]);
+  #     return (high << 8) | low;
+  #   write_lambda: |-
+  # uint8_t shape_bit;
+  # if (id(pwm_mirror_in_x_axis).state) {
+  #   shape_bit = 0x80;
+  # } else {
+  #   shape_bit = 0x00;
+  # }
+  # uint16_t value = x;
+  # uint16_t high = (value & 0xFF00) >> 8;
+  # uint16_t low = value & 0xff;
+  # return ((shape_bit|high) << 8) | low;
 
   # OUT1 PRC (HR13)
-  - platform: modbus_controller
-    modbus_controller_id: s88_modbus_controller
-    id: pwm_proportional_regulator_constant_internal
-    address: 12
-    value_type: U_WORD
+  # - platform: modbus_controller
+  #   modbus_controller_id: s88_modbus_controller
+  #   id: pwm_proportional_regulator_constant_internal
+  #   address: 12
+  #   value_type: U_WORD
 
   # OUT1 MinLimit (HR14)
-  - platform: modbus_controller
-    modbus_controller_id: s88_modbus_controller
-    name: "S88: PWM: Min output duty cycle"
-    address: 13
-    value_type: U_WORD
-    min_value: 0
-    step: 1
-    max_value: 100
-    mode: box
-    lambda: "return x * 100.0 / 16383.0;"
-    write_lambda: "return x * 16383.0 / 100.0;"
-    unit_of_measurement: "%"
+  # - platform: modbus_controller
+  #   modbus_controller_id: s88_modbus_controller
+  #   name: "S88: PWM: Min output duty cycle"
+  #   address: 13
+  #   value_type: U_WORD
+  #   min_value: 0
+  #   step: 1
+  #   max_value: 100
+  #   mode: box
+  #   lambda: "return x * 100.0 / 16383.0;"
+  #   write_lambda: "return x * 16383.0 / 100.0;"
+  #   unit_of_measurement: "%"
 
   # OUT1 MaxLimit (HR15)
-  - platform: modbus_controller
-    modbus_controller_id: s88_modbus_controller
-    name: "S88: PWM: Max output duty cycle"
-    address: 14
-    value_type: U_WORD
-    min_value: 0
-    step: 1
-    max_value: 100
-    mode: box
-    lambda: "return x * 100.0 / 16383.0;"
-    write_lambda: "return x * 16383.0 / 100.0;"
-    unit_of_measurement: "%"
+  # - platform: modbus_controller
+  #   modbus_controller_id: s88_modbus_controller
+  #   name: "S88: PWM: Max output duty cycle"
+  #   address: 14
+  #   value_type: U_WORD
+  #   min_value: 0
+  #   step: 1
+  #   max_value: 100
+  #   mode: box
+  #   lambda: "return x * 100.0 / 16383.0;"
+  #   write_lambda: "return x * 16383.0 / 100.0;"
+  #   unit_of_measurement: "%"
 
   # OUT1 Offset (HR16)
-  - platform: modbus_controller
-    modbus_controller_id: s88_modbus_controller
-    name: "S88: PWM: Offset"
-    address: 15
-    value_type: U_WORD
-    min_value: 0
-    step: 1
-    max_value: 100
-    mode: box
-    lambda: "return x * 100.0 / 16383.0;"
-    write_lambda: "return x * 16383.0 / 100.0;"
-    unit_of_measurement: "%"
+  # - platform: modbus_controller
+  #   modbus_controller_id: s88_modbus_controller
+  #   name: "S88: PWM: Offset"
+  #   address: 15
+  #   value_type: U_WORD
+  #   min_value: 0
+  #   step: 1
+  #   max_value: 100
+  #   mode: box
+  #   lambda: "return x * 100.0 / 16383.0;"
+  #   write_lambda: "return x * 16383.0 / 100.0;"
+  #   unit_of_measurement: "%"
 
   # OUT1 Override (HR22)
-  - platform: modbus_controller
-    modbus_controller_id: s88_modbus_controller
-    name: "S88: PWM: Override"
-    address: 21
-    value_type: U_WORD
-    min_value: 0
-    step: 1
-    max_value: 100
-    mode: box
-    lambda: |-
-      if(x==65535)
-        return NAN;
-      return x * 100.0 / 16383.0;
-    write_lambda: "return x * 16383.0 / 100.0;"
-    unit_of_measurement: "%"
+  # - platform: modbus_controller
+  #   modbus_controller_id: s88_modbus_controller
+  #   name: "S88: PWM: Override"
+  #   address: 21
+  #   value_type: U_WORD
+  #   min_value: 0
+  #   step: 1
+  #   max_value: 100
+  #   mode: box
+  #   lambda: |-
+  #     if(x==65535)
+  #       return NAN;
+  #     return x * 100.0 / 16383.0;
+  #   write_lambda: "return x * 16383.0 / 100.0;"
+  #   unit_of_measurement: "%"
 
 switch:
-  # OUT0 RDB (HR10)
-  - platform: modbus_controller
-    modbus_controller_id: s88_modbus_controller
-    name: "S88: Alarm: Mirror in y-axis"
-    id: alarm_mirror_in_y_axis
-    register_type: holding
-    address: 9
-    bitmask: 0x8000
-    restore_mode: DISABLED
-    write_lambda: |-
-      uint16_t number = (uint16_t)id(alarm_regulator_dead_band).state;
-      uint16_t value;
-      if(x)
-        value = number | 0x8000;
-      else
-        value = number;
-      auto call = id(alarm_regulator_dead_band_internal).make_call();
-      call.set_value(value);
-      call.perform();
-      return {};
+  # # OUT0 RDB (HR10)
+  # - platform: modbus_controller
+  #   modbus_controller_id: s88_modbus_controller
+  #   name: "S88: Alarm: Mirror in y-axis"
+  #   id: alarm_mirror_in_y_axis
+  #   register_type: holding
+  #   address: 9
+  #   bitmask: 0x8000
+  #   restore_mode: DISABLED
+  #   write_lambda: |-
+  #     uint16_t number = (uint16_t)id(alarm_regulator_dead_band).state;
+  #     uint16_t value;
+  #     if(x)
+  #       value = number | 0x8000;
+  #     else
+  #       value = number;
+  #     auto call = id(alarm_regulator_dead_band_internal).make_call();
+  #     call.set_value(value);
+  #     call.perform();
+  #     return {};
 
-  # OUT0 PRC (HR11)
-  - platform: modbus_controller
-    modbus_controller_id: s88_modbus_controller
-    name: "S88: Alarm: Mirror in x-axis"
-    id: alarm_mirror_in_x_axis
-    register_type: holding
-    address: 10
-    bitmask: 0x8000
-    restore_mode: DISABLED
-    write_lambda: |-
-      uint16_t number = (uint16_t)id(alarm_proportional_regulator_constant).state;
-      uint16_t value;
-      if(x)
-        value = number | 0x8000;
-      else
-        value = number;
-      auto call = id(alarm_proportional_regulator_constant_internal).make_call();
-      call.set_value(value);
-      call.perform();
-      return {};
+  # # OUT0 PRC (HR11)
+  # - platform: modbus_controller
+  #   modbus_controller_id: s88_modbus_controller
+  #   name: "S88: Alarm: Mirror in x-axis"
+  #   id: alarm_mirror_in_x_axis
+  #   register_type: holding
+  #   address: 10
+  #   bitmask: 0x8000
+  #   restore_mode: DISABLED
+  #   write_lambda: |-
+  #     uint16_t number = (uint16_t)id(alarm_proportional_regulator_constant).state;
+  #     uint16_t value;
+  #     if(x)
+  #       value = number | 0x8000;
+  #     else
+  #       value = number;
+  #     auto call = id(alarm_proportional_regulator_constant_internal).make_call();
+  #     call.set_value(value);
+  #     call.perform();
+  #     return {};
 
   # OUT1 RDB (HR12)
-  - platform: modbus_controller
-    modbus_controller_id: s88_modbus_controller
-    name: "S88: PWM: Mirror in y-axis"
-    id: pwm_mirror_in_y_axis
-    register_type: holding
-    address: 11
-    bitmask: 0x8000
-    restore_mode: DISABLED
-    write_lambda: |-
-      uint16_t number = (uint16_t)id(pwm_regulator_dead_band).state;
-      uint16_t value;
-      if(x)
-        value = number | 0x8000;
-      else
-        value = number;
-      auto call = id(pwm_regulator_dead_band_internal).make_call();
-      call.set_value(value);
-      call.perform();
-      return {};
+  # - platform: modbus_controller
+  #   modbus_controller_id: s88_modbus_controller
+  #   name: "S88: PWM: Mirror in y-axis"
+  #   id: pwm_mirror_in_y_axis
+  #   register_type: holding
+  #   address: 11
+  #   bitmask: 0x8000
+  #   restore_mode: DISABLED
+  #   write_lambda: |-
+  #     uint16_t number = (uint16_t)id(pwm_regulator_dead_band).state;
+  #     uint16_t value;
+  #     if(x)
+  #       value = number | 0x8000;
+  #     else
+  #       value = number;
+  #     auto call = id(pwm_regulator_dead_band_internal).make_call();
+  #     call.set_value(value);
+  #     call.perform();
+  #     return {};
 
   # OUT1 PRC (HR13)
-  - platform: modbus_controller
-    modbus_controller_id: s88_modbus_controller
-    name: "S88: PWM: Mirror in x-axis"
-    id: pwm_mirror_in_x_axis
-    register_type: holding
-    address: 12
-    bitmask: 0x8000
-    restore_mode: DISABLED
-    write_lambda: |-
-      uint16_t number = (uint16_t)id(pwm_proportional_regulator_constant).state;
-      uint16_t value;
-      if(x)
-        value = number | 0x8000;
-      else
-        value = number;
-      auto call = id(pwm_proportional_regulator_constant_internal).make_call();
-      call.set_value(value);
-      call.perform();
-      return {};
+  # - platform: modbus_controller
+  #   modbus_controller_id: s88_modbus_controller
+  #   name: "S88: PWM: Mirror in x-axis"
+  #   id: pwm_mirror_in_x_axis
+  #   register_type: holding
+  #   address: 12
+  #   bitmask: 0x8000
+  #   restore_mode: DISABLED
+  #   write_lambda: |-
+  #     uint16_t number = (uint16_t)id(pwm_proportional_regulator_constant).state;
+  #     uint16_t value;
+  #     if(x)
+  #       value = number | 0x8000;
+  #     else
+  #       value = number;
+  #     auto call = id(pwm_proportional_regulator_constant_internal).make_call();
+  #     call.set_value(value);
+  #     call.perform();
+  #     return {};
 
 light:
   - platform: esp32_rmt_led_strip
@@ -850,6 +858,19 @@ button:
 
   - platform: safe_mode
     name: "Safe Mode"
+
+  # Reset CO₂ calibration to factory defaults (HR2/0x7C/0x1)
+  - platform: template
+    name: "S88: Calibration: Reset CO₂ calibration to factory defaults"
+    on_press:
+      - lambda: |-
+          auto modbus_controller = id(s88_modbus_controller);
+          auto modbus_command_item = esphome::modbus_controller::ModbusCommandItem::create_write_single_command(
+            modbus_controller,
+            0x01,
+            0x7C01
+          );
+          modbus_controller->queue_command(modbus_command_item);
 
 text_sensor:
   - platform: wifi_info
