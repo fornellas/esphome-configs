@@ -305,6 +305,46 @@ binary_sensor:
     name: "S88: Offline"
     id: s88_offline
 
+  # Acknowledgement register: Reset calibration has been performed (HR1/CI1)
+  - platform: modbus_controller
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Calibration: Reset CO₂ calibration to factory defaults: Acknowledged"
+    register_type: holding
+    address: 0
+    bitmask: 0x01 # 1
+
+  # Force ABC calibration has been performed (HR1/CI3)
+  - platform: modbus_controller
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Calibration: ABC: Force: Acknowledged"
+    register_type: holding
+    address: 0
+    bitmask: 0x04 # 3
+
+  # Acknowledgement register: CO₂ target calibration (HR2/0x7C/0x5)
+  - platform: modbus_controller
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Calibration: Target: Acknowledged"
+    register_type: holding
+    address: 0
+    bitmask: 0x10 # 5
+
+  # CO₂ background calibration has been performed (HR1/CI6)
+  - platform: modbus_controller
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Calibration: Background: Acknowledged"
+    register_type: holding
+    address: 0
+    bitmask: 0x20 # 6
+
+  # CO₂ zero calibration has been performed (HR1/CI7)
+  - platform: modbus_controller
+    modbus_controller_id: s88_modbus_controller
+    name: "S88: Calibration: Zero: Acknowledged"
+    register_type: holding
+    address: 0
+    bitmask: 0x40 # 7
+
 sensor:
   - platform: uptime
     name: "Uptime"
@@ -855,6 +895,14 @@ number:
   #   write_lambda: "return x * 16383.0 / 100.0;"
   #   unit_of_measurement: "%"
 
+  # Acknowledgement register (HR1)
+  - platform: modbus_controller
+    id: s88_acknowledgement_register
+    modbus_controller_id: s88_modbus_controller
+    internal: true
+    address: 0
+    value_type: U_WORD
+
 switch:
   # OUT0 RDB (HR10)
   # - platform: modbus_controller
@@ -1007,6 +1055,77 @@ button:
 
   - platform: safe_mode
     name: "Safe Mode"
+
+  # Acknowledgement register (HR1)
+  - platform: template
+    name: "S88: Calibration: Acknowledgement: Clear"
+    on_press:
+      - lambda: id(s88_acknowledgement_register).make_call().set_value(0).perform();
+
+  # Reset CO₂ calibration to factory defaults (HR2/0x7C/0x1)
+  - platform: template
+    name: "S88: Calibration: Reset CO₂ calibration to factory defaults"
+    on_press:
+      - lambda: |-
+          auto modbus_controller = id(s88_modbus_controller);
+          auto modbus_command_item = esphome::modbus_controller::ModbusCommandItem::create_write_single_command(
+            modbus_controller,
+            0x01,
+            0x7C01
+          );
+          modbus_controller->queue_command(modbus_command_item);
+
+  # Force ABC calibration (HR2/0x7C/0x3)
+  - platform: template
+    name: "S88: Calibration: ABC: Force"
+    on_press:
+      - lambda: |-
+          auto modbus_controller = id(s88_modbus_controller);
+          auto modbus_command_item = esphome::modbus_controller::ModbusCommandItem::create_write_single_command(
+            modbus_controller,
+            0x01,
+            0x7C03
+          );
+          modbus_controller->queue_command(modbus_command_item);
+
+  # CO₂ target calibration has been performed (HR1/CI5)
+  - platform: template
+    name: "S88: Calibration: Target"
+    on_press:
+      - lambda: |-
+          auto modbus_controller = id(s88_modbus_controller);
+          auto modbus_command_item = esphome::modbus_controller::ModbusCommandItem::create_write_single_command(
+            modbus_controller,
+            0x01,
+            0x7C05
+          );
+          modbus_controller->queue_command(modbus_command_item);
+
+  # CO₂ background calibration (HR2/0x7C/0x6)
+  - platform: template
+    name: "S88: Calibration: Background"
+    on_press:
+      - lambda: |-
+          auto modbus_controller = id(s88_modbus_controller);
+          auto modbus_command_item = esphome::modbus_controller::ModbusCommandItem::create_write_single_command(
+            modbus_controller,
+            0x01,
+            0x7C06
+          );
+          modbus_controller->queue_command(modbus_command_item);
+
+  # CO₂ zero calibration (HR2/0x7C/0x7)
+  - platform: template
+    name: "S88: Calibration: Zero"
+    on_press:
+      - lambda: |-
+          auto modbus_controller = id(s88_modbus_controller);
+          auto modbus_command_item = esphome::modbus_controller::ModbusCommandItem::create_write_single_command(
+            modbus_controller,
+            0x01,
+            0x7C07
+          );
+          modbus_controller->queue_command(modbus_command_item);
 
 text_sensor:
   - platform: wifi_info
