@@ -579,6 +579,45 @@ sensor:
     value_type: U_DWORD
     bitmask: 0x0FFF
 
+  - platform: template
+    name: "AQI"
+    unit_of_measurement: "AQI"
+    icon: "mdi:gauge"
+    lambda: |-
+      double aqi = -1;
+
+      if (id(s88_aqi).state != NAN && id(s88_aqi).state > aqi)
+        aqi = id(s88_aqi).state;
+      if (id(pmsx003_aqi).state != NAN && id(pmsx003_aqi).state > aqi)
+        aqi = id(pmsx003_aqi).state;
+
+      if(aqi >= 0.0)
+        return aqi;
+      return NAN;
+    update_interval: 1s
+    on_value:
+      then:
+        - lambda: |-
+            if (x == NAN) {
+              id(white_led_light).turn_on().set_effect("fast_strobe").perform();
+              id(yellow_led_light).turn_on().set_effect("fast_strobe").perform();
+            }
+            if (x < 1.5) {
+              id(white_led_light).turn_off().perform();
+              id(white_led_light).turn_on().perform();
+              id(yellow_led_light).turn_off().perform();
+            }
+            if (x >= 1.5 && x < 3) {
+              id(white_led_light).turn_off().perform();
+              id(yellow_led_light).turn_off().perform();
+              id(yellow_led_light).turn_on().perform();
+            }
+            if (x > 3) {
+              id(white_led_light).turn_off().perform();
+              id(yellow_led_light).turn_off().perform();
+              id(yellow_led_light).turn_on().set_effect("fast_strobe").perform();
+            }
+
 select:
   # Static IIR Config (HR28)
   - platform: modbus_controller
@@ -1012,11 +1051,27 @@ light:
     id: yellow_led_light
     output: yellow_led_output
     internal: true
+    effects:
+      - strobe:
+          name: "fast_strobe"
+          colors:
+            - state: true
+              duration: 125ms
+            - state: false
+              duration: 125ms
 
   - platform: binary
     id: white_led_light
     output: white_led_output
     internal: true
+    effects:
+      - strobe:
+          name: "fast_strobe"
+          colors:
+            - state: true
+              duration: 125ms
+            - state: false
+              duration: 125ms
 
 output:
   - platform: gpio
