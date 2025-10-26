@@ -82,6 +82,10 @@ ifneq ($(.SHELLSTATUS),0)
   $(error cat .word-clock-devices failed: $(WORD_CLOCK_DEVICES))
 endif
 
+S88_TEST_DEVICES := $(shell cat .s88-test-devices)
+ifneq ($(.SHELLSTATUS),0)
+  $(error cat .word-clock-devices failed: $(S88_TEST_DEVICES))
+endif
 
 all: \
 	template.bin \
@@ -436,7 +440,7 @@ s88-test.bin: s88-test.yaml
 .PHONY: s88-test-upload
 s88-test-upload: s88-test.bin
 	@echo Uploaing s88-test:
-	@for device in $(WORD_CLOCK_DEVICES) ; do echo -n "  s88-test-$${device}.$(DOMAIN)..." ; curl -f -X POST https://s88-test-$${device}.$(DOMAIN)/update -F upload=@s88-test.bin -u "$(USERNAME):$(PASSWORD)" ; done
+	@for device in $(S88_TEST_DEVICES) ; do echo -n "  s88-test-$${device}.$(DOMAIN)..." ; curl -f -X POST https://s88-test-$${device}.$(DOMAIN)/update -F upload=@s88-test.bin -u "$(USERNAME):$(PASSWORD)" ; done
 	@echo
 upload: s88-test-upload
 
