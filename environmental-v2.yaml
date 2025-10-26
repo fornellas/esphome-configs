@@ -515,11 +515,10 @@ sensor:
   # Synchro (IR6)
   - platform: modbus_controller
     modbus_controller_id: s88_modbus_controller
-    name: "S88: Sensor: Synchro"
+    name: "S88: Sensor: Measurement periods"
     register_type: "read"
     address: 0x05
     value_type: U_WORD
-    unit_of_measurement: "measurement periods"
 
   # Vbb (IR7)
   - platform: modbus_controller
