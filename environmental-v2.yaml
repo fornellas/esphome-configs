@@ -417,18 +417,18 @@ sensor:
       double pm25 = id(pmsx003_pm25).state;
       if(!std::isnan(pm25)) {
         double aqi_pm25 = 0.0;
-        if(pm25 < 10.0)
-          aqi_pm25 = pm25 / 10.0;
-        else if(pm25 < 20.0)
-          aqi_pm25 = 1.0 + (pm25 - 10.0) / 10.0;
-        else if(pm25 < 25.0)
-          aqi_pm25 = 2.0 + (pm25 - 20.0) / 5.0;
+        if(pm25 < 5.0)
+          aqi_pm25 = pm25 / 5.0;
+        else if(pm25 < 15.0)
+          aqi_pm25 = 1.0 + (pm25 - 5.0) / (15.0 - 5.0);
         else if(pm25 < 50.0)
-          aqi_pm25 = 3.0 + (pm25 - 25.0) / 25.0;
-        else if(pm25 < 75.0)
-          aqi_pm25 = 4.0 + (pm25 - 50.0) / 25.0;
+          aqi_pm25 = 2.0 + (pm25 - 15.0) / (50.0 - 15.0);
+        else if(pm25 < 90.0)
+          aqi_pm25 = 3.0 + (pm25 - 50.0) / (90.0 - 50.0);
+        else if(pm25 < 140.0)
+          aqi_pm25 = 4.0 + (pm25 - 90.0) / (140.0 - 90.0);
         else
-          aqi_pm25 = 6.0;
+          aqi_pm25 = 50.0 * pm25 - 110.0;
         if(aqi_pm25 > aqi)
           aqi = aqi_pm25;
       }
@@ -437,18 +437,18 @@ sensor:
       double pm10 = id(pmsx003_pm10).state;
       if(!std::isnan(pm10)) {
         double aqi_pm10 = 0.0;
-        if(pm10 < 20.0)
-          aqi_pm10 = pm10 / 20.0;
-        else if(pm10 < 40.0)
-          aqi_pm10 = 1.0 + (pm10 - 20.0) / 20.0;
-        else if(pm10 < 50.0)
-          aqi_pm10 = 2.0 + (pm10 - 40.0) / 10.0;
-        else if(pm10 < 100.0)
-          aqi_pm10 = 3.0 + (pm10 - 50.0) / 50.0;
-        else if(pm10 < 150.0)
-          aqi_pm10 = 4.0 + (pm10 - 100.0) / 50.0;
+        if(pm10 < 15.0)
+          aqi_pm10 = pm10 / 15.0;
+        else if(pm10 < 45.0)
+          aqi_pm10 = 1.0 + (pm10 - 15.0) / (45.0 - 15.0);
+        else if(pm10 < 120.0)
+          aqi_pm10 = 2.0 + (pm10 - 45.0) / (120.0 - 45.0);
+        else if(pm10 < 195.0)
+          aqi_pm10 = 3.0 + (pm10 - 120.0) / (195.0 - 120.0);
+        else if(pm10 < 270.0)
+          aqi_pm10 = 4.0 + (pm10 - 195.0) / (270.0 - 195.0);
         else
-          aqi_pm10 = 6.0;
+          aqi_pm10 = 75.0 * pm10 - 105.0;
         if(aqi_pm10 > aqi)
           aqi = aqi_pm10;
       }
@@ -490,7 +490,7 @@ sensor:
         else if(co2_ppm < 5000.0)
           aqi_co2 = 4.0 + (co2_ppm - 2000.0) / 3000.0;
         else
-          aqi_co2 = 6.0;
+          aqi_co2 = 3000.0 * co2_ppm - 10000.0;
         if(aqi_co2 > aqi)
           aqi = aqi_co2;
       }
@@ -588,6 +588,7 @@ sensor:
 
       if (id(s88_aqi).state != NAN && id(s88_aqi).state > aqi)
         aqi = id(s88_aqi).state;
+
       if (id(pmsx003_aqi).state != NAN && id(pmsx003_aqi).state > aqi)
         aqi = id(pmsx003_aqi).state;
 
