@@ -127,7 +127,7 @@ output:
 light:
   - platform: rgbct
     id: rgbct_light
-    default_transition_length: 0ms
+    default_transition_length: 500ms
     restore_mode: RESTORE_DEFAULT_ON
     red: red_output
     green: green_output
