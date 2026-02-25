@@ -3,7 +3,7 @@ ifneq ($(.SHELLSTATUS),0)
   $(error cat .serial failed: $(SERIAL))
 endif
 
-ESPHOME_VERSION = 2025.10.2
+ESPHOME_VERSION = 2026.2.1
 
 ESPHOME = docker run --rm --privileged --net=host --device=$(SERIAL) -v "${PWD}":/config -it ghcr.io/esphome/esphome:$(ESPHOME_VERSION)
 
